@@ -19,7 +19,6 @@ C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\bin\Debug\netcoreapp3.1
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\bin\Debug\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\bin\Debug\netcoreapp3.1\System.Reactive.dll
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\bin\Debug\netcoreapp3.1\System.Reactive.xml
-C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\obj\Debug\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\obj\Debug\netcoreapp3.1\DiscordBotUpdates.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\obj\Debug\netcoreapp3.1\DiscordBotUpdates.AssemblyInfoInputs.cache
 C:\Users\ZANDER\source\repos\DicordBotUpdates\BotUpdates\obj\Debug\netcoreapp3.1\DiscordBotUpdates.AssemblyInfo.cs
