@@ -42,7 +42,8 @@ namespace DiscordBotUpdates
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-
+            Modules.BotUpdater botUpdater = new Modules.BotUpdater();
+            _ = Task.Run(() => botUpdater.PictureBotUpdates());
             await Task.Delay(Timeout.Infinite);
         }
 

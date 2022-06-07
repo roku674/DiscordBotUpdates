@@ -7,6 +7,11 @@ namespace DiscordBotUpdates.Modules
 {
     public class BotUpdater
     {
+        /// <summary>
+        /// BotUpdates Id
+        /// </summary>
+        private ulong botUpdatesID = 979100384037568582;
+
         private static readonly int _duration = 604800;
         private string _botUpdatesStr = "";
 
@@ -17,8 +22,8 @@ namespace DiscordBotUpdates.Modules
         public async Task MessageBotUpdates()
         {
             System.Console.WriteLine("MessageBotUpdates Executed!");
-            ulong id = 979100384037568582;
-            var channel = Program.client.GetChannel(id) as IMessageChannel;
+
+            var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
 
             for (int i = 0; i < _duration; i++)
             {
@@ -38,8 +43,31 @@ namespace DiscordBotUpdates.Modules
                 else
                 {
                     File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
-                    await channel.SendMessageAsync("Created botUpdates.txt !");
+                    await channel.SendMessageAsync("Created botUpdates.txt ! Recommend ReRunning!");
                     i = _duration;
+                }
+            }
+        }
+
+        public async Task PictureBotUpdates()
+        {
+            System.Console.WriteLine("PictureBotUpdates Executed!");
+
+            var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
+
+            for (int i = 0; i < _duration; i++)
+            {
+                string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/pictures", "*.png");
+                await Task.Delay(1000);
+
+                if (paths.Length > 0)
+                {
+                    foreach (string path in paths)
+                    {
+                        System.Console.WriteLine(path);
+                        await channel.SendFileAsync(path);
+                        File.Delete(path);
+                    }
                 }
             }
         }

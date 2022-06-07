@@ -17,7 +17,9 @@ namespace DiscordBotUpdates.Modules
         {
             BotUpdater botUpdater = new BotUpdater();
             _ = Task.Run(() => botUpdater.MessageBotUpdates());
-            await ReplyAsync("By Your Command! Listening for messages for " + BotUpdater.duration + " seconds!");
+            _ = Task.Run(() => botUpdater.PictureBotUpdates());
+
+            await ReplyAsync("By Your Command! Listening for messages and pictures for " + BotUpdater.duration + " seconds!");
         }
     }
 }
