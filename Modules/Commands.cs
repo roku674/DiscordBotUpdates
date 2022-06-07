@@ -22,6 +22,8 @@ namespace BotUpdates.Modules
         {
             await ReplyAsync("By Your Command!");
 
+            //https://github.com/N4T4NM/CSharpDiscordWebhook
+
             for (int i = 0; i < duration; i++)
             {
                 await Task.Delay(1000);
