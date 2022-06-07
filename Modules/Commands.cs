@@ -8,18 +8,13 @@ namespace BotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        private int duration = 86400;
+        //1 week
+        private int duration = 604800;
 
         [Command("Ping")]
         public async Task Ping()
         {
             await ReplyAsync("Pong");
-        }
-
-        [Command("Destroy NWO")]
-        public async Task DestroyNWO()
-        {
-            await ReplyAsync("By Your Command!");
         }
 
         [Command("run BotUpdater")]
