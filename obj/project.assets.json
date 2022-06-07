@@ -594,23 +594,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ZANDER\\.nuget\\packages\\": {},
+    "C:\\Users\\ALEX\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "projectUniqueName": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
       "projectName": "DiscordBotUpdates",
-      "projectPath": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
-      "packagesPath": "C:\\Users\\ZANDER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\obj\\",
+      "projectPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "packagesPath": "C:\\Users\\ALEX\\.nuget\\packages\\",
+      "outputPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\ZANDER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ALEX\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -660,7 +660,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
       }
     }
   }

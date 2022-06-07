@@ -56,3 +56,4 @@ H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\Discord
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.genruntimeconfig.cache
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.pdb
