@@ -1,47 +1,44 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
 {
-    public static class BotUpdater
+    public class BotUpdater
     {
-        private static string _botUpdatesStr = "";
-        private static bool _botUpdatesBool;
+        private static readonly int duration = 604800;
+        private string _botUpdatesStr = "";
 
-        public static string botUpdatesStr { get => _botUpdatesStr; set => _botUpdatesStr = value; }
-        public static bool botUpdatesBool { get => _botUpdatesBool; set => _botUpdatesBool = value; }
+        public string botUpdatesStr { get => _botUpdatesStr; set => _botUpdatesStr = value; }
 
-        public static void Run()
+        public async Task MessageBotUpdates()
         {
-            if (botUpdatesBool)
-            {
-                Timer timer = new Timer(MessageBotUpdates, null, 0, 1000);
-                System.Console.WriteLine("Run");
-            }
-        }
-
-        private static void MessageBotUpdates(object o)
-        {
+            System.Console.WriteLine("MessageBotUpdates");
             ulong id = 979100384037568582;
             var channel = Program.client.GetChannel(id) as IMessageChannel;
 
-            if (File.Exists(Directory.GetCurrentDirectory() + "/botUpdates.txt"))
+            for (int i = 0; i < duration; i++)
             {
-                _botUpdatesStr = File.ReadAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+                await Task.Delay(1000);
 
-                if (!string.IsNullOrEmpty(_botUpdatesStr))
+                if (File.Exists(Directory.GetCurrentDirectory() + "/botUpdates.txt"))
                 {
-                    System.Console.WriteLine(_botUpdatesStr);
-                    channel.SendMessageAsync(_botUpdatesStr);
-                    File.WriteAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt", "");
+                    botUpdatesStr = File.ReadAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+
+                    if (!string.IsNullOrEmpty(botUpdatesStr))
+                    {
+                        System.Console.WriteLine(botUpdatesStr);
+                        await channel.SendMessageAsync(botUpdatesStr);
+                        File.WriteAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt", "");
+                    }
                 }
-            }
-            else
-            {
-                File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
-                channel.SendMessageAsync("Created botUpdates.txt !");
+                else
+                {
+                    File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+                    await channel.SendMessageAsync("Created botUpdates.txt !");
+                    i = duration;
+                }
             }
         }
     }

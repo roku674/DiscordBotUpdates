@@ -43,9 +43,6 @@ namespace DiscordBotUpdates
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
-            Modules.BotUpdater.botUpdatesBool = true;
-            Modules.BotUpdater.Run();
-
             await Task.Delay(Timeout.Infinite);
         }
 

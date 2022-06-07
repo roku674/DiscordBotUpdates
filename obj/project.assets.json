@@ -600,11 +600,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "projectUniqueName": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
       "projectName": "DiscordBotUpdates",
-      "projectPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "projectPath": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
       "packagesPath": "C:\\Users\\ZANDER\\.nuget\\packages\\",
-      "outputPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\obj\\",
+      "outputPath": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

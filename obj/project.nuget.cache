@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bAirx0CMsyC+4VeGw6/Ep+i6tcevJ81+T2mCGlCfDzZ/HIxieV5m600U1QV293ovey5v8zP92GD231PRZccVGw==",
+  "dgSpecHash": "T2ZVJWNzSv1yw8RjdKX4W6DYxbOSuvcbRQlJIR+8Q6tJ6SXXnWGZcrqjdXEz5vgPvzuTwqmNUrPvNMoTkVUZ2g==",
   "success": true,
-  "projectFilePath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+  "projectFilePath": "C:\\Users\\ZANDER\\source\\repos\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ZANDER\\.nuget\\packages\\discord.net\\3.7.2\\discord.net.3.7.2.nupkg.sha512",
     "C:\\Users\\ZANDER\\.nuget\\packages\\discord.net.commands\\3.7.2\\discord.net.commands.3.7.2.nupkg.sha512",
