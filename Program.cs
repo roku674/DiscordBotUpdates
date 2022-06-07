@@ -4,22 +4,26 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
+
+//Created by Alexander Fields https://github.com/roku674
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BotUpdates
+namespace DiscordBotUpdates
 {
     internal class Program
     {
         private static void Main(string[] args) => new Program().RunBotAsync().GetAwaiter().GetResult();
 
-        private static string _botUpdates = "";
-        private DiscordSocketClient _client;
-        private CommandService _commands;
+        //nentwork variables
+        private static DiscordSocketClient _client;
+
+        private static CommandService _commands;
         private IServiceProvider _services;
 
-        public static string botUpdates { get => _botUpdates; set => _botUpdates = value; }
+        public static CommandService commands { get => _commands; set => _commands = value; }
+        public static DiscordSocketClient client { get => _client; set => _client = value; }
 
         public async Task RunBotAsync()
         {
@@ -38,6 +42,9 @@ namespace BotUpdates
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
+
+            Modules.BotUpdater.botUpdatesBool = true;
+            Modules.BotUpdater.Run();
 
             await Task.Delay(Timeout.Infinite);
         }
