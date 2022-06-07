@@ -8,6 +8,8 @@ namespace BotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
+        private int duration = 86400;
+
         [Command("Ping")]
         public async Task Ping()
         {
@@ -25,7 +27,7 @@ namespace BotUpdates.Modules
         {
             await ReplyAsync("By Your Command!");
 
-            for (int i = 0; i < 86400; i++)
+            for (int i = 0; i < duration; i++)
             {
                 await Task.Delay(1000);
 
@@ -43,6 +45,8 @@ namespace BotUpdates.Modules
                 else
                 {
                     File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+                    await ReplyAsync("Created botUpdates.txt !");
+                    i = duration;
                 }
             }
             await ReplyAsync("No Longer Checking Bot Updates!");
