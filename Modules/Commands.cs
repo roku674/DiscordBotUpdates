@@ -13,11 +13,11 @@ namespace DiscordBotUpdates.Modules
         }
 
         [Command("run BotUpdater")]
-        public async Task BotUpdater()
+        public async Task BotUpdaterCommand()
         {
             BotUpdater botUpdater = new BotUpdater();
             _ = Task.Run(() => botUpdater.MessageBotUpdates());
-            await ReplyAsync("By Your Command! Listening for messages indefinitely");
+            await ReplyAsync("By Your Command! Listening for messages for " + BotUpdater.duration + " seconds!");
         }
     }
 }

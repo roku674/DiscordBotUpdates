@@ -7,8 +7,10 @@ namespace DiscordBotUpdates.Modules
 {
     public class BotUpdater
     {
-        private static readonly int duration = 604800;
+        private static readonly int _duration = 604800;
         private string _botUpdatesStr = "";
+
+        public static int duration => _duration;
 
         public string botUpdatesStr { get => _botUpdatesStr; set => _botUpdatesStr = value; }
 
@@ -18,7 +20,7 @@ namespace DiscordBotUpdates.Modules
             ulong id = 979100384037568582;
             var channel = Program.client.GetChannel(id) as IMessageChannel;
 
-            for (int i = 0; i < duration; i++)
+            for (int i = 0; i < _duration; i++)
             {
                 await Task.Delay(1000);
 
@@ -37,7 +39,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
                     await channel.SendMessageAsync("Created botUpdates.txt !");
-                    i = duration;
+                    i = _duration;
                 }
             }
         }
