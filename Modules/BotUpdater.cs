@@ -16,7 +16,7 @@ namespace DiscordBotUpdates.Modules
 
         public async Task MessageBotUpdates()
         {
-            System.Console.WriteLine("MessageBotUpdates");
+            System.Console.WriteLine("MessageBotUpdates Executed!");
             ulong id = 979100384037568582;
             var channel = Program.client.GetChannel(id) as IMessageChannel;
 
@@ -30,7 +30,7 @@ namespace DiscordBotUpdates.Modules
 
                     if (!string.IsNullOrEmpty(botUpdatesStr))
                     {
-                        System.Console.WriteLine(botUpdatesStr);
+                        //System.Console.WriteLine(botUpdatesStr);
                         await channel.SendMessageAsync(botUpdatesStr);
                         File.WriteAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt", "");
                     }
