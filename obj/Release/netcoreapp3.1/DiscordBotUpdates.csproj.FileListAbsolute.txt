@@ -32,6 +32,7 @@ H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Discord
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.runtimeconfig.json
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.runtimeconfig.dev.json
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.dll
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Discord.Net.Commands.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Discord.Net.Core.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Discord.Net.Interactions.dll
@@ -55,4 +56,3 @@ H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\Discord
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.genruntimeconfig.cache
-H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\DiscordBotUpdates.pdb

@@ -24,29 +24,30 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("MessageBotUpdates Executed!");
 
             var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
-
+            await channel.SendMessageAsync("Initiating Message Listener!");
             for (int i = 0; i < _duration; i++)
             {
                 await Task.Delay(1000);
 
-                if (File.Exists(Directory.GetCurrentDirectory() + "/botUpdates.txt"))
+                if (File.Exists(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt"))
                 {
-                    botUpdatesStr = File.ReadAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+                    botUpdatesStr = File.ReadAllText(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt");
 
                     if (!string.IsNullOrEmpty(botUpdatesStr))
                     {
                         //System.Console.WriteLine(botUpdatesStr);
                         await channel.SendMessageAsync(botUpdatesStr);
-                        File.WriteAllText(Directory.GetCurrentDirectory() + "/botUpdates.txt", "");
+                        File.WriteAllText(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt", "");
                     }
                 }
                 else
                 {
-                    File.Create(Directory.GetCurrentDirectory() + "/botUpdates.txt");
+                    File.Create(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt");
                     await channel.SendMessageAsync("Created botUpdates.txt ! Recommend ReRunning!");
                     i = _duration;
                 }
             }
+            await channel.SendMessageAsync("No Longer Listening for MessageUpdates!");
         }
 
         public async Task PictureBotUpdates()
@@ -54,10 +55,11 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("PictureBotUpdates Executed!");
 
             var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
+            await channel.SendMessageAsync("Initiating Picture Listener!");
 
             for (int i = 0; i < _duration; i++)
             {
-                string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/pictures", "*.png");
+                string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Pictures", "*.png");
                 await Task.Delay(1000);
 
                 if (paths.Length > 0)
@@ -65,11 +67,12 @@ namespace DiscordBotUpdates.Modules
                     foreach (string path in paths)
                     {
                         System.Console.WriteLine(path);
-                        await channel.SendFileAsync(path);
+                        await channel.SendFileAsync(path, Path.GetFileName(path));
                         File.Delete(path);
                     }
                 }
             }
+            await channel.SendMessageAsync("No Longer Listening for Pictures Updates!");
         }
     }
 }

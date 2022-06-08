@@ -42,8 +42,7 @@ namespace DiscordBotUpdates
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-            Modules.BotUpdater botUpdater = new Modules.BotUpdater();
-            _ = Task.Run(() => botUpdater.PictureBotUpdates());
+
             await Task.Delay(Timeout.Infinite);
         }
 
@@ -73,7 +72,10 @@ namespace DiscordBotUpdates
             {
                 IResult result = await _commands.ExecuteAsync(context, argPos, _services);
 
-                if (!result.IsSuccess) Console.WriteLine(result.ErrorReason);
+                if (!result.IsSuccess)
+                {
+                    Console.WriteLine(result.ErrorReason + " | " + context.Message);
+                }
             }
         }
     }
