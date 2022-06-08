@@ -24,7 +24,8 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("MessageBotUpdates Executed!");
 
             var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
-            await channel.SendMessageAsync("Initiating Message Listener!");
+            await channel.SendMessageAsync("Sucessfully Initiated Message Listener!");
+
             for (int i = 0; i < _duration; i++)
             {
                 await Task.Delay(1000);
@@ -55,7 +56,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("PictureBotUpdates Executed!");
 
             var channel = Program.client.GetChannel(botUpdatesID) as IMessageChannel;
-            await channel.SendMessageAsync("Initiating Picture Listener!");
+            await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
 
             for (int i = 0; i < _duration; i++)
             {

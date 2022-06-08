@@ -15,11 +15,11 @@ namespace DiscordBotUpdates.Modules
         [Command("run BotUpdater")]
         public async Task BotUpdaterCommand()
         {
+            await ReplyAsync("By Your Command! Listening for messages and pictures for " + BotUpdater.duration + " seconds!");
+
             BotUpdater botUpdater = new BotUpdater();
             _ = Task.Run(() => botUpdater.MessageBotUpdates());
             _ = Task.Run(() => botUpdater.PictureBotUpdates());
-
-            await ReplyAsync("By Your Command! Listening for messages and pictures for " + BotUpdater.duration + " seconds!");
         }
     }
 }
