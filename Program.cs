@@ -16,6 +16,8 @@ namespace DiscordBotUpdates
     {
         private static void Main(string[] args) => new Program().RunBotAsync().GetAwaiter().GetResult();
 
+        private static DateTime _dateTime;
+
         //nentwork variables
         private static DiscordSocketClient _client;
 
@@ -24,6 +26,7 @@ namespace DiscordBotUpdates
 
         public static CommandService commands { get => _commands; set => _commands = value; }
         public static DiscordSocketClient client { get => _client; set => _client = value; }
+        public static DateTime dateTime { get => _dateTime; set => _dateTime = value; }
 
         public async Task RunBotAsync()
         {
@@ -42,6 +45,8 @@ namespace DiscordBotUpdates
             await RegisterCommandsAsync();
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
+
+            _dateTime = DateTime.Now;
 
             await Task.Delay(Timeout.Infinite);
         }
@@ -75,6 +80,7 @@ namespace DiscordBotUpdates
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result.ErrorReason + " | " + context.Message);
+                    await Modules.BotUpdater.Outprint(result.ErrorReason + " | " + context.Message);
                 }
             }
         }
