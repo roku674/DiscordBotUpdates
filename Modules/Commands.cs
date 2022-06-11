@@ -51,14 +51,14 @@ namespace DiscordBotUpdates.Modules
 
             BotUpdater botUpdater = new BotUpdater();
 
-            uint messagesNum = BotUpdater.dbuTaskNum++;
+            uint messagesNum = DBUTask.dbuTaskNum++;
             Task messages = Task.Run(() => botUpdater.MessageBotUpdates(messagesNum));
 
-            uint picturesNum = BotUpdater.dbuTaskNum++;
+            uint picturesNum = DBUTask.dbuTaskNum++;
             Task pictures = Task.Run(() => botUpdater.PictureBotUpdates(picturesNum));
 
-            BotUpdater.DBUTask dBUMessages = new BotUpdater.DBUTask(messages, "Message Updater", "Server", messagesNum);
-            BotUpdater.DBUTask dBUPicturess = new BotUpdater.DBUTask(pictures, "Picture Updater", "Server", picturesNum);
+            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Server", messagesNum);
+            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Server", picturesNum);
 
             BotUpdater.runningTasks.Add(dBUMessages);
             BotUpdater.runningTasks.Add(dBUPicturess);
@@ -78,7 +78,7 @@ namespace DiscordBotUpdates.Modules
             {
                 for (int i = BotUpdater.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    BotUpdater.DBUTask dbuTask = BotUpdater.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = BotUpdater.runningTasks[i];
 
                     await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
                         + '\n'
@@ -101,7 +101,7 @@ namespace DiscordBotUpdates.Modules
             {
                 for (int i = BotUpdater.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    BotUpdater.DBUTask dbuTask = BotUpdater.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = BotUpdater.runningTasks[i];
 
                     if (dbuTask.owner.Equals("Allie"))
                     {
@@ -127,7 +127,7 @@ namespace DiscordBotUpdates.Modules
             {
                 for (int i = BotUpdater.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    BotUpdater.DBUTask dbuTask = BotUpdater.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = BotUpdater.runningTasks[i];
 
                     if (dbuTask.owner.Equals("Probation"))
                     {
@@ -153,7 +153,7 @@ namespace DiscordBotUpdates.Modules
             {
                 for (int i = BotUpdater.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    BotUpdater.DBUTask dbuTask = BotUpdater.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = BotUpdater.runningTasks[i];
 
                     if (dbuTask.owner.Equals("Server"))
                     {
@@ -191,7 +191,7 @@ namespace DiscordBotUpdates.Modules
         {
             if (BotUpdater.runningTasks.Count > 0)
             {
-                foreach (BotUpdater.DBUTask task in BotUpdater.runningTasks)
+                foreach (DBUTask.DBUTaskObj task in BotUpdater.runningTasks)
                 {
                     await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted);
                 }
