@@ -1,7 +1,5 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
