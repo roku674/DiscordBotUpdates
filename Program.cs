@@ -80,7 +80,7 @@ namespace DiscordBotUpdates
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result.ErrorReason + " | " + context.Message);
-                    await Modules.BotUpdater.Outprint(result.ErrorReason + " | " + context.Message, Modules.BotUpdater.botUpdatesID);
+                    await Modules.TaskInitiater.Outprint(result.ErrorReason + " | " + context.Message, Modules.TaskInitiater.botUpdatesID);
                 }
             }
         }

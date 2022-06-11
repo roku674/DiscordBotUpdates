@@ -5,24 +5,54 @@ using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
 {
-    internal class BotUpdater : DBUTask
+    internal class TaskInitiater : DBUTask
     {
-        private static ulong _botUpdatesID = 979100384037568582;
+        /// </summary>
 
         /// <summary>
-        /// BotUpdates channel Id
+        /// Call this to start the Distress Calls Listener
         /// </summary>
-        public static ulong botUpdatesID { get => _botUpdatesID; set => _botUpdatesID = value; }
+        /// <returns></returns>
+        public async Task DistressCallsListener(uint id, ulong channelID)
+        {
+            System.Console.WriteLine("DistressCalls Executed!");
+
+            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
+            await channel.SendMessageAsync("Sucessfully Distress Calls Listener!");
+
+            int taskNum = runningTasks.FindIndex(task => task.id == id);
+
+            for (int i = 0; i < duration; i++)
+            {
+                if (runningTasks[taskNum].isCancelled)
+                {
+                    i = duration;
+                    break;
+                }
+                await Task.Delay(1000);
+
+                watcher = new FileSystemWatcher();
+                watcher.Path = path;
+                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                       | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                watcher.Filter = "*.*";
+                watcher.Changed += new FileSystemEventHandler(OnChanged);
+                watcher.EnableRaisingEvents = true;
+            }
+            await channel.SendMessageAsync("No Longer Listening for Distress Signalss!");
+
+            dbuTaskNum--;
+        }
 
         /// <summary>
         /// Call this to start the Message Updater
         /// </summary>
         /// <returns></returns>
-        public async Task MessageBotUpdates(uint id)
+        public async Task MessageBotUpdates(uint id, ulong channelID)
         {
             System.Console.WriteLine("MessageBotUpdates Executed!");
 
-            IMessageChannel channel = Program.client.GetChannel(_botUpdatesID) as IMessageChannel;
+            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
             await channel.SendMessageAsync("Sucessfully Initiated Message Listener!");
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -63,11 +93,11 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the picture updater
         /// </summary>
         /// <returns></returns>
-        public async Task PictureBotUpdates(uint id)
+        public async Task PictureBotUpdates(uint id, ulong channelID)
         {
             System.Console.WriteLine("PictureBotUpdates Executed!");
 
-            IMessageChannel channel = Program.client.GetChannel(_botUpdatesID) as IMessageChannel;
+            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
             await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -93,6 +123,33 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await channel.SendMessageAsync("No Longer Listening for Pictures Updates!");
+
+            dbuTaskNum--;
+        }
+
+        /// <summary>
+        /// Call this to start the Shutdown Listener
+        /// </summary>
+        /// <returns></returns>
+        public async Task ServerShutdownListener(uint id, ulong channelID)
+        {
+            System.Console.WriteLine("MessageBotUpdates Executed!");
+
+            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
+            await channel.SendMessageAsync("Sucessfully Started Server Shutdown Listener!");
+
+            int taskNum = runningTasks.FindIndex(task => task.id == id);
+
+            for (int i = 0; i < duration; i++)
+            {
+                if (runningTasks[taskNum].isCancelled)
+                {
+                    i = duration;
+                    break;
+                }
+                await Task.Delay(1000);
+            }
+            await channel.SendMessageAsync("No Longer Listening for Server Shutdown Mesages!");
 
             dbuTaskNum--;
         }
