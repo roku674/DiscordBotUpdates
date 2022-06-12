@@ -1,24 +1,42 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
 {
-    internal class TaskInitiater : DBUTask
+    internal class TaskInitator : DBUTask
     {
-        /// </summary>
+        private FileSystemWatcher watcher;
 
+        private string[] enemies = {
+            "Altair","Awmalzo","B-radk.","Dad","Deegs", "DOG-WHISPERER",
+            "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
+            "Roe.v.Wade","Scar-Face"};
+
+        public static bool distress { get; set; }
+        public static bool serverReset { get; set; }
+
+        /// </summary>
         /// <summary>
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task DistressCallsListener(uint id, ulong channelID)
+        public async Task ChatLogListener(uint id, ulong channelID)
         {
-            System.Console.WriteLine("DistressCalls Executed!");
+            System.Console.WriteLine("ChatLog Listener Executed!");
+
+            watcher = new FileSystemWatcher();
+            watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            watcher.Filter = "*.*";
+            watcher.Changed += new FileSystemEventHandler(OnChanged);
+            watcher.EnableRaisingEvents = true;
 
             IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
-            await channel.SendMessageAsync("Sucessfully Distress Calls Listener!");
+            await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -30,18 +48,58 @@ namespace DiscordBotUpdates.Modules
                     break;
                 }
                 await Task.Delay(1000);
-
-                watcher = new FileSystemWatcher();
-                watcher.Path = path;
-                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                       | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-                watcher.Filter = "*.*";
-                watcher.Changed += new FileSystemEventHandler(OnChanged);
-                watcher.EnableRaisingEvents = true;
             }
-            await channel.SendMessageAsync("No Longer Listening for Distress Signalss!");
-
+            watcher = null;
+            await channel.SendMessageAsync("No longer listening to chat logs!");
+            DBUTask.runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
+        }
+
+        private async void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            string filePath = e.FullPath;
+            string[] fileStrArr = File.ReadAllLines(filePath);
+            string lastLine = fileStrArr[fileStrArr.Length - 1];
+
+            //Console.WriteLine("Distress: " + distress + " | serverReset: " + serverReset);
+
+            if (distress)
+            {
+                ///Console.WriteLine("Distress");
+                if (lastLine.Contains("***") && lastLine.Contains("landed"))
+                {
+                    await Outprint(lastLine, ChannelID.distressCallsID);
+                }
+            }
+            if (serverReset)
+            {
+                if (lastLine.Contains("Server Alert!"))
+                {
+                    await Outprint(lastLine, ChannelID.slaversID);
+                }
+            }
+
+            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
+            {
+                await Outprint(lastLine, ChannelID.distressCallsID);
+                await Say(lastLine, ChannelID.slaversOnlyVoiceID);
+            }
+            else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
+            {
+                await Outprint(lastLine, ChannelID.distressCallsID);
+            }
+
+            if (lastLine.Contains("tons of unidentified compounds"))
+            {
+                if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
+                {
+                    await Outprint("Undomed: " + lastLine, ChannelID.buildingID);
+                }
+                else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
+                {
+                    await Outprint(lastLine, ChannelID.nuetrinoID);
+                }
+            }
         }
 
         /// <summary>
@@ -53,7 +111,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("MessageBotUpdates Executed!");
 
             IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
-            await channel.SendMessageAsync("Sucessfully Initiated Message Listener!");
+            await Outprint("Sucessfully Initiated Message Listener!", channelID);
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -85,7 +143,7 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await channel.SendMessageAsync("No Longer Listening for MessageUpdates!");
-
+            DBUTask.runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
@@ -123,35 +181,20 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await channel.SendMessageAsync("No Longer Listening for Pictures Updates!");
-
+            DBUTask.runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
-        /// <summary>
-        /// Call this to start the Shutdown Listener
-        /// </summary>
-        /// <returns></returns>
-        public async Task ServerShutdownListener(uint id, ulong channelID)
+        public async Task SetDistress(bool v)
         {
-            System.Console.WriteLine("MessageBotUpdates Executed!");
+            distress = v;
+            await Task.Delay(0);
+        }
 
-            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
-            await channel.SendMessageAsync("Sucessfully Started Server Shutdown Listener!");
-
-            int taskNum = runningTasks.FindIndex(task => task.id == id);
-
-            for (int i = 0; i < duration; i++)
-            {
-                if (runningTasks[taskNum].isCancelled)
-                {
-                    i = duration;
-                    break;
-                }
-                await Task.Delay(1000);
-            }
-            await channel.SendMessageAsync("No Longer Listening for Server Shutdown Mesages!");
-
-            dbuTaskNum--;
+        public async Task SetServerReset(bool v)
+        {
+            serverReset = v;
+            await Task.Delay(0);
         }
     }
 }

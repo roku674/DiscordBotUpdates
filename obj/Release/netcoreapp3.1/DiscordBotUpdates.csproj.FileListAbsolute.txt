@@ -48,7 +48,6 @@ H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\System.
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\System.Reactive.dll
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\System.Reactive.xml
-H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.GeneratedMSBuildEditorConfig.editorconfig
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.AssemblyInfoInputs.cache
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.AssemblyInfo.cs

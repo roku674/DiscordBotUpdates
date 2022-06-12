@@ -73,14 +73,14 @@ namespace DiscordBotUpdates
 
             int argPos = 0;
 
-            if (message.HasStringPrefix("$", ref argPos))
+            if (message.HasStringPrefix("$", ref argPos) && message.Channel.Id == Modules.ChannelID.botUpdatesID)
             {
                 IResult result = await _commands.ExecuteAsync(context, argPos, _services);
 
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result.ErrorReason + " | " + context.Message);
-                    await Modules.TaskInitiater.Outprint(result.ErrorReason + " | " + context.Message, Modules.TaskInitiater.botUpdatesID);
+                    await Modules.TaskInitator.Outprint(result.ErrorReason + " | " + context.Message, Modules.ChannelID.botUpdatesID);
                 }
             }
         }
