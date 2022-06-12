@@ -65,9 +65,11 @@ namespace DiscordBotUpdates.Modules
         public async Task AllTasks()
         {
             await Task.Run(() => BotUpdaterPost());
-            await Task.Run(() => ListenerChatLogPost());
+
             await Task.Run(() => ListenerDistressPost());
             await Task.Run(() => ListenerStarportServerResetPost());
+
+            await Task.Run(() => ListenerChatLogPost());
         }
 
         [Command("run BotUpdater")]

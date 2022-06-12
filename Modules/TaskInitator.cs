@@ -8,13 +8,12 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-        private FileSystemWatcher watcher;
-
         private string[] enemies = {
             "Altair","Awmalzo","B-radk.","Dad","Deegs", "DOG-WHISPERER",
             "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
             "Roe.v.Wade","Scar-Face"};
 
+        private FileSystemWatcher watcher;
         public static bool distress { get; set; }
         public static bool serverReset { get; set; }
 
@@ -53,53 +52,6 @@ namespace DiscordBotUpdates.Modules
             await channel.SendMessageAsync("No longer listening to chat logs!");
             DBUTask.runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
-        }
-
-        private async void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            string filePath = e.FullPath;
-            string[] fileStrArr = File.ReadAllLines(filePath);
-            string lastLine = fileStrArr[fileStrArr.Length - 1];
-
-            //Console.WriteLine("Distress: " + distress + " | serverReset: " + serverReset);
-
-            if (distress)
-            {
-                ///Console.WriteLine("Distress");
-                if (lastLine.Contains("***") && lastLine.Contains("landed"))
-                {
-                    await Outprint(lastLine, ChannelID.distressCallsID);
-                }
-            }
-            if (serverReset)
-            {
-                if (lastLine.Contains("Server Alert!"))
-                {
-                    await Outprint(lastLine, ChannelID.slaversID);
-                }
-            }
-
-            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
-            {
-                await Outprint(lastLine, ChannelID.distressCallsID);
-                await Say(lastLine, ChannelID.slaversOnlyVoiceID);
-            }
-            else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
-            {
-                await Outprint(lastLine, ChannelID.distressCallsID);
-            }
-
-            if (lastLine.Contains("tons of unidentified compounds"))
-            {
-                if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
-                {
-                    await Outprint("Undomed: " + lastLine, ChannelID.buildingID);
-                }
-                else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
-                {
-                    await Outprint(lastLine, ChannelID.nuetrinoID);
-                }
-            }
         }
 
         /// <summary>
@@ -195,6 +147,51 @@ namespace DiscordBotUpdates.Modules
         {
             serverReset = v;
             await Task.Delay(0);
+        }
+
+        private async void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            string filePath = e.FullPath;
+            string[] fileStrArr = File.ReadAllLines(filePath);
+            string lastLine = fileStrArr[fileStrArr.Length - 1];
+
+            if (distress)
+            {
+                ///Console.WriteLine("Distress");
+                if (lastLine.Contains("***") && lastLine.Contains("landed"))
+                {
+                    await Outprint(lastLine, ChannelID.distressCallsID);
+                }
+            }
+            if (serverReset)
+            {
+                if (lastLine.Contains("Server Alert!"))
+                {
+                    await Outprint(lastLine, ChannelID.slaversID);
+                }
+            }
+
+            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
+            {
+                await Outprint(lastLine, ChannelID.distressCallsID);
+                await Say(lastLine, ChannelID.slaversOnlyVoiceID);
+            }
+            else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
+            {
+                await Outprint(lastLine, ChannelID.distressCallsID);
+            }
+
+            if (lastLine.Contains("tons of unidentified compounds"))
+            {
+                if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
+                {
+                    await Outprint("Undomed: " + lastLine, ChannelID.buildingID);
+                }
+                else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
+                {
+                    await Outprint(lastLine, ChannelID.nuetrinoID);
+                }
+            }
         }
     }
 }

@@ -4,8 +4,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-
-//Created by Alexander Fields https://github.com/roku674
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +12,10 @@ namespace DiscordBotUpdates
 {
     internal class Program
     {
-        private static void Main(string[] args) => new Program().RunBotAsync().GetAwaiter().GetResult();
+        private static void Main(string[] args)
+        {
+            new Program().RunBotAsync().GetAwaiter().GetResult();
+        }
 
         private static DateTime _dateTime;
 
@@ -80,7 +81,7 @@ namespace DiscordBotUpdates
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result.ErrorReason + " | " + context.Message);
-                    await Modules.TaskInitator.Outprint(result.ErrorReason + " | " + context.Message, Modules.ChannelID.botUpdatesID);
+                    await Modules.DBUTask.Outprint(result.ErrorReason + " | " + context.Message, Modules.ChannelID.botUpdatesID);
                 }
             }
         }
