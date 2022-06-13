@@ -1,6 +1,5 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
-using Discord;
-using Google.Apis.Calendar.v3.Data;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +25,9 @@ namespace DiscordBotUpdates.Modules
 
         private FileSystemWatcher watcher;
 
+        public static bool building { get; set; }
         public static bool distress { get; set; }
+        public static bool kombat { get; set; }
         public static bool serverReset { get; set; }
 
         /// </summary>
@@ -39,14 +40,22 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             watcher = new FileSystemWatcher();
-            watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+            {
+                watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
+            }
+            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+            {
+                watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+            }
+
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = "*.*";
             watcher.Changed += new FileSystemEventHandler(OnChanged);
             watcher.EnableRaisingEvents = true;
 
-            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
             await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -74,7 +83,7 @@ namespace DiscordBotUpdates.Modules
         {
             System.Console.WriteLine("MessageBotUpdates Executed!");
 
-            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
             await Outprint("Sucessfully Initiated Message Listener!", channelID);
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -119,7 +128,7 @@ namespace DiscordBotUpdates.Modules
         {
             System.Console.WriteLine("PictureBotUpdates Executed!");
 
-            IMessageChannel channel = Program.client.GetChannel(channelID) as IMessageChannel;
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
             await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -149,18 +158,6 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        public async Task SetDistress(bool v)
-        {
-            distress = v;
-            await Task.Delay(0);
-        }
-
-        public async Task SetServerReset(bool v)
-        {
-            serverReset = v;
-            await Task.Delay(0);
-        }
-
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
             string filePath = e.FullPath;
@@ -179,19 +176,48 @@ namespace DiscordBotUpdates.Modules
             {
                 if (lastLine.Contains("Server Alert!"))
                 {
-                    await Outprint(lastLine, ChannelID.slaversID);
+                    await Outprint("@everyone " + lastLine, ChannelID.slaversID);
                 }
             }
+            if (kombat)
+            {
+                if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
+                {
+                    await Outprint(lastLine, ChannelID.distressCallsID);
+                    await Say(lastLine, ChannelID.slaversOnlyVoiceID);
+                }
+                else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
+                {
+                    await Outprint(lastLine, ChannelID.distressCallsID);
+                    await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                }
+                if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
+                {
+                    List<string> alliesList = allies.ToList<string>();
+                    List<string> enemiesList = enemies.ToList<string>();
 
-            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
-            {
-                await Outprint(lastLine, ChannelID.distressCallsID);
-                await Say(lastLine, ChannelID.slaversOnlyVoiceID);
-            }
-            else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
-            {
-                await Outprint(lastLine, ChannelID.distressCallsID);
-                await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                    string ally = alliesList.Find(s => lastLine.Contains(s));
+                    string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                    if (lastLine.Contains("shot down " + enemy) && lastLine.Contains(ally + " shot down"))
+                    {
+                        if (lastLine.Contains("Defenses"))
+                        {
+                            await Outprint("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
+                        }
+                        else
+                        {
+                            await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
+                        }
+
+                        await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                    }
+                    else if (lastLine.Contains("shot down " + ally) && lastLine.Contains(enemy + " shot down"))
+                    {
+                        await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
+                        await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                    }
+                }
             }
 
             if (lastLine.Contains("tons of unidentified compounds"))
@@ -206,61 +232,65 @@ namespace DiscordBotUpdates.Modules
                 }
             }
 
-            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
+            if (building)
             {
-                List<string> alliesList = allies.ToList<string>();
-                List<string> enemiesList = enemies.ToList<string>();
-
-                string ally = alliesList.Find(s => lastLine.Contains(s));
-                string enemy = enemiesList.Find(s => lastLine.Contains(s));
-
-                if (lastLine.Contains("shot down " + enemy))
+                if (lastLine.Contains("was finally abandoned"))
                 {
-                    if (lastLine.Contains("Defenses"))
-                    {
-                        await Outprint("Nice Job! " + ally + "'s defenses clapped" + enemy, ChannelID.slaversID);
-                    }
-                    else
-                    {
-                        await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass", ChannelID.slaversID);
-                    }
+                    System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
+                    System.TimeSpan days3thirtyMin = new System.TimeSpan(72, 0, 30, 0);
 
-                    await Outprint(lastLine, ChannelID.slaversID);
-                    await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                    System.DateTime start = new System.DateTime() + days3;
+
+                    System.DateTime end = System.DateTime.Now + days3thirtyMin;
+
+                    await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
+
+                    await Outprint(lastLine +
+                        '\n' + "Adding redome time to Discord Calendar!", ChannelID.buildingID);
                 }
-                else if (lastLine.Contains("shot down " + ally))
+
+                if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
                 {
-                    await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
-                    await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                    await Outprint(lastLine, ChannelID.buildingID);
+                }
+                else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+                {
+                    await Outprint(lastLine, ChannelID.buildingID);
                 }
             }
+        }
 
-            if (lastLine.Contains("was finally abandoned"))
-            {
-                var ev = new Event();
-                EventDateTime start = new EventDateTime();
-                start.DateTime = new DateTime(2019, 3, 11, 10, 0, 0);
+        internal async Task SetAll(bool v)
+        {
+            building = v;
+            distress = v;
+            kombat = v;
+            serverReset = v;
+            await Task.Delay(0);
+        }
 
-                EventDateTime end = new EventDateTime();
-                end.DateTime = new DateTime(2019, 3, 11, 10, 30, 0);
+        internal async Task SetBuilding(bool v)
+        {
+            building = v;
+            await Task.Delay(0);
+        }
 
-                ev.Start = start;
-                ev.End = end;
-                ev.Summary = "New Event";
-                ev.Description = "Description...";
+        internal async Task SetDistress(bool v)
+        {
+            distress = v;
+            await Task.Delay(0);
+        }
 
-                await Outprint(lastLine +
-    '\n' + "Adding redome time to Google Calendar!", ChannelID.buildingID);
-            }
+        internal async Task SetKombat(bool v)
+        {
+            kombat = v;
+            await Task.Delay(0);
+        }
 
-            if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
-            {
-                await Outprint(lastLine, ChannelID.buildingID);
-            }
-            else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
-            {
-                await Outprint(lastLine, ChannelID.buildingID);
-            }
+        internal async Task SetServerReset(bool v)
+        {
+            serverReset = v;
+            await Task.Delay(0);
         }
     }
 }

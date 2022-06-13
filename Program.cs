@@ -1,9 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
-using System;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,17 +14,17 @@ namespace DiscordBotUpdates
             new Program().RunBotAsync().GetAwaiter().GetResult();
         }
 
-        private static DateTime _dateTime;
+        private static System.DateTime _dateTime;
 
         //nentwork variables
         private static DiscordSocketClient _client;
 
         private static CommandService _commands;
-        private IServiceProvider _services;
+        private System.IServiceProvider _services;
 
         public static CommandService commands { get => _commands; set => _commands = value; }
         public static DiscordSocketClient client { get => _client; set => _client = value; }
-        public static DateTime dateTime { get => _dateTime; set => _dateTime = value; }
+        public static System.DateTime dateTime { get => _dateTime; set => _dateTime = value; }
 
         public async Task RunBotAsync()
         {
@@ -44,17 +41,17 @@ namespace DiscordBotUpdates
             _client.Log += _client_Log;
 
             await RegisterCommandsAsync();
-            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
 
-            _dateTime = DateTime.Now;
+            _dateTime = System.DateTime.Now;
 
-            await Task.Delay(Timeout.Infinite);
+            await Task.Delay(System.Threading.Timeout.Infinite);
         }
 
-        private Task _client_Log(LogMessage arg)
+        private Task _client_Log(Discord.LogMessage arg)
         {
-            Console.WriteLine(arg);
+            System.Console.WriteLine(arg);
             return Task.CompletedTask;
         }
 
@@ -80,7 +77,7 @@ namespace DiscordBotUpdates
 
                 if (!result.IsSuccess)
                 {
-                    Console.WriteLine(result.ErrorReason + " | " + context.Message);
+                    System.Console.WriteLine(result.ErrorReason + " | " + context.Message);
                     await Modules.DBUTask.Outprint(result.ErrorReason + " | " + context.Message, Modules.ChannelID.botUpdatesID);
                 }
             }
