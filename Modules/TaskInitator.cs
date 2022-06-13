@@ -1,5 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord;
+using Google.Apis.Calendar.v3.Data;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -232,6 +233,33 @@ namespace DiscordBotUpdates.Modules
                     await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
                     await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                 }
+            }
+
+            if (lastLine.Contains("was finally abandoned"))
+            {
+                var ev = new Event();
+                EventDateTime start = new EventDateTime();
+                start.DateTime = new DateTime(2019, 3, 11, 10, 0, 0);
+
+                EventDateTime end = new EventDateTime();
+                end.DateTime = new DateTime(2019, 3, 11, 10, 30, 0);
+
+                ev.Start = start;
+                ev.End = end;
+                ev.Summary = "New Event";
+                ev.Description = "Description...";
+
+                await Outprint(lastLine +
+    '\n' + "Adding redome time to Google Calendar!", ChannelID.buildingID);
+            }
+
+            if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
+            {
+                await Outprint(lastLine, ChannelID.buildingID);
+            }
+            else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+            {
+                await Outprint(lastLine, ChannelID.buildingID);
             }
         }
     }

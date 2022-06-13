@@ -48,6 +48,22 @@ namespace DiscordBotUpdates.Modules
 
         public string dbuString { get => _dbuString; set => _dbuString = value; }
 
+        public static async Task CalendarEvent(Schedule schedule)
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle(schedule.Title);
+            embed.AddField("Event Description: ", schedule.Description);
+            embed.AddField("Author: ", MentionUtils.MentionUser(schedule.Author), true);
+            embed.AddField("Who can join: ", schedule.Role != 0 ? MentionUtils.MentionRole(schedule.Role) : "Everyone", true);
+            embed.AddField("Start Date:", schedule.StartTime.ToString("dd/MM/yyyy H:mm"), true);
+            embed.AddField("Maximum capacity: ", schedule.MaxMembers, true);
+            embed.AddField($"Assistants ({schedule.Members.Count}/{schedule.MaxMembers}) : ", members.ToString());
+            embed.AddField("Party ID: ", schedule.Id);
+            embed.WithFooter($"React with {NewMemberEmoji} to join. Created on {schedule.CreatedOn:dd/MM/yyyy H:mm}");
+            embed.WithColor(new Color(52, 152, 219));
+            embed.WithCurrentTimestamp();
+        }
+
         public static async Task Outprint(string message, ulong channelId)
         {
             IMessageChannel channel = Program.client.GetChannel(channelId) as IMessageChannel;
