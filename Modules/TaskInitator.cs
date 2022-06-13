@@ -1,5 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,12 +9,22 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-        private string[] enemies = {
+        private string[] enemies =
+        {
             "Altair","Awmalzo","B-radk.","Dad","Deegs", "DOG-WHISPERER",
             "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
-            "Roe.v.Wade","Scar-Face"};
+            "RepealThe2ndA","Scar-Face"
+        };
+
+        private string[] allies =
+        {
+            "Allie", "Anxiety.jar", "Bodhi", "CaptArcher",
+            "Depression.Wav",  "Devila", "Hokujinn",
+            "Leaderkiller","Probation", "Taterchip", "WW3"
+        };
 
         private FileSystemWatcher watcher;
+
         public static bool distress { get; set; }
         public static bool serverReset { get; set; }
 
@@ -27,7 +38,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             watcher = new FileSystemWatcher();
-            watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+            watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = "*.*";
@@ -179,6 +190,7 @@ namespace DiscordBotUpdates.Modules
             else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
             {
                 await Outprint(lastLine, ChannelID.distressCallsID);
+                await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
             }
 
             if (lastLine.Contains("tons of unidentified compounds"))
@@ -190,6 +202,26 @@ namespace DiscordBotUpdates.Modules
                 else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
                 {
                     await Outprint(lastLine, ChannelID.nuetrinoID);
+                }
+            }
+
+            if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
+            {
+                List<string> alliesList = allies.ToList<string>();
+                List<string> enemiesList = enemies.ToList<string>();
+
+                string ally = alliesList.Find(s => lastLine.Contains(s));
+                string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                if (lastLine.Contains("shot down " + enemy))
+                {
+                    await Outprint(lastLine, ChannelID.slaversID);
+                    await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                }
+                else if (lastLine.Contains("shot down " + ally))
+                {
+                    await Outprint(lastLine + " Help me Nigga. Damn!", ChannelID.slaversID);
+                    await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                 }
             }
         }
