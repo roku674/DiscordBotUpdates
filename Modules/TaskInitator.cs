@@ -38,7 +38,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             watcher = new FileSystemWatcher();
-            watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
+            watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = "*.*";
@@ -61,7 +61,7 @@ namespace DiscordBotUpdates.Modules
             }
             watcher = null;
             await channel.SendMessageAsync("No longer listening to chat logs!");
-            DBUTask.runningTasks.RemoveAt(taskNum);
+            runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
@@ -106,7 +106,7 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await channel.SendMessageAsync("No Longer Listening for MessageUpdates!");
-            DBUTask.runningTasks.RemoveAt(taskNum);
+            runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
@@ -144,7 +144,7 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await channel.SendMessageAsync("No Longer Listening for Pictures Updates!");
-            DBUTask.runningTasks.RemoveAt(taskNum);
+            runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
@@ -215,12 +215,21 @@ namespace DiscordBotUpdates.Modules
 
                 if (lastLine.Contains("shot down " + enemy))
                 {
+                    if (lastLine.Contains("Defenses"))
+                    {
+                        await Outprint("Nice Job! " + ally + "'s defenses clapped" + enemy, ChannelID.slaversID);
+                    }
+                    else
+                    {
+                        await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass", ChannelID.slaversID);
+                    }
+
                     await Outprint(lastLine, ChannelID.slaversID);
                     await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                 }
                 else if (lastLine.Contains("shot down " + ally))
                 {
-                    await Outprint(lastLine + " Help me Nigga. Damn!", ChannelID.slaversID);
+                    await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
                     await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                 }
             }
