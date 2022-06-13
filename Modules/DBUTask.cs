@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -51,6 +52,13 @@ namespace DiscordBotUpdates.Modules
         {
             IMessageChannel channel = Program.client.GetChannel(channelId) as IMessageChannel;
             await channel.SendMessageAsync(message);
+        }
+
+        public static async Task Say(string message, ulong channelId)
+        {
+            IVoiceChannel channel = Program.client.GetChannel(channelId) as IVoiceChannel;
+
+            await channel.SendMessageAsync(message, true);
         }
     }
 }
