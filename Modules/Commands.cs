@@ -1,13 +1,16 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
-using Discord;
 using Discord.Commands;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
+        private string[] botNames = { "Allie", "Bitcoin", "Probation", "Towlie" };
         private TaskInitator init = new TaskInitator();
 
         [Command("Ping")]
@@ -40,7 +43,11 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run BotUpdater" +
                 '\n' +
+                "    run ClearBotsEcho" +
+                '\n' +
                 "    run Deactivate" +
+                '\n' +
+                "    run Echo (BotName)" +
                 '\n' +
                 "    run ListenerChatLog" +
                 '\n' +
@@ -50,14 +57,13 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run StopAllTasks" +
                 '\n' +
+                "    run StopBotTasks (BotName)" +
+                '\n' +
                 "    run StopListenerDistress" +
                 '\n' +
                 "    run StopListenerStarporServerReset" +
                 '\n' +
-                "    run Stop(BotName)Tasks" +
-                '\n' +
                 "    run StopServerTasks"
-
                 );
         }
 
@@ -88,6 +94,43 @@ namespace DiscordBotUpdates.Modules
 
             DBUTask.runningTasks.Add(dBUMessages);
             DBUTask.runningTasks.Add(dBUPicturess);
+        }
+
+        [Command("run ClearBotsEcho")]
+        public async Task ClearBotsEcho()
+        {
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Echo", "*.txt");
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                await File.WriteAllTextAsync(files[i], "");
+
+                await ReplyAsync("Bot Text Files Cleared!");
+            }
+        }
+
+        [Command("run Echo")]
+        public async Task EchoPost([Remainder] string text)
+        {
+            if (botNames.Any(s => text.Contains(s)))
+            {
+                List<string> botNamesList = botNames.ToList<string>();
+
+                string bot = botNamesList.Find(s => text.Contains(s));
+                string botEcho = text.Replace(bot + " ", "");
+
+                if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
+                {
+                    await File.WriteAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
+                }
+                else
+                {
+                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt");
+                    await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
+                }
+
+                await ReplyAsync(bot + " will say: " + botEcho);
+            }
         }
 
         [Command("request Listeners")]
@@ -148,9 +191,9 @@ namespace DiscordBotUpdates.Modules
         [Command("request RunningTasks")]
         public async Task RunningTasksGet()
         {
-            if (TaskInitator.runningTasks.Count > 0)
+            if (DBUTask.runningTasks.Count > 0)
             {
-                foreach (DBUTask.DBUTaskObj task in TaskInitator.runningTasks)
+                foreach (DBUTask.DBUTaskObj task in DBUTask.runningTasks)
                 {
                     await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted);
                 }
@@ -161,24 +204,21 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run StopAllieTasks")]
-        public async Task StopAllieTasks()
+        [Command("run StopAllTasks")]
+        public async Task StopAllTasks()
         {
-            if (TaskInitator.runningTasks.Count > 0)
+            if (DBUTask.runningTasks.Count > 0)
             {
-                for (int i = TaskInitator.runningTasks.Count - 1; i >= 0; i--)
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    DBUTask.DBUTaskObj dbuTask = TaskInitator.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    if (dbuTask.owner.Equals("Allie"))
-                    {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
-                            + '\n'
-                            + "Was ended at " + DateTime.Now);
+                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                        + '\n'
+                        + "Was ended at " + DateTime.Now);
 
-                        dbuTask.Cancel();
-                        TaskInitator.runningTasks.Remove(dbuTask);
-                    }
+                    dbuTask.Cancel();
+                    DBUTask.runningTasks.Remove(dbuTask);
                 }
             }
             else
@@ -187,21 +227,24 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run StopAllTasks")]
-        public async Task StopAllTasks()
+        [Command("run StopBotTasks")]
+        public async Task StopBotTasks([Remainder] string text)
         {
-            if (TaskInitator.runningTasks.Count > 0)
+            if (DBUTask.runningTasks.Count > 0)
             {
-                for (int i = TaskInitator.runningTasks.Count - 1; i >= 0; i--)
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    DBUTask.DBUTaskObj dbuTask = TaskInitator.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
-                        + '\n'
-                        + "Was ended at " + DateTime.Now);
+                    if (dbuTask.owner.Equals("Allie"))
+                    {
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                            + '\n'
+                            + "Was ended at " + DateTime.Now);
 
-                    dbuTask.Cancel();
-                    TaskInitator.runningTasks.Remove(dbuTask);
+                        dbuTask.Cancel();
+                        DBUTask.runningTasks.Remove(dbuTask);
+                    }
                 }
             }
             else
@@ -227,9 +270,9 @@ namespace DiscordBotUpdates.Modules
         [Command("run StopProbationTasks")]
         public async Task StopProbationTasks()
         {
-            if (TaskInitator.runningTasks.Count > 0)
+            if (DBUTask.runningTasks.Count > 0)
             {
-                for (int i = TaskInitator.runningTasks.Count - 1; i >= 0; i--)
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
                 {
                     DBUTask.DBUTaskObj dbuTask = TaskInitator.runningTasks[i];
 
@@ -240,7 +283,7 @@ namespace DiscordBotUpdates.Modules
                             + "Was ended at " + DateTime.Now);
 
                         dbuTask.Cancel();
-                        TaskInitator.runningTasks.Remove(dbuTask);
+                        DBUTask.runningTasks.Remove(dbuTask);
                     }
                 }
             }
@@ -253,11 +296,11 @@ namespace DiscordBotUpdates.Modules
         [Command("run StopServerTasks")]
         public async Task StopServerTasks()
         {
-            if (TaskInitator.runningTasks.Count > 0)
+            if (DBUTask.runningTasks.Count > 0)
             {
-                for (int i = TaskInitator.runningTasks.Count - 1; i >= 0; i--)
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
                 {
-                    DBUTask.DBUTaskObj dbuTask = TaskInitator.runningTasks[i];
+                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
                     if (dbuTask.owner.Equals("Server"))
                     {
@@ -266,7 +309,7 @@ namespace DiscordBotUpdates.Modules
                             + "Was ended at " + DateTime.Now);
 
                         dbuTask.Cancel();
-                        TaskInitator.runningTasks.Remove(dbuTask);
+                        DBUTask.runningTasks.Remove(dbuTask);
                     }
                 }
             }
