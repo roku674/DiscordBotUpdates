@@ -57,13 +57,13 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run StopAllTasks" +
                 '\n' +
-                "    run StopBotTasks (BotName)" +
+                "    run StopClientTasks" +
                 '\n' +
                 "    run StopListenerDistress" +
                 '\n' +
                 "    run StopListenerStarporServerReset" +
                 '\n' +
-                "    run StopServerTasks"
+                "    run StopTasks (BotName or client)"
                 );
         }
 
@@ -89,8 +89,8 @@ namespace DiscordBotUpdates.Modules
             uint picturesNum = DBUTask.dbuTaskNum++;
             Task pictures = Task.Run(() => init.PictureBotUpdates(picturesNum, ChannelID.botUpdatesID));
 
-            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Server", messagesNum);
-            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Server", picturesNum);
+            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Client", messagesNum);
+            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Client", picturesNum);
 
             DBUTask.runningTasks.Add(dBUMessages);
             DBUTask.runningTasks.Add(dBUPicturess);
@@ -105,7 +105,7 @@ namespace DiscordBotUpdates.Modules
             {
                 await File.WriteAllTextAsync(files[i], "");
 
-                await ReplyAsync("Bot Text Files Cleared!");
+                await ReplyAsync(Path.GetFileName(files[i]) + "Text Files Cleared!");
             }
         }
 
@@ -121,7 +121,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
                 {
-                    await File.WriteAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
+                    await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
                 }
                 else
                 {
@@ -149,7 +149,7 @@ namespace DiscordBotUpdates.Modules
             uint listenerNum = DBUTask.dbuTaskNum++;
             Task listener = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID));
 
-            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Server", listenerNum);
+            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Client", listenerNum);
             DBUTask.runningTasks.Add(dbuListener);
         }
 
@@ -227,7 +227,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run StopBotTasks")]
+        [Command("run StopTasks")]
         public async Task StopBotTasks([Remainder] string text)
         {
             if (DBUTask.runningTasks.Count > 0)
@@ -236,7 +236,19 @@ namespace DiscordBotUpdates.Modules
                 {
                     DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    if (dbuTask.owner.Equals("Allie"))
+                    List<string> botNamesList = botNames.ToList<string>();
+                    string bot = botNamesList.Find(s => text.Contains(s));
+
+                    if (dbuTask.owner.Equals(bot))
+                    {
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                            + '\n'
+                            + "Was ended at " + DateTime.Now);
+
+                        dbuTask.Cancel();
+                        DBUTask.runningTasks.Remove(dbuTask);
+                    }
+                    else if (dbuTask.owner.Equals("Client"))
                     {
                         await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
                             + '\n'
@@ -265,58 +277,6 @@ namespace DiscordBotUpdates.Modules
         {
             await Task.Run(() => init.SetServerReset(false));
             await ReplyAsync("By Your Command! Stopped Listening for Server Resets");
-        }
-
-        [Command("run StopProbationTasks")]
-        public async Task StopProbationTasks()
-        {
-            if (DBUTask.runningTasks.Count > 0)
-            {
-                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
-                {
-                    DBUTask.DBUTaskObj dbuTask = TaskInitator.runningTasks[i];
-
-                    if (dbuTask.owner.Equals("Probation"))
-                    {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
-                            + '\n'
-                            + "Was ended at " + DateTime.Now);
-
-                        dbuTask.Cancel();
-                        DBUTask.runningTasks.Remove(dbuTask);
-                    }
-                }
-            }
-            else
-            {
-                await ReplyAsync("There are no tasks to stop!");
-            }
-        }
-
-        [Command("run StopServerTasks")]
-        public async Task StopServerTasks()
-        {
-            if (DBUTask.runningTasks.Count > 0)
-            {
-                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
-                {
-                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
-
-                    if (dbuTask.owner.Equals("Server"))
-                    {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
-                            + '\n'
-                            + "Was ended at " + DateTime.Now);
-
-                        dbuTask.Cancel();
-                        DBUTask.runningTasks.Remove(dbuTask);
-                    }
-                }
-            }
-            else
-            {
-                await ReplyAsync("There are no tasks to stop!");
-            }
         }
     }
 }
