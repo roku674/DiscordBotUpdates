@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
-using System;
+﻿//Created by Alexander Fields https://github.com/roku674
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,7 +12,7 @@ namespace DiscordBotUpdates.Modules
 
             public DBUTaskObj(Task _task, string _purpose, string _owner, uint _id)
             {
-                timeStarted = DateTime.Now;
+                timeStarted = System.DateTime.Now;
 
                 id = _id;
                 owner = _owner;
@@ -26,7 +24,7 @@ namespace DiscordBotUpdates.Modules
             public string owner { get; set; }
             public string purpose { get; set; }
             public Task task { get; set; }
-            public DateTime timeStarted { get; set; }
+            public System.DateTime timeStarted { get; set; }
 
             public void Cancel()
             {
@@ -48,31 +46,40 @@ namespace DiscordBotUpdates.Modules
 
         public string dbuString { get => _dbuString; set => _dbuString = value; }
 
-        public static async Task CalendarEvent(Schedule schedule)
+        public static async Task CreateCalendarEvent(System.DateTime start, System.DateTime end, string summary, ulong channelId)
         {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(schedule.Title);
-            embed.AddField("Event Description: ", schedule.Description);
-            embed.AddField("Author: ", MentionUtils.MentionUser(schedule.Author), true);
-            embed.AddField("Who can join: ", schedule.Role != 0 ? MentionUtils.MentionRole(schedule.Role) : "Everyone", true);
-            embed.AddField("Start Date:", schedule.StartTime.ToString("dd/MM/yyyy H:mm"), true);
-            embed.AddField("Maximum capacity: ", schedule.MaxMembers, true);
-            embed.AddField($"Assistants ({schedule.Members.Count}/{schedule.MaxMembers}) : ", members.ToString());
-            embed.AddField("Party ID: ", schedule.Id);
-            embed.WithFooter($"React with {NewMemberEmoji} to join. Created on {schedule.CreatedOn:dd/MM/yyyy H:mm}");
-            embed.WithColor(new Color(52, 152, 219));
-            embed.WithCurrentTimestamp();
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
+            //channel.
+        }
+
+        public static async Task CelebrateUser(string title, string message, ulong channelId)
+        {
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
+
+            Discord.EmbedBuilder embed = new Discord.EmbedBuilder()
+            {
+                Title = title,
+                Color = Discord.Color.Green,
+                ThumbnailUrl = "https://tenor.com/view/cat-shooting-mouth-open-gif-15017033",
+                Footer =
+                {
+                IconUrl = "https://icons8.com/icon/YV_2mLwXMWyM/futurama-bender",
+                Text = message
+                },
+                Timestamp = System.DateTimeOffset.Now
+            };
+            await channel.SendMessageAsync("", embed: embed.Build());
         }
 
         public static async Task Outprint(string message, ulong channelId)
         {
-            IMessageChannel channel = Program.client.GetChannel(channelId) as IMessageChannel;
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
             await channel.SendMessageAsync(message);
         }
 
         public static async Task Say(string message, ulong channelId)
         {
-            IVoiceChannel channel = Program.client.GetChannel(channelId) as IVoiceChannel;
+            Discord.IVoiceChannel channel = Program.client.GetChannel(channelId) as Discord.IVoiceChannel;
 
             await channel.SendMessageAsync(message, true);
         }

@@ -1,6 +1,5 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord.Commands;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,7 @@ namespace DiscordBotUpdates.Modules
     public class Commands : ModuleBase<SocketCommandContext>
     {
         private string[] botNames = { "Allie", "Bitcoin", "Probation", "Towlie" };
+        private string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
         private TaskInitator init = new TaskInitator();
 
         [Command("Ping")]
@@ -51,17 +51,13 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run ListenerChatLog" +
                 '\n' +
-                "    run ListenerDistress" +
-                '\n' +
-                "    run ListenerStarportServerReset" +
+                "    run Listener (Listener type)" +
                 '\n' +
                 "    run StopAllTasks" +
                 '\n' +
                 "    run StopClientTasks" +
                 '\n' +
-                "    run StopListenerDistress" +
-                '\n' +
-                "    run StopListenerStarporServerReset" +
+                "    run StopListener (Listener type)" +
                 '\n' +
                 "    run StopTasks (BotName or client)"
                 );
@@ -72,8 +68,7 @@ namespace DiscordBotUpdates.Modules
         {
             await Task.Run(() => BotUpdaterPost());
 
-            await Task.Run(() => ListenerDistressPost());
-            await Task.Run(() => ListenerStarportServerResetPost());
+            await Task.Run(() => ListenerPost("All"));
 
             await Task.Run(() => ListenerChatLogPost());
         }
@@ -136,7 +131,12 @@ namespace DiscordBotUpdates.Modules
         [Command("request Listeners")]
         public async Task ListenerActivityGet()
         {
-            await ReplyAsync("Distress: " + TaskInitator.distress +
+            await ReplyAsync(
+                "Building: " + TaskInitator.building +
+                '\n' +
+                "Distress: " + TaskInitator.distress +
+                '\n' +
+                "Kombat: " + TaskInitator.kombat +
                 '\n' +
                 "Server Reset: " + TaskInitator.serverReset);
         }
@@ -163,7 +163,7 @@ namespace DiscordBotUpdates.Modules
         [Command("request Lifetime")]
         public async Task LifetimeGet()
         {
-            TimeSpan lifetime = DateTime.Now - Program.dateTime;
+            System.TimeSpan lifetime = System.DateTime.Now - Program.dateTime;
             await ReplyAsync("Initiated at " + Program.dateTime + " EST. Has been running for: " +
                 '\n' +
                 lifetime.Hours + " Hours " +
@@ -174,18 +174,36 @@ namespace DiscordBotUpdates.Modules
                 );
         }
 
-        [Command("run ListenerDistress")]
-        public async Task ListenerDistressPost()
+        [Command("run Listener")]
+        public async Task ListenerPost([Remainder] string text)
         {
-            await Task.Run(() => init.SetDistress(true));
-            await ReplyAsync("By Your Command! Listening for Distress Signals");
-        }
+            if (listenerNames.Any(s => text.Contains(s)))
+            {
+                List<string> listenerList = listenerNames.ToList<string>();
+                string listener = listenerList.Find(s => text.Contains(s));
 
-        [Command("run ListenerStarportServerReset")]
-        public async Task ListenerStarportServerResetPost()
-        {
-            await Task.Run(() => init.SetServerReset(true));
-            await ReplyAsync("By Your Command! Listening for Server Resets");
+                if (listener.Equals("building"))
+                {
+                    await Task.Run(() => init.SetBuilding(true));
+                }
+                else if (listener.Equals("distress"))
+                {
+                    await Task.Run(() => init.SetDistress(true));
+                }
+                else if (listener.Equals("kombat"))
+                {
+                    await Task.Run(() => init.SetKombat(true));
+                }
+                else if (listener.Equals("serverResets"))
+                {
+                    await Task.Run(() => init.SetServerReset(true));
+                }
+                else if (text.Equals("All"))
+                {
+                    await Task.Run(() => init.SetAll(true));
+                }
+                await ReplyAsync("By Your Command! Listening for " + listener + "updates");
+            }
         }
 
         [Command("request RunningTasks")]
@@ -215,7 +233,7 @@ namespace DiscordBotUpdates.Modules
 
                     await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
                         + '\n'
-                        + "Was ended at " + DateTime.Now);
+                        + "Was ended at " + System.DateTime.Now);
 
                     dbuTask.Cancel();
                     DBUTask.runningTasks.Remove(dbuTask);
@@ -243,7 +261,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
                             + '\n'
-                            + "Was ended at " + DateTime.Now);
+                            + "Was ended at " + System.DateTime.Now);
 
                         dbuTask.Cancel();
                         DBUTask.runningTasks.Remove(dbuTask);
@@ -252,7 +270,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
                             + '\n'
-                            + "Was ended at " + DateTime.Now);
+                            + "Was ended at " + System.DateTime.Now);
 
                         dbuTask.Cancel();
                         DBUTask.runningTasks.Remove(dbuTask);
@@ -265,18 +283,36 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run StopListenerDistress")]
-        public async Task StopListenerDistress()
+        [Command("run StopListener")]
+        public async Task StopListener([Remainder] string text)
         {
-            await Task.Run(() => init.SetDistress(false));
-            await ReplyAsync("By Your Command! Stopped Listening for Distress Signals");
-        }
+            if (listenerNames.Any(s => text.Contains(s)))
+            {
+                List<string> listenerList = listenerNames.ToList<string>();
+                string listener = listenerList.Find(s => text.Contains(s));
 
-        [Command("run StopListenerStarportServerReset")]
-        public async Task StopListenerServerReset()
-        {
-            await Task.Run(() => init.SetServerReset(false));
-            await ReplyAsync("By Your Command! Stopped Listening for Server Resets");
+                if (listener.Equals("building"))
+                {
+                    await Task.Run(() => init.SetBuilding(false));
+                }
+                else if (listener.Equals("distress"))
+                {
+                    await Task.Run(() => init.SetDistress(false));
+                }
+                else if (listener.Equals("kombat"))
+                {
+                    await Task.Run(() => init.SetKombat(false));
+                }
+                else if (listener.Equals("serverResets"))
+                {
+                    await Task.Run(() => init.SetServerReset(false));
+                }
+                else if (listener.Equals("All"))
+                {
+                    await Task.Run(() => init.SetAll(false));
+                }
+                await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
+            }
         }
     }
 }

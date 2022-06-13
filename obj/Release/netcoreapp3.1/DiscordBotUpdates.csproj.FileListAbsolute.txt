@@ -57,3 +57,8 @@ H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\Discord
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.genruntimeconfig.cache
 H:\My Drive\Shared\DicordBotUpdates\BotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Google.Apis.dll
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Auth.PlatformServices.dll
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Auth.dll
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Calendar.v3.dll
+H:\My Drive\Shared\DicordBotUpdates\BotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Core.dll
