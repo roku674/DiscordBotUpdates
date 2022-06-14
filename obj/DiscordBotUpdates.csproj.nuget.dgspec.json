@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj": {}
+    "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj": {}
   },
   "projects": {
-    "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj": {
+    "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+        "projectUniqueName": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj",
         "projectName": "DiscordBotUpdates",
-        "projectPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+        "projectPath": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj",
         "packagesPath": "C:\\Users\\ZANDER\\.nuget\\packages\\",
-        "outputPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\obj\\",
+        "outputPath": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -46,10 +46,6 @@
             "Discord.Net": {
               "target": "Package",
               "version": "[3.7.2, )"
-            },
-            "Google.Apis.Calendar.v3": {
-              "target": "Package",
-              "version": "[1.57.0.2696, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",

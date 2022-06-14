@@ -95,58 +95,6 @@
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {}
         }
       },
-      "Google.Apis/1.57.0": {
-        "type": "package",
-        "dependencies": {
-          "Google.Apis.Core": "1.57.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Google.Apis.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Google.Apis.dll": {}
-        }
-      },
-      "Google.Apis.Auth/1.57.0": {
-        "type": "package",
-        "dependencies": {
-          "Google.Apis": "1.57.0",
-          "Google.Apis.Core": "1.57.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Google.Apis.Auth.PlatformServices.dll": {},
-          "lib/netstandard2.0/Google.Apis.Auth.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Google.Apis.Auth.PlatformServices.dll": {},
-          "lib/netstandard2.0/Google.Apis.Auth.dll": {}
-        }
-      },
-      "Google.Apis.Calendar.v3/1.57.0.2696": {
-        "type": "package",
-        "dependencies": {
-          "Google.Apis": "1.57.0",
-          "Google.Apis.Auth": "1.57.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Google.Apis.Calendar.v3.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Google.Apis.Calendar.v3.dll": {}
-        }
-      },
-      "Google.Apis.Core/1.57.0": {
-        "type": "package",
-        "dependencies": {
-          "Newtonsoft.Json": "13.0.1"
-        },
-        "compile": {
-          "lib/netstandard2.0/Google.Apis.Core.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Google.Apis.Core.dll": {}
-        }
-      },
       "Microsoft.Extensions.DependencyInjection/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -389,108 +337,6 @@
         "lib/netstandard2.0/Discord.Net.WebSocket.xml",
         "lib/netstandard2.1/Discord.Net.WebSocket.dll",
         "lib/netstandard2.1/Discord.Net.WebSocket.xml"
-      ]
-    },
-    "Google.Apis/1.57.0": {
-      "sha512": "30V7T2G98HQjfI6y0AzBOXJUu7j7Trl1ZzH0e6DKmUaXNCvdMPwxApjBKESeTOkWjMdFRmkpAGyDEoxim+Xq1A==",
-      "type": "package",
-      "path": "google.apis/1.57.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "NuGetIcon.png",
-        "google.apis.1.57.0.nupkg.sha512",
-        "google.apis.nuspec",
-        "lib/net45/Google.Apis.PlatformServices.dll",
-        "lib/net45/Google.Apis.dll",
-        "lib/net45/Google.Apis.pdb",
-        "lib/net45/Google.Apis.xml",
-        "lib/netstandard1.3/Google.Apis.dll",
-        "lib/netstandard1.3/Google.Apis.pdb",
-        "lib/netstandard1.3/Google.Apis.xml",
-        "lib/netstandard2.0/Google.Apis.dll",
-        "lib/netstandard2.0/Google.Apis.pdb",
-        "lib/netstandard2.0/Google.Apis.xml"
-      ]
-    },
-    "Google.Apis.Auth/1.57.0": {
-      "sha512": "xNY9rprn3iih1H5dymbxxHeZggn4bMYKtYdwO3Yr+Cj06f6xrxnL0LqEi1bmG46LBY2FlVMy9NKIF99tZ6ZBZg==",
-      "type": "package",
-      "path": "google.apis.auth/1.57.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "NuGetIcon.png",
-        "google.apis.auth.1.57.0.nupkg.sha512",
-        "google.apis.auth.nuspec",
-        "lib/net45/Google.Apis.Auth.PlatformServices.dll",
-        "lib/net45/Google.Apis.Auth.dll",
-        "lib/net45/Google.Apis.Auth.pdb",
-        "lib/net45/Google.Apis.Auth.xml",
-        "lib/net461/Google.Apis.Auth.PlatformServices.dll",
-        "lib/net461/Google.Apis.Auth.dll",
-        "lib/net461/Google.Apis.Auth.pdb",
-        "lib/net461/Google.Apis.Auth.xml",
-        "lib/netstandard1.3/Google.Apis.Auth.PlatformServices.dll",
-        "lib/netstandard1.3/Google.Apis.Auth.dll",
-        "lib/netstandard1.3/Google.Apis.Auth.pdb",
-        "lib/netstandard1.3/Google.Apis.Auth.xml",
-        "lib/netstandard2.0/Google.Apis.Auth.PlatformServices.dll",
-        "lib/netstandard2.0/Google.Apis.Auth.dll",
-        "lib/netstandard2.0/Google.Apis.Auth.pdb",
-        "lib/netstandard2.0/Google.Apis.Auth.xml"
-      ]
-    },
-    "Google.Apis.Calendar.v3/1.57.0.2696": {
-      "sha512": "wOkQFjN8xDGunhkbW+ZrDPmKXAyV7dM9YTmrBgTY0ZBzK9+32ut9n73DTuK68afmdqienw7y+hiHtlWWX71sSQ==",
-      "type": "package",
-      "path": "google.apis.calendar.v3/1.57.0.2696",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "NuGetIcon.png",
-        "google.apis.calendar.v3.1.57.0.2696.nupkg.sha512",
-        "google.apis.calendar.v3.nuspec",
-        "lib/net40/Google.Apis.Calendar.v3.dll",
-        "lib/net40/Google.Apis.Calendar.v3.pdb",
-        "lib/net40/Google.Apis.Calendar.v3.xml",
-        "lib/net45/Google.Apis.Calendar.v3.dll",
-        "lib/net45/Google.Apis.Calendar.v3.pdb",
-        "lib/net45/Google.Apis.Calendar.v3.xml",
-        "lib/netstandard1.0/Google.Apis.Calendar.v3.dll",
-        "lib/netstandard1.0/Google.Apis.Calendar.v3.pdb",
-        "lib/netstandard1.0/Google.Apis.Calendar.v3.xml",
-        "lib/netstandard1.3/Google.Apis.Calendar.v3.dll",
-        "lib/netstandard1.3/Google.Apis.Calendar.v3.pdb",
-        "lib/netstandard1.3/Google.Apis.Calendar.v3.xml",
-        "lib/netstandard2.0/Google.Apis.Calendar.v3.dll",
-        "lib/netstandard2.0/Google.Apis.Calendar.v3.pdb",
-        "lib/netstandard2.0/Google.Apis.Calendar.v3.xml"
-      ]
-    },
-    "Google.Apis.Core/1.57.0": {
-      "sha512": "5wuY88PewhfaWsk37EEHcwU6CFqxpaWMm20ogWLXmaCw8NbTlV/Lna0gjtr2jpTLgb3mtVa7RC1AG/mgi530SQ==",
-      "type": "package",
-      "path": "google.apis.core/1.57.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "NuGetIcon.png",
-        "google.apis.core.1.57.0.nupkg.sha512",
-        "google.apis.core.nuspec",
-        "lib/net45/Google.Apis.Core.dll",
-        "lib/net45/Google.Apis.Core.pdb",
-        "lib/net45/Google.Apis.Core.xml",
-        "lib/netstandard1.3/Google.Apis.Core.dll",
-        "lib/netstandard1.3/Google.Apis.Core.pdb",
-        "lib/netstandard1.3/Google.Apis.Core.xml",
-        "lib/netstandard2.0/Google.Apis.Core.dll",
-        "lib/netstandard2.0/Google.Apis.Core.pdb",
-        "lib/netstandard2.0/Google.Apis.Core.xml"
       ]
     },
     "Microsoft.Extensions.DependencyInjection/6.0.0": {
@@ -744,7 +590,6 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "Discord.Net >= 3.7.2",
-      "Google.Apis.Calendar.v3 >= 1.57.0.2696",
       "Microsoft.Extensions.DependencyInjection >= 6.0.0"
     ]
   },
@@ -755,11 +600,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "projectUniqueName": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj",
       "projectName": "DiscordBotUpdates",
-      "projectPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\DiscordBotUpdates.csproj",
+      "projectPath": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\DiscordBotUpdates.csproj",
       "packagesPath": "C:\\Users\\ZANDER\\.nuget\\packages\\",
-      "outputPath": "H:\\My Drive\\Shared\\DicordBotUpdates\\BotUpdates\\obj\\",
+      "outputPath": "H:\\My Drive\\Shared\\DiscordBotUpdates\\DiscordBotUpdates\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -794,10 +639,6 @@
           "Discord.Net": {
             "target": "Package",
             "version": "[3.7.2, )"
-          },
-          "Google.Apis.Calendar.v3": {
-            "target": "Package",
-            "version": "[1.57.0.2696, )"
           },
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",
