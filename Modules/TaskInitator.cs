@@ -11,7 +11,7 @@ namespace DiscordBotUpdates.Modules
     {
         private string[] enemies =
         {
-            "Altair","Awmalzo","B-radk.","Dad","Deegs", "DOG-WHISPERER",
+            "Altair","Awmalzo","B-radk.","Dad", "Demon", "Deegs", "DOG-WHISPERER",
             "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
             "RepealThe2ndA","Scar-Face"
         };
@@ -201,13 +201,17 @@ namespace DiscordBotUpdates.Modules
 
                     if (lastLine.Contains("shot down " + enemy) && lastLine.Contains(ally + " shot down"))
                     {
-                        if (lastLine.Contains("Defenses"))
+                        if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally))
                         {
                             await Outprint("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
                         }
-                        else
+                        else if (!string.IsNullOrEmpty(ally))
                         {
                             await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
+                        }
+                        else
+                        {
+                            await Outprint(lastLine, ChannelID.slaversID);
                         }
 
                         await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
