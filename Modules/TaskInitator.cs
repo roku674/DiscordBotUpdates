@@ -171,102 +171,108 @@ namespace DiscordBotUpdates.Modules
             string[] fileStrArr = await File.ReadAllLinesAsync(filePath);
             string lastLine = fileStrArr[fileStrArr.Length - 1];
 
-            if (distress)
+            if (filePath.Contains("Probation"))
             {
-                ///Console.WriteLine("Distress");
-                if (lastLine.Contains("***") && lastLine.Contains("landed"))
+                if (kombat)
                 {
-                    await Outprint(lastLine, ChannelID.distressCallsID);
-                }
-            }
-            if (serverReset)
-            {
-                if (lastLine.Contains("Server Alert!"))
-                {
-                    await Outprint("@everyone " + lastLine, ChannelID.slaversID);
-                }
-            }
-            if (kombat && filePath.Contains("Probation"))
-            {
-                if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
-                {
-                    await Outprint(lastLine, ChannelID.distressCallsID);
-                    await Say(lastLine, ChannelID.slaversOnlyVoiceID);
-                }
-                else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
-                {
-                    await Outprint(lastLine, ChannelID.distressCallsID);
-                    await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
-                }
-                if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
-                {
-                    List<string> alliesList = allies.ToList<string>();
-                    List<string> enemiesList = enemies.ToList<string>();
-
-                    string ally = alliesList.Find(s => lastLine.Contains(s));
-                    string enemy = enemiesList.Find(s => lastLine.Contains(s));
-
-                    if (lastLine.Contains("shot down " + enemy) && lastLine.Contains(ally + " shot down"))
+                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
                     {
-                        if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally))
-                        {
-                            await Outprint("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
-                        }
-                        else if (!string.IsNullOrEmpty(ally))
-                        {
-                            await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
-                        }
-                        else
-                        {
-                            await Outprint(lastLine, ChannelID.slaversID);
-                        }
-
-                        await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                        await Outprint(lastLine, ChannelID.distressCallsID);
+                        await Say(lastLine, ChannelID.slaversOnlyVoiceID);
                     }
-                    else if (lastLine.Contains("shot down " + ally) && lastLine.Contains(enemy + " shot down"))
+                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
-                        await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
-                        await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                        await Outprint(lastLine, ChannelID.distressCallsID);
+                        await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                    }
+                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
+                    {
+                        List<string> alliesList = allies.ToList<string>();
+                        List<string> enemiesList = enemies.ToList<string>();
+
+                        string ally = alliesList.Find(s => lastLine.Contains(s));
+                        string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                        if (lastLine.Contains("shot down " + enemy) && lastLine.Contains(ally + " shot down"))
+                        {
+                            if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally))
+                            {
+                                await Outprint("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
+                            }
+                            else if (!string.IsNullOrEmpty(ally))
+                            {
+                                await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
+                            }
+                            else
+                            {
+                                await Outprint(lastLine, ChannelID.slaversID);
+                            }
+
+                            await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                        }
+                        else if (lastLine.Contains("shot down " + ally) && lastLine.Contains(enemy + " shot down"))
+                        {
+                            await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
+                            await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                        }
                     }
                 }
             }
-
-            if (lastLine.Contains("tons of unidentified compounds"))
+            else
             {
-                if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
+                if (distress)
                 {
-                    await Outprint("Undomed: " + lastLine, ChannelID.buildingID);
+                    ///Console.WriteLine("Distress");
+                    if (lastLine.Contains("***") && lastLine.Contains("landed"))
+                    {
+                        await Outprint(lastLine, ChannelID.distressCallsID);
+                    }
                 }
-                else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
+                if (serverReset)
                 {
-                    await Outprint(lastLine, ChannelID.nuetrinoID);
-                }
-            }
-
-            if (building)
-            {
-                if (lastLine.Contains("was finally abandoned"))
-                {
-                    System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
-                    System.TimeSpan days3thirtyMin = new System.TimeSpan(72, 0, 30, 0);
-
-                    System.DateTime start = new System.DateTime() + days3;
-
-                    System.DateTime end = System.DateTime.Now + days3thirtyMin;
-
-                    await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
-
-                    await Outprint(lastLine +
-                        '\n' + "Adding redome time to Discord Calendar!", ChannelID.buildingID);
+                    if (lastLine.Contains("Server Alert!"))
+                    {
+                        await Outprint("@everyone " + lastLine, ChannelID.slaversID);
+                    }
                 }
 
-                if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
+                if (lastLine.Contains("tons of unidentified compounds"))
                 {
-                    await Outprint(lastLine, ChannelID.buildingID);
+                    if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
+                    {
+                        await Outprint("Undomed: " + lastLine, ChannelID.buildingID);
+                    }
+                    else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
+                    {
+                        await Outprint(lastLine, ChannelID.nuetrinoID);
+                    }
                 }
-                else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+
+                if (building)
                 {
-                    await Outprint(lastLine, ChannelID.buildingID);
+                    if (lastLine.Contains("was finally abandoned"))
+                    {
+                        System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
+                        System.TimeSpan days3thirtyMin = new System.TimeSpan(72, 0, 30, 0);
+
+                        System.DateTime start = new System.DateTime() + days3;
+
+                        System.DateTime end = System.DateTime.Now + days3thirtyMin;
+
+                        await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
+
+                        await Outprint(lastLine +
+                            '\n' + "Adding redome time to Discord Calendar!", ChannelID.buildingID);
+                    }
+
+                    if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
+                    {
+                        await Outprint(lastLine, ChannelID.buildingID);
+                    }
+                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+                    {
+                        await Outprint(lastLine, ChannelID.buildingID);
+                    }
                 }
             }
         }

@@ -151,7 +151,7 @@ namespace DiscordBotUpdates.Modules
             DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Main Chat Log Listener", "Client", listenerNum);
 
             listenerNum += 1;
-            Task listener2 = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID, true));
+            Task listener2 = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID, false));
             DBUTask.DBUTaskObj dbuListener2 = new DBUTask.DBUTaskObj(listener2, "Secondary Chat Log Listener", "Client", listenerNum);
 
             DBUTask.runningTasks.Add(dbuListener);
