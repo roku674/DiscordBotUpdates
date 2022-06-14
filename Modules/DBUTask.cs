@@ -49,6 +49,7 @@ namespace DiscordBotUpdates.Modules
         public static async Task CreateCalendarEvent(System.DateTime start, System.DateTime end, string summary, ulong channelId)
         {
             Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
+            await Outprint("Calendar Updater Unimplemented!", channelId);
             //channel.
         }
 

@@ -35,18 +35,25 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task ChatLogListener(uint id, ulong channelID)
+        public async Task ChatLogListener(uint id, ulong channelID, bool main)
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             watcher = new FileSystemWatcher();
-            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+            if (main)
             {
-                watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
+                if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+                {
+                    watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
+                }
+                else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+                {
+                    watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+                }
             }
-            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+            else
             {
-                watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+                watcher.Path = "H:/My Drive/Probation/StarportGE/ChatLogs";
             }
 
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
@@ -161,7 +168,7 @@ namespace DiscordBotUpdates.Modules
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
             string filePath = e.FullPath;
-            string[] fileStrArr = File.ReadAllLines(filePath);
+            string[] fileStrArr = await File.ReadAllLinesAsync(filePath);
             string lastLine = fileStrArr[fileStrArr.Length - 1];
 
             if (distress)
@@ -179,7 +186,7 @@ namespace DiscordBotUpdates.Modules
                     await Outprint("@everyone " + lastLine, ChannelID.slaversID);
                 }
             }
-            if (kombat)
+            if (kombat && filePath.Contains("Probation"))
             {
                 if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
                 {

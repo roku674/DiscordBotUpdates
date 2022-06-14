@@ -147,10 +147,15 @@ namespace DiscordBotUpdates.Modules
             await ReplyAsync("By Your Command! Listening for Chatlog changes!");
 
             uint listenerNum = DBUTask.dbuTaskNum++;
-            Task listener = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID));
+            Task listener = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID, true));
+            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Main Chat Log Listener", "Client", listenerNum);
 
-            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Client", listenerNum);
+            listenerNum += 1;
+            Task listener2 = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID, true));
+            DBUTask.DBUTaskObj dbuListener2 = new DBUTask.DBUTaskObj(listener2, "Secondary Chat Log Listener", "Client", listenerNum);
+
             DBUTask.runningTasks.Add(dbuListener);
+            DBUTask.runningTasks.Add(dbuListener2);
         }
 
         [Command("run Deactivate")]
