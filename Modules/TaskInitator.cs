@@ -10,18 +10,18 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-        private string[] enemies =
-        {
-            "Altair","Awmalzo","B-radk.","Dad", "Demon", "Deegs", "DOG-WHISPERER",
-            "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
-            "RepealThe2ndA","Scar-Face"
-        };
-
         private string[] allies =
         {
             "Allie", "Anxiety.jar", "Bodhi", "CaptArcher",
             "Depression.Wav",  "Devila", "Hokujinn",
             "Leaderkiller","Probation", "Taterchip", "WW3"
+        };
+
+        private string[] enemies =
+                {
+            "Altair","Awmalzo","B-radk.","Dad", "Demon", "Deegs", "DOG-WHISPERER",
+            "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
+            "RepealThe2ndA","Scar-Face"
         };
 
         private Discord.IMessageChannel pictureChannel;
@@ -86,12 +86,23 @@ namespace DiscordBotUpdates.Modules
         }
 
         /// <summary>
-        /// Call this to start the Message Updater
+        /// Call this to start the picture updater
         /// </summary>
         /// <returns></returns>
-        public async Task MessageBotUpdates(uint id, ulong channelID, string type)
+        public async Task PictureUpdater(uint id, ulong channelID)
         {
-            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+            pictureChannel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
+            //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
+            System.Console.WriteLine("Sucessfully Initiated Picture Listener!");
+            await Task.Delay(2000);
+
+            FileSystemWatcher pictureWatcher = new FileSystemWatcher();
+            pictureWatcher.Path = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures";
+            pictureWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            pictureWatcher.Filter = "*.*";
+            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChanged);
+            pictureWatcher.EnableRaisingEvents = true;
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -101,7 +112,46 @@ namespace DiscordBotUpdates.Modules
             }
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
+
+            for (int i = 0; i < duration; i++)
+            {
+                if (runningTasks[taskNum].isCancelled)
+                {
+                    i = duration;
+                    break;
+                }
+                await Task.Delay(1000);
+
+                if (i == 1)
+                {
+                    System.Console.WriteLine("Picture Updater: First pass completed!");
+                }
+
+                task.ticker++;
+            }
+            await pictureChannel.SendMessageAsync("No Longer Listening for Pictures Updates!");
+            runningTasks.RemoveAt(taskNum);
+            dbuTaskNum--;
+        }
+
+        /// <summary>
+        /// Call this to start the Message Updater
+        /// </summary>
+        /// <returns></returns>
+        public async Task TextUpdater(uint id, ulong channelID, string type)
+        {
+            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+            await Task.Delay(500);
+            int taskNum = runningTasks.FindIndex(task => task.id == id);
+
+            while (taskNum == -1)
+            {
+                taskNum = runningTasks.FindIndex(task => task.id == id);
+            }
+
+            DBUTaskObj task = runningTasks.ElementAt(taskNum);
             System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+
             for (int i = 0; i < duration; i++)
             {
                 if (runningTasks[taskNum].isCancelled)
@@ -136,7 +186,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (i == 1)
                 {
-                    System.Console.WriteLine(type + ": First pass completed!");
+                    System.Console.WriteLine(type + " Updater: First pass completed!");
                 }
 
                 task.ticker++;
@@ -146,48 +196,37 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        /// <summary>
-        /// Call this to start the picture updater
-        /// </summary>
-        /// <returns></returns>
-        public async Task PictureBotUpdates(uint id, ulong channelID)
+        internal async Task SetAll(bool v)
         {
-            pictureChannel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-            //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
-            System.Console.WriteLine("Sucessfully Initiated Picture Listener!");
-            await Task.Delay(2000);
+            building = v;
+            distress = v;
+            kombat = v;
+            serverReset = v;
+            await Task.Delay(0);
+        }
 
-            FileSystemWatcher pictureWatcher = new FileSystemWatcher();
-            pictureWatcher.Path = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures";
-            pictureWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            pictureWatcher.Filter = "*.*";
-            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChanged);
-            pictureWatcher.EnableRaisingEvents = true;
+        internal async Task SetBuilding(bool v)
+        {
+            building = v;
+            await Task.Delay(0);
+        }
 
-            int taskNum = runningTasks.FindIndex(task => task.id == id);
+        internal async Task SetDistress(bool v)
+        {
+            distress = v;
+            await Task.Delay(0);
+        }
 
-            while (taskNum == -1)
-            {
-                taskNum = runningTasks.FindIndex(task => task.id == id);
-            }
+        internal async Task SetKombat(bool v)
+        {
+            kombat = v;
+            await Task.Delay(0);
+        }
 
-            DBUTaskObj task = runningTasks.ElementAt(taskNum);
-
-            for (int i = 0; i < duration; i++)
-            {
-                if (runningTasks[taskNum].isCancelled)
-                {
-                    i = duration;
-                    break;
-                }
-                await Task.Delay(1000);
-
-                task.ticker++;
-            }
-            await pictureChannel.SendMessageAsync("No Longer Listening for Pictures Updates!");
-            runningTasks.RemoveAt(taskNum);
-            dbuTaskNum--;
+        internal async Task SetServerReset(bool v)
+        {
+            serverReset = v;
+            await Task.Delay(0);
         }
 
         private async void OnChatChanged(object sender, FileSystemEventArgs fileSysEvent)
@@ -330,58 +369,6 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine(Path.GetFileName(path));
             await pictureChannel.SendFileAsync(path, Path.GetFileName(path));
             File.Delete(path);
-        }
-
-        internal async Task SetAll(bool v)
-        {
-            building = v;
-            distress = v;
-            kombat = v;
-            serverReset = v;
-            await Task.Delay(0);
-        }
-
-        internal async Task SetBuilding(bool v)
-        {
-            building = v;
-            await Task.Delay(0);
-        }
-
-        internal async Task SetDistress(bool v)
-        {
-            distress = v;
-            await Task.Delay(0);
-        }
-
-        internal async Task SetKombat(bool v)
-        {
-            kombat = v;
-            await Task.Delay(0);
-        }
-
-        internal async Task SetServerReset(bool v)
-        {
-            serverReset = v;
-            await Task.Delay(0);
-        }
-
-        /// <summary>
-        /// If the file can be opened for exclusive access it means that the file
-        /// is no longer locked by another process.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private static bool IsFileReady(string filename)
-        {
-            try
-            {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
-                    return inputStream.Length > 0;
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }
         }
     }
 }

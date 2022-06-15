@@ -208,7 +208,7 @@ namespace DiscordBotUpdates.Modules
             {
                 foreach (DBUTask.DBUTaskObj task in DBUTask.runningTasks)
                 {
-                    await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted + " | Lifetime: " + task.ticker + "(s)");
+                    await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted + " | Lifetime: " + SecondsToTime(task.ticker));
                 }
             }
             else
@@ -226,7 +226,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                         + '\n'
                         + "Was ended at " + System.DateTime.Now);
 
@@ -254,7 +254,7 @@ namespace DiscordBotUpdates.Modules
 
                     if (dbuTask.owner.Equals(bot))
                     {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                             + '\n'
                             + "Was ended at " + System.DateTime.Now);
 
@@ -263,7 +263,7 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (dbuTask.owner.Equals("Client"))
                     {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                             + '\n'
                             + "Was ended at " + System.DateTime.Now);
 
@@ -313,7 +313,7 @@ namespace DiscordBotUpdates.Modules
         private async Task PictureUpdater(ulong channelID, string purpose, string owner)
         {
             uint picturesNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.PictureBotUpdates(picturesNum, channelID));
+            Task task = Task.Run(() => init.PictureUpdater(picturesNum, channelID));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
             await Task.Delay(500);
         }
@@ -321,9 +321,16 @@ namespace DiscordBotUpdates.Modules
         private async Task MessageUpdater(ulong channelID, string purpose, string owner, string type)
         {
             uint id = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.MessageBotUpdates(id, channelID, type));
+            Task task = Task.Run(() => init.TextUpdater(id, channelID, type));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
             await Task.Delay(500);
+        }
+
+        private string SecondsToTime(uint seconds)
+        {
+            System.TimeSpan timespan = new System.TimeSpan(0, 0, (int)seconds);
+            string timeSpanString = timespan.Hours + ":" + timespan.Minutes + ":" + timespan.Seconds + "";
+            return timeSpanString;
         }
     }
 }
