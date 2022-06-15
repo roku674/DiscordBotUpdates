@@ -31,6 +31,7 @@ namespace DiscordBotUpdates.Modules
             public string owner { get; set; }
             public string purpose { get; set; }
             public Task task { get; set; }
+            public uint ticker { get; set; }
             public System.DateTime timeStarted { get; set; }
 
             public void Cancel()
@@ -39,19 +40,17 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        //var
         private static readonly int _duration = 604800;
 
         private static uint _dbuTaskNum;
         private static List<DBUTaskObj> _runningTasks = new List<DBUTaskObj>();
 
-        private string _dbuString = "";
-
+        //getters/setters
         public static int duration => _duration;
 
         public static uint dbuTaskNum { get => _dbuTaskNum; set => _dbuTaskNum = value; }
         public static List<DBUTaskObj> runningTasks { get => _runningTasks; set => _runningTasks = value; }
-
-        public string dbuString { get => _dbuString; set => _dbuString = value; }
 
         public static async Task CreateCalendarEvent(System.DateTime start, System.DateTime end, string summary, ulong channelId)
         {

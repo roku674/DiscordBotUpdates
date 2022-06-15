@@ -1,5 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace DiscordBotUpdates.Modules
         };
 
         private FileSystemWatcher watcher;
+        private Discord.IMessageChannel pictureChannel;
 
         public static bool building { get; set; }
         public static bool distress { get; set; }
@@ -58,9 +60,13 @@ namespace DiscordBotUpdates.Modules
             watcher.EnableRaisingEvents = true;
 
             Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-            await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
+            //await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
+            System.Console.WriteLine("Sucessfully ran ChatLog Listener!");
+
+            await Task.Delay(2000);
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
+            DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
             for (int i = 0; i < duration; i++)
             {
@@ -70,6 +76,8 @@ namespace DiscordBotUpdates.Modules
                     break;
                 }
                 await Task.Delay(1000);
+
+                task.ticker++;
             }
             watcher = null;
             await channel.SendMessageAsync("No longer listening to chat logs!");
@@ -83,11 +91,14 @@ namespace DiscordBotUpdates.Modules
         /// <returns></returns>
         public async Task MessageBotUpdates(uint id, ulong channelID, string type)
         {
-            System.Console.WriteLine(type + " Executed!");
+            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
 
-            await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+
+            await Task.Delay(2000);
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
+            DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
             for (int i = 0; i < duration; i++)
             {
@@ -99,21 +110,19 @@ namespace DiscordBotUpdates.Modules
 
                 await Task.Delay(1000);
 
-                string filePath = Directory.GetCurrentDirectory() + "/Channel/" + type + ".txt";
+                string filePath = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
+                string fileAsText = "";
 
                 if (File.Exists(filePath))
                 {
-                    while (IsFileReady(filePath))
-                    {
-                        dbuString = await File.ReadAllTextAsync(filePath, default);
-                    }
+                    fileAsText = await File.ReadAllTextAsync(filePath, default);
 
-                    if (!string.IsNullOrEmpty(dbuString))
+                    if (!string.IsNullOrEmpty(fileAsText))
                     {
-                        //System.Console.WriteLine(dbuString);
                         Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-                        await channel.SendMessageAsync(dbuString);
-                        File.WriteAllText(filePath, "");
+                        await channel.SendMessageAsync(fileAsText); //let it rain
+
+                        await File.WriteAllTextAsync(filePath, " "); //now clear it out
                     }
                 }
                 else
@@ -121,8 +130,9 @@ namespace DiscordBotUpdates.Modules
                     File.Create(filePath).Close();
 
                     await Outprint("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botUpdatesID);
-                    i = duration;
                 }
+
+                task.ticker++;
             }
             await Outprint("No Longer Listening for " + type + "!", ChannelID.botUpdatesID);
             runningTasks.RemoveAt(taskNum);
@@ -135,12 +145,21 @@ namespace DiscordBotUpdates.Modules
         /// <returns></returns>
         public async Task PictureBotUpdates(uint id, ulong channelID)
         {
-            System.Console.WriteLine("PictureBotUpdates Executed!");
+            pictureChannel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
+            //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
+            System.Console.WriteLine("Sucessfully Initiated Picture Listener!");
+            await Task.Delay(2000);
 
-            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-            await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
+            FileSystemWatcher pictureWatcher = new FileSystemWatcher();
+            pictureWatcher.Path = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures";
+            pictureWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            pictureWatcher.Filter = "*.*";
+            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChanged);
+            pictureWatcher.EnableRaisingEvents = true;
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
+            DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
             for (int i = 0; i < duration; i++)
             {
@@ -149,33 +168,32 @@ namespace DiscordBotUpdates.Modules
                     i = duration;
                     break;
                 }
-                string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Pictures", "*.png");
-
                 await Task.Delay(1000);
 
-                if (paths.Length > 0)
-                {
-                    foreach (string path in paths)
-                    {
-                        System.Console.WriteLine(Path.GetFileName(path));
-                        await channel.SendFileAsync(path, Path.GetFileName(path));
-                        File.Delete(path);
-                    }
-                }
+                task.ticker++;
             }
-            await channel.SendMessageAsync("No Longer Listening for Pictures Updates!");
+            await pictureChannel.SendMessageAsync("No Longer Listening for Pictures Updates!");
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
 
-        private async void OnChanged(object sender, FileSystemEventArgs filesysEvent)
+        private async void OnPictureChanged(object sender, FileSystemEventArgs fileSysEvent)
         {
-            string filePath = filesysEvent.FullPath;
+            string path = fileSysEvent.FullPath;
+
+            System.Console.WriteLine(Path.GetFileName(path));
+            await pictureChannel.SendFileAsync(path, Path.GetFileName(path));
+            File.Delete(path);
+        }
+
+        private async void OnChanged(object sender, FileSystemEventArgs fileSysEvent)
+        {
+            string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
-            while (IsFileReady(filePath))
-            {
-                fileStrArr = await File.ReadAllLinesAsync(filePath);
-            }
+
+            //System.Console.WriteLine("On Changed");
+
+            fileStrArr = await File.ReadAllLinesAsync(filePath);
 
             if (fileStrArr.Length > 0)
             {
@@ -334,10 +352,14 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
+        /// <summary>
+        /// If the file can be opened for exclusive access it means that the file
+        /// is no longer locked by another process.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private static bool IsFileReady(string filename)
         {
-            // If the file can be opened for exclusive access it means that the file
-            // is no longer locked by another process.
             try
             {
                 using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))

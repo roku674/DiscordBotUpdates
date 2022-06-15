@@ -76,27 +76,11 @@ namespace DiscordBotUpdates.Modules
         {
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
-            uint messagesNum = DBUTask.dbuTaskNum++;
-            Task messages = Task.Run(() => init.MessageBotUpdates(messagesNum, ChannelID.botUpdatesID, "botUpdates"));
+            await MessageUpdater(ChannelID.botUpdatesID, "Message Updater", "Client", "botUpdates");
+            await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
+            await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
 
-            uint picturesNum = DBUTask.dbuTaskNum++;
-            Task pictures = Task.Run(() => init.PictureBotUpdates(picturesNum, ChannelID.botUpdatesID));
-
-            uint distressNum = DBUTask.dbuTaskNum++;
-            Task distress = Task.Run(() => init.MessageBotUpdates(distressNum, ChannelID.distressCallsID, "distress"));
-
-            uint warpedInOutNum = DBUTask.dbuTaskNum++;
-            Task warpedInOut = Task.Run(() => init.MessageBotUpdates(warpedInOutNum, ChannelID.slaversID, "warpedInOut"));
-
-            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Client", messagesNum, null);
-            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Client", picturesNum, null);
-            DBUTask.DBUTaskObj dBUDistress = new DBUTask.DBUTaskObj(distress, "Distress Signal Updater", "Client", distressNum, null);
-            DBUTask.DBUTaskObj dBUWarpedInOut = new DBUTask.DBUTaskObj(warpedInOut, "Warped In & Out Updater", "Client", warpedInOutNum, null);
-
-            DBUTask.runningTasks.Add(dBUMessages);
-            DBUTask.runningTasks.Add(dBUPicturess);
-            DBUTask.runningTasks.Add(dBUDistress);
-            DBUTask.runningTasks.Add(dBUWarpedInOut);
+            await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
         }
 
         [Command("run ClearBotsEcho")]
@@ -222,7 +206,7 @@ namespace DiscordBotUpdates.Modules
             {
                 foreach (DBUTask.DBUTaskObj task in DBUTask.runningTasks)
                 {
-                    await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted);
+                    await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted + " | Lifetime: " + task.ticker + "(s)");
                 }
             }
             else
@@ -322,6 +306,24 @@ namespace DiscordBotUpdates.Modules
                 }
                 await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
             }
+        }
+
+        private async Task PictureUpdater(ulong channelID, string purpose, string owner)
+        {
+            uint picturesNum = DBUTask.dbuTaskNum++;
+            Task task = Task.Run(() => init.PictureBotUpdates(picturesNum, channelID));
+            DBUTask.DBUTaskObj taskObj = new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null);
+            DBUTask.runningTasks.Add(taskObj);
+            await Task.Delay(500);
+        }
+
+        private async Task MessageUpdater(ulong channelID, string purpose, string owner, string type)
+        {
+            uint id = DBUTask.dbuTaskNum++;
+            Task task = Task.Run(() => init.MessageBotUpdates(id, channelID, type));
+            DBUTask.DBUTaskObj taskObj = new DBUTask.DBUTaskObj(task, purpose, owner, id, null);
+            DBUTask.runningTasks.Add(taskObj);
+            await Task.Delay(500);
         }
     }
 }
