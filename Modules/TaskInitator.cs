@@ -1,10 +1,9 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
@@ -91,15 +90,17 @@ namespace DiscordBotUpdates.Modules
         /// <returns></returns>
         public async Task MessageBotUpdates(uint id, ulong channelID, string type)
         {
-            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
-
             //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
 
-            await Task.Delay(2000);
-
             int taskNum = runningTasks.FindIndex(task => task.id == id);
-            DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
+            while (taskNum == -1)
+            {
+                taskNum = runningTasks.FindIndex(task => task.id == id);
+            }
+
+            DBUTaskObj task = runningTasks.ElementAt(taskNum);
+            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
             for (int i = 0; i < duration; i++)
             {
                 if (runningTasks[taskNum].isCancelled)
@@ -117,7 +118,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     fileAsText = await File.ReadAllTextAsync(filePath, default);
 
-                    if (!string.IsNullOrEmpty(fileAsText))
+                    if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
                     {
                         Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
                         await channel.SendMessageAsync(fileAsText); //let it rain
@@ -130,6 +131,11 @@ namespace DiscordBotUpdates.Modules
                     File.Create(filePath).Close();
 
                     await Outprint("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botUpdatesID);
+                }
+
+                if (i == 1)
+                {
+                    System.Console.WriteLine(type + ": First pass completed!");
                 }
 
                 task.ticker++;
@@ -159,6 +165,12 @@ namespace DiscordBotUpdates.Modules
             pictureWatcher.EnableRaisingEvents = true;
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
+
+            while (taskNum == -1)
+            {
+                taskNum = runningTasks.FindIndex(task => task.id == id);
+            }
+
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
             for (int i = 0; i < duration; i++)

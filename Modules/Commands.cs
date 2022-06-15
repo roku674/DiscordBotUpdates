@@ -66,9 +66,11 @@ namespace DiscordBotUpdates.Modules
         [Command("run AllTasks")]
         public async Task AllTasks()
         {
-            await Task.Run(() => BotUpdaterPost());
-            await Task.Run(() => ListenerPost("All"));
-            await Task.Run(() => ListenerChatLogPost());
+            _ = Task.Run(() => BotUpdaterPost());
+            _ = Task.Run(() => ListenerPost("All"));
+            _ = Task.Run(() => ListenerChatLogPost());
+
+            await Task.Delay(33);
         }
 
         [Command("run BotUpdater")]
@@ -312,8 +314,7 @@ namespace DiscordBotUpdates.Modules
         {
             uint picturesNum = DBUTask.dbuTaskNum++;
             Task task = Task.Run(() => init.PictureBotUpdates(picturesNum, channelID));
-            DBUTask.DBUTaskObj taskObj = new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null);
-            DBUTask.runningTasks.Add(taskObj);
+            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
             await Task.Delay(500);
         }
 
@@ -321,8 +322,7 @@ namespace DiscordBotUpdates.Modules
         {
             uint id = DBUTask.dbuTaskNum++;
             Task task = Task.Run(() => init.MessageBotUpdates(id, channelID, type));
-            DBUTask.DBUTaskObj taskObj = new DBUTask.DBUTaskObj(task, purpose, owner, id, null);
-            DBUTask.runningTasks.Add(taskObj);
+            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
             await Task.Delay(500);
         }
     }
