@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
@@ -35,25 +36,19 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task ChatLogListener(uint id, ulong channelID, bool main)
+        public async Task ChatLogListener(uint id, ulong channelID)
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             watcher = new FileSystemWatcher();
-            if (main)
+
+            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
             {
-                if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
-                {
-                    watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
-                }
-                else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
-                {
-                    watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
-                }
+                watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
             }
-            else
+            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
             {
-                watcher.Path = "H:/My Drive/Probation/StarportGE/ChatLogs";
+                watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
             }
 
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
@@ -86,12 +81,11 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Message Updater
         /// </summary>
         /// <returns></returns>
-        public async Task MessageBotUpdates(uint id, ulong channelID)
+        public async Task MessageBotUpdates(uint id, ulong channelID, string type)
         {
-            System.Console.WriteLine("MessageBotUpdates Executed!");
+            System.Console.WriteLine(type + " Executed!");
 
-            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-            await Outprint("Sucessfully Initiated Message Listener!", channelID);
+            await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -102,27 +96,37 @@ namespace DiscordBotUpdates.Modules
                     i = duration;
                     break;
                 }
+
                 await Task.Delay(1000);
 
-                if (File.Exists(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt"))
+                string filePath = Directory.GetCurrentDirectory() + "/Channel/" + type + ".txt";
+
+                FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                if (File.Exists(filePath))
                 {
-                    dbuString = File.ReadAllText(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt");
+                    dbuString = await streamReader.ReadToEndAsync();
+                    streamReader.Close();
+                    streamReader.Dispose();
 
                     if (!string.IsNullOrEmpty(dbuString))
                     {
                         //System.Console.WriteLine(dbuString);
+                        Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
                         await channel.SendMessageAsync(dbuString);
-                        File.WriteAllText(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt", "");
+                        File.WriteAllText(filePath, "");
                     }
                 }
                 else
                 {
-                    File.Create(Directory.GetCurrentDirectory() + "/Channel/botUpdates.txt");
-                    await channel.SendMessageAsync("Created botUpdates.txt ! Recommend ReRunning!");
+                    File.Create(filePath).Close();
+
+                    await Outprint("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botUpdatesID);
                     i = duration;
                 }
             }
-            await channel.SendMessageAsync("No Longer Listening for MessageUpdates!");
+            await Outprint("No Longer Listening for " + type + "!", ChannelID.botUpdatesID);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
@@ -148,13 +152,14 @@ namespace DiscordBotUpdates.Modules
                     break;
                 }
                 string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Pictures", "*.png");
+
                 await Task.Delay(1000);
 
                 if (paths.Length > 0)
                 {
                     foreach (string path in paths)
                     {
-                        System.Console.WriteLine(path);
+                        System.Console.WriteLine(Path.GetFileName(path));
                         await channel.SendFileAsync(path, Path.GetFileName(path));
                         File.Delete(path);
                     }
@@ -165,16 +170,18 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        private async void OnChanged(object sender, FileSystemEventArgs e)
+        private async void OnChanged(object sender, FileSystemEventArgs filesysEvent)
         {
-            string filePath = e.FullPath;
+            string filePath = filesysEvent.FullPath;
             string[] fileStrArr = await File.ReadAllLinesAsync(filePath);
-            string lastLine = fileStrArr[fileStrArr.Length - 1];
 
-            if (filePath.Contains("Probation"))
+            if (fileStrArr.Length > 0)
             {
+                string lastLine = fileStrArr[fileStrArr.Length - 1];
+
                 if (kombat)
                 {
+                    //warped in
                     if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
                     {
                         await Outprint(lastLine, ChannelID.distressCallsID);
@@ -185,6 +192,8 @@ namespace DiscordBotUpdates.Modules
                         await Outprint(lastLine, ChannelID.distressCallsID);
                         await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
                     }
+
+                    //shot downs
                     if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
                     {
                         List<string> alliesList = allies.ToList<string>();
@@ -216,10 +225,23 @@ namespace DiscordBotUpdates.Modules
                             await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                         }
                     }
+
+                    //invasions
+                    if (lastLine.Contains("was invaded"))
+                    {
+                        await Outprint(lastLine, ChannelID.recapListID);
+                        await Say("We've Lost a Command Post!", ChannelID.slaversOnlyVoiceID);
+                    }
+                    else if (lastLine.Contains("captured"))
+                    {
+                        List<string> alliesList = allies.ToList<string>();
+                        string ally = alliesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(ally + " captured a command post!" + '\n' + lastLine, ChannelID.slaversID);
+                        await Say("We've Captured a Command Post!", ChannelID.slaversOnlyVoiceID);
+                    }
                 }
-            }
-            else
-            {
+
                 if (distress)
                 {
                     ///Console.WriteLine("Distress");
@@ -269,7 +291,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         await Outprint(lastLine, ChannelID.buildingID);
                     }
-                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
                     {
                         await Outprint(lastLine, ChannelID.buildingID);
                     }
