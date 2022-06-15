@@ -76,9 +76,6 @@ namespace DiscordBotUpdates.Modules
         {
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
-            if (DBUTask.runningTasks.Contains(item => item.purpose.Equals("Message Updater")))
-            {
-            }
             uint messagesNum = DBUTask.dbuTaskNum++;
             Task messages = Task.Run(() => init.MessageBotUpdates(messagesNum, ChannelID.botUpdatesID, "botUpdates"));
 
