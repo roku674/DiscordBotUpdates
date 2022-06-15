@@ -103,7 +103,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (File.Exists(filePath))
                 {
-                    while (!IsFileReady(filePath))
+                    while (IsFileReady(filePath))
                     {
                         dbuString = await File.ReadAllTextAsync(filePath, default);
                     }
@@ -172,7 +172,7 @@ namespace DiscordBotUpdates.Modules
         {
             string filePath = filesysEvent.FullPath;
             string[] fileStrArr = new string[0];
-            while (!IsFileReady(filePath))
+            while (IsFileReady(filePath))
             {
                 fileStrArr = await File.ReadAllLinesAsync(filePath);
             }
