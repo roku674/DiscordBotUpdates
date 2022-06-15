@@ -101,14 +101,12 @@ namespace DiscordBotUpdates.Modules
 
                 string filePath = Directory.GetCurrentDirectory() + "/Channel/" + type + ".txt";
 
-                FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8);
-
                 if (File.Exists(filePath))
                 {
-                    dbuString = await streamReader.ReadToEndAsync();
-                    streamReader.Close();
-                    streamReader.Dispose();
+                    while (!IsFileReady(filePath))
+                    {
+                        dbuString = await File.ReadAllTextAsync(filePath, default);
+                    }
 
                     if (!string.IsNullOrEmpty(dbuString))
                     {
@@ -173,7 +171,11 @@ namespace DiscordBotUpdates.Modules
         private async void OnChanged(object sender, FileSystemEventArgs filesysEvent)
         {
             string filePath = filesysEvent.FullPath;
-            string[] fileStrArr = await File.ReadAllLinesAsync(filePath);
+            string[] fileStrArr = new string[0];
+            while (!IsFileReady(filePath))
+            {
+                fileStrArr = await File.ReadAllLinesAsync(filePath);
+            }
 
             if (fileStrArr.Length > 0)
             {
@@ -330,6 +332,21 @@ namespace DiscordBotUpdates.Modules
         {
             serverReset = v;
             await Task.Delay(0);
+        }
+
+        private static bool IsFileReady(string filename)
+        {
+            // If the file can be opened for exclusive access it means that the file
+            // is no longer locked by another process.
+            try
+            {
+                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
+                    return inputStream.Length > 0;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
     }
 }

@@ -76,6 +76,9 @@ namespace DiscordBotUpdates.Modules
         {
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
+            if (DBUTask.runningTasks.Contains(item => item.purpose.Equals("Message Updater")))
+            {
+            }
             uint messagesNum = DBUTask.dbuTaskNum++;
             Task messages = Task.Run(() => init.MessageBotUpdates(messagesNum, ChannelID.botUpdatesID, "botUpdates"));
 
@@ -88,10 +91,10 @@ namespace DiscordBotUpdates.Modules
             uint warpedInOutNum = DBUTask.dbuTaskNum++;
             Task warpedInOut = Task.Run(() => init.MessageBotUpdates(warpedInOutNum, ChannelID.slaversID, "warpedInOut"));
 
-            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Client", messagesNum);
-            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Client", picturesNum);
-            DBUTask.DBUTaskObj dBUDistress = new DBUTask.DBUTaskObj(distress, "Distress Signal Updater", "Client", distressNum);
-            DBUTask.DBUTaskObj dBUWarpedInOut = new DBUTask.DBUTaskObj(warpedInOut, "Warped In & Out Updater", "Client", warpedInOutNum);
+            DBUTask.DBUTaskObj dBUMessages = new DBUTask.DBUTaskObj(messages, "Message Updater", "Client", messagesNum, null);
+            DBUTask.DBUTaskObj dBUPicturess = new DBUTask.DBUTaskObj(pictures, "Picture Updater", "Client", picturesNum, null);
+            DBUTask.DBUTaskObj dBUDistress = new DBUTask.DBUTaskObj(distress, "Distress Signal Updater", "Client", distressNum, null);
+            DBUTask.DBUTaskObj dBUWarpedInOut = new DBUTask.DBUTaskObj(warpedInOut, "Warped In & Out Updater", "Client", warpedInOutNum, null);
 
             DBUTask.runningTasks.Add(dBUMessages);
             DBUTask.runningTasks.Add(dBUPicturess);
@@ -157,7 +160,7 @@ namespace DiscordBotUpdates.Modules
             uint listenerNum = DBUTask.dbuTaskNum++;
             Task listener = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID));
 
-            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Client", listenerNum);
+            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Client", listenerNum, null);
 
             DBUTask.runningTasks.Add(dbuListener);
         }

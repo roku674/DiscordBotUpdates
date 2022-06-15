@@ -10,9 +10,16 @@ namespace DiscordBotUpdates.Modules
         {
             internal bool isCancelled = false;
 
-            public DBUTaskObj(Task _task, string _purpose, string _owner, uint _id)
+            public DBUTaskObj(Task _task, string _purpose, string _owner, uint _id, System.DateTime? _timeStarted)
             {
-                timeStarted = System.DateTime.Now;
+                if (_timeStarted != null)
+                {
+                    timeStarted = (System.DateTime)_timeStarted;
+                }
+                else
+                {
+                    timeStarted = System.DateTime.Now;
+                }
 
                 id = _id;
                 owner = _owner;
