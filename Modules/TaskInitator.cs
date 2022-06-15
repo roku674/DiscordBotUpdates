@@ -24,7 +24,6 @@ namespace DiscordBotUpdates.Modules
             "Leaderkiller","Probation", "Taterchip", "WW3"
         };
 
-        private FileSystemWatcher watcher;
         private Discord.IMessageChannel pictureChannel;
 
         public static bool building { get; set; }
@@ -41,7 +40,7 @@ namespace DiscordBotUpdates.Modules
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
-            watcher = new FileSystemWatcher();
+            FileSystemWatcher watcher = new FileSystemWatcher();
 
             if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
             {
@@ -55,7 +54,9 @@ namespace DiscordBotUpdates.Modules
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = "*.*";
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
+
+            watcher.Changed += new FileSystemEventHandler(OnChatChanged);
+
             watcher.EnableRaisingEvents = true;
 
             Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
@@ -189,16 +190,7 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        private async void OnPictureChanged(object sender, FileSystemEventArgs fileSysEvent)
-        {
-            string path = fileSysEvent.FullPath;
-
-            System.Console.WriteLine(Path.GetFileName(path));
-            await pictureChannel.SendFileAsync(path, Path.GetFileName(path));
-            File.Delete(path);
-        }
-
-        private async void OnChanged(object sender, FileSystemEventArgs fileSysEvent)
+        private async void OnChatChanged(object sender, FileSystemEventArgs fileSysEvent)
         {
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
@@ -329,6 +321,15 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
+        }
+
+        private async void OnPictureChanged(object sender, FileSystemEventArgs fileSysEvent)
+        {
+            string path = fileSysEvent.FullPath;
+
+            System.Console.WriteLine(Path.GetFileName(path));
+            await pictureChannel.SendFileAsync(path, Path.GetFileName(path));
+            File.Delete(path);
         }
 
         internal async Task SetAll(bool v)
