@@ -114,7 +114,7 @@ namespace DiscordBotUpdates.Modules
                 }
                 else
                 {
-                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt");
+                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt").Close();
                     await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
                 }
 

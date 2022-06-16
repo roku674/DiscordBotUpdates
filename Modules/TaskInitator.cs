@@ -140,7 +140,7 @@ namespace DiscordBotUpdates.Modules
         /// <returns></returns>
         public async Task TextUpdater(uint id, ulong channelID, string type)
         {
-            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
             await Task.Delay(500);
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -150,7 +150,7 @@ namespace DiscordBotUpdates.Modules
             }
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
-            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botUpdatesID);
+            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
 
             for (int i = 0; i < duration; i++)
             {
@@ -181,7 +181,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     File.Create(filePath).Close();
 
-                    await Outprint("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botUpdatesID);
+                    await Outprint("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botCommandsID);
                 }
 
                 if (i == 1)
@@ -191,7 +191,7 @@ namespace DiscordBotUpdates.Modules
 
                 task.ticker++;
             }
-            await Outprint("No Longer Listening for " + type + "!", ChannelID.botUpdatesID);
+            await Outprint("No Longer Listening for " + type + "!", ChannelID.botCommandsID);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
