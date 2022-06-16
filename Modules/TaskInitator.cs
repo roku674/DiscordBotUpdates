@@ -335,6 +335,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (building)
                 {
+                    //col died
                     if (lastLine.Contains("was finally abandoned"))
                     {
                         System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
@@ -350,6 +351,7 @@ namespace DiscordBotUpdates.Modules
                             '\n' + "Adding redome time to Discord Calendar!", ChannelID.buildingID);
                     }
 
+                    //aa
                     if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
                     {
                         await Outprint(lastLine, ChannelID.buildingID);
@@ -357,6 +359,12 @@ namespace DiscordBotUpdates.Modules
                     else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
                     {
                         await Outprint(lastLine, ChannelID.buildingID);
+                    }
+
+                    //Domed new colony
+                    if (lastLine.Contains("founding"))
+                    {
+                        await Outprint("We've Colonized a Wew World!", ChannelID.buildingID);
                     }
                 }
             }
