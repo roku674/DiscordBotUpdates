@@ -229,6 +229,25 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
+        /// <summary>
+        /// If the file can be opened for exclusive access it means that the file
+        /// is no longer locked by another process.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        private static bool IsFileReady(string filename)
+        {
+            try
+            {
+                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
+                    return inputStream.Length > 0;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
+
         private async void OnChatChanged(object sender, FileSystemEventArgs fileSysEvent)
         {
             string filePath = fileSysEvent.FullPath;
@@ -361,10 +380,16 @@ namespace DiscordBotUpdates.Modules
                         await Outprint(lastLine, ChannelID.buildingID);
                     }
 
-                    //Domed new colony
+                    //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await Outprint("We've Colonized a Wew World!", ChannelID.buildingID);
+                        await Outprint("We've Colonized a New World!", ChannelID.buildingID);
+                    }
+                    else if (lastLine.Contains("adding another dome"))
+                    {
+                        await Outprint("We've Created a New Double Dome!", ChannelID.buildingID);
+                        await Outprint("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
+                        //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
                     }
                 }
             }

@@ -63,7 +63,7 @@ namespace DiscordBotUpdates.Modules
         {
             Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
 
-            Discord.EmbedBuilder embed = new Discord.EmbedBuilder()
+            Discord.EmbedBuilder embedBuilder = new Discord.EmbedBuilder()
             {
                 Title = title,
                 Color = Discord.Color.Green,
@@ -75,7 +75,8 @@ namespace DiscordBotUpdates.Modules
                 },
                 Timestamp = System.DateTimeOffset.Now
             };
-            await channel.SendMessageAsync("", embed: embed.Build());
+            Discord.Embed embeded = embedBuilder.Build();
+            await channel.SendMessageAsync("", embed: embeded);
         }
 
         public static async Task Outprint(string message, ulong channelId)
@@ -88,7 +89,7 @@ namespace DiscordBotUpdates.Modules
         {
             Discord.IVoiceChannel channel = Program.client.GetChannel(channelId) as Discord.IVoiceChannel;
 
-            await channel.SendMessageAsync(message, true);
+            await channel.SendMessageAsync(message, isTTS: true);
         }
     }
 }
