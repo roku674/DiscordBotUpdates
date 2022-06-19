@@ -19,9 +19,9 @@ namespace DiscordBotUpdates.Modules
 
         private string[] enemies =
                 {
-            "Altair","Awmalzo","B-radk.","Dad", "Demon", "Deegs", "DOG-WHISPERER",
-            "Flint", "Meshuggah","McGee","Pluto","Presto", "Revelation",
-            "RepealThe2ndA","Scar-Face"
+            "Altair","Awmalzo","B-radk.","Dad","Darkside", "Demon", "Deegs",
+            "DOG-WHISPERER", "Flint", "Meshuggah","McGee","Pluto","Presto",
+            "Revelation", "RepealThe2ndA","Scar-Face"
         };
 
         private Discord.IMessageChannel pictureChannel;
@@ -29,60 +29,87 @@ namespace DiscordBotUpdates.Modules
         public static bool building { get; set; }
         public static bool distress { get; set; }
         public static bool kombat { get; set; }
-        public static bool serverReset { get; set; }
+        public static bool alerts { get; set; }
 
         /// </summary>
         /// <summary>
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task ChatLogListener(uint id, ulong channelID)
+        public async Task ChatLogListener(uint id, ulong channelID, string owner)
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
             FileSystemWatcher watcher = new FileSystemWatcher();
 
-            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+            if (owner.Equals("Client"))
             {
-                watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
-            }
-            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
-            {
-                watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
-            }
-
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            watcher.Filter = "*.*";
-
-            watcher.Changed += new FileSystemEventHandler(OnChatChanged);
-
-            watcher.EnableRaisingEvents = true;
-
-            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-            //await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
-            System.Console.WriteLine("Sucessfully ran ChatLog Listener!");
-
-            await Task.Delay(2000);
-
-            int taskNum = runningTasks.FindIndex(task => task.id == id);
-            DBUTaskObj task = runningTasks.ElementAt(taskNum);
-
-            for (int i = 0; i < duration; i++)
-            {
-                if (runningTasks[taskNum].isCancelled)
+                if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
                 {
-                    i = duration;
-                    break;
+                    watcher.Path = "C:/Users/ZANDER/StarportGE/ChatLogs";
                 }
-                await Task.Delay(1000);
-
-                task.ticker++;
+                else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+                {
+                    watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
+                }
             }
-            watcher = null;
-            await channel.SendMessageAsync("No longer listening to chat logs!");
-            runningTasks.RemoveAt(taskNum);
-            dbuTaskNum--;
+            else
+            {
+                if (Directory.Exists("H:/My Drive/" + owner + "/StarportGE/ChatLogs"))
+                {
+                    watcher.Path = "H:/My Drive/Probation/StarportGE/ChatLogs";
+                }
+            }
+
+            if (!watcher.Path.Equals(" ") && !string.IsNullOrEmpty(watcher.Path))
+            {
+                System.Console.WriteLine("Found Chatlogs for " + owner);
+                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                     | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                watcher.Filter = "*.*";
+
+                watcher.Changed += new FileSystemEventHandler(OnChatChanged);
+
+                watcher.EnableRaisingEvents = true;
+
+                Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
+                //await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
+                System.Console.WriteLine("Sucessfully ran ChatLog Listener!");
+
+                await Task.Delay(2000);
+
+                int taskNum = runningTasks.FindIndex(task => task.id == id);
+                DBUTaskObj task = runningTasks.ElementAt(taskNum);
+
+                for (int i = 0; i < duration; i++)
+                {
+                    if (runningTasks[taskNum].isCancelled)
+                    {
+                        i = duration;
+                        break;
+                    }
+                    await Task.Delay(1000);
+
+                    if (i == 1)
+                    {
+                        System.Console.WriteLine("ChatLogListener Updater: First pass completed!For " + owner);
+                    }
+
+                    task.ticker++;
+                }
+                watcher = null;
+                await channel.SendMessageAsync("No longer listening to chat logs!");
+                runningTasks.RemoveAt(taskNum);
+                dbuTaskNum--;
+            }
+            else
+            {
+                int taskNum = runningTasks.FindIndex(task => task.id == id);
+                DBUTaskObj task = runningTasks.ElementAt(taskNum);
+                System.Console.WriteLine("Watcher Path Not Found for " + owner + "! Thread was not started!");
+                runningTasks.RemoveAt(taskNum);
+                dbuTaskNum--;
+            }
         }
 
         /// <summary>
@@ -201,7 +228,7 @@ namespace DiscordBotUpdates.Modules
             building = v;
             distress = v;
             kombat = v;
-            serverReset = v;
+            alerts = v;
             await Task.Delay(0);
         }
 
@@ -223,9 +250,9 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
-        internal async Task SetServerReset(bool v)
+        internal async Task SetAlerts(bool v)
         {
-            serverReset = v;
+            alerts = v;
             await Task.Delay(0);
         }
 
@@ -253,7 +280,12 @@ namespace DiscordBotUpdates.Modules
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
 
-            //System.Console.WriteLine("On Changed");
+            bool bot = true;
+            if (filePath.Contains("Users"))
+            {
+                bot = false;
+                //System.Console.WriteLine("On Changed Client Not Bot");
+            }
 
             fileStrArr = await File.ReadAllLinesAsync(filePath);
 
@@ -264,19 +296,41 @@ namespace DiscordBotUpdates.Modules
                 if (kombat)
                 {
                     //warped in
-                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped into"))
+                    if (enemies.Any(s => lastLine.Contains(s)) && (lastLine.Contains("warped into") || lastLine.Contains("entered the system")))
                     {
-                        await Outprint(lastLine, ChannelID.distressCallsID);
-                        await Say(lastLine, ChannelID.slaversOnlyVoiceID);
+                        List<string> enemiesList = enemies.ToList<string>();
+                        string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(Path.GetFileName(filePath) + ": " + lastLine, ChannelID.distressCallsID);
+                        await Say(enemy + " spotted! By " + Path.GetFileName(filePath), ChannelID.slaversOnlyVoiceID);
                     }
                     else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
+                        List<string> enemiesList = allies.ToList<string>();
+                        string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
                         await Outprint(lastLine, ChannelID.distressCallsID);
-                        await Say(lastLine + " because he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                        await Say(enemy + " ran away cause he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                    }
+                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
+                    {
+                        List<string> enemiesList = allies.ToList<string>();
+                        string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(lastLine, ChannelID.slaversID);
+                        await Say(enemy + " landed!", ChannelID.slaversOnlyVoiceID);
+                    }
+                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
+                    {
+                        List<string> enemiesList = allies.ToList<string>();
+                        string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(lastLine, ChannelID.slaversID);
+                        await Say(enemy + " Re-Shielded!", ChannelID.slaversOnlyVoiceID);
                     }
 
                     //shot downs
-                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down"))
+                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot)
                     {
                         List<string> alliesList = allies.ToList<string>();
                         List<string> enemiesList = enemies.ToList<string>();
@@ -284,13 +338,13 @@ namespace DiscordBotUpdates.Modules
                         string ally = alliesList.Find(s => lastLine.Contains(s));
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        if (lastLine.Contains("shot down " + enemy) && lastLine.Contains(ally + " shot down"))
+                        if (lastLine.Contains("shot down " + enemy))
                         {
-                            if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally))
+                            if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
                                 await Outprint("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
                             }
-                            else if (!string.IsNullOrEmpty(ally))
+                            else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
                                 await Outprint("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
                             }
@@ -301,7 +355,7 @@ namespace DiscordBotUpdates.Modules
 
                             await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
                         }
-                        else if (lastLine.Contains("shot down " + ally) && lastLine.Contains(enemy + " shot down"))
+                        else if (lastLine.Contains("shot down " + ally) && !ally.Equals(" "))
                         {
                             await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
                             await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
@@ -332,11 +386,19 @@ namespace DiscordBotUpdates.Modules
                         await Outprint(lastLine, ChannelID.distressCallsID);
                     }
                 }
-                if (serverReset)
+                if (alerts && !bot)
                 {
                     if (lastLine.Contains("Server Alert!"))
                     {
                         await Outprint("@everyone " + lastLine, ChannelID.slaversID);
+                    }
+                    else if (lastLine.Contains("U.N. Hotline"))
+                    {
+                        List<string> alliesList = allies.ToList<string>();
+                        string ally = alliesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(lastLine, ChannelID.slaversID);
+                        await Say(ally + " I see you!", ChannelID.slaversOnlyVoiceID);
                     }
                 }
 
@@ -355,6 +417,7 @@ namespace DiscordBotUpdates.Modules
                 if (building)
                 {
                     //col died
+                    /*
                     if (lastLine.Contains("was finally abandoned"))
                     {
                         System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
@@ -364,12 +427,13 @@ namespace DiscordBotUpdates.Modules
 
                         System.DateTime end = System.DateTime.Now + days3thirtyMin;
 
-                        await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
+                        //await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
 
                         await Outprint(lastLine +
-                            '\n' + "Adding redome time to Discord Calendar!", ChannelID.buildingID);
+                            '\n' + "Add redome time to Discord Calendar!" +
+                            '\n' + end.ToString(), ChannelID.buildingID);
                     }
-
+                    */
                     //aa
                     if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
                     {
@@ -383,11 +447,11 @@ namespace DiscordBotUpdates.Modules
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await Outprint("We've Colonized a New World!", ChannelID.buildingID);
+                        await Outprint(Path.GetFileName(filePath) + " Colonized a New World!", ChannelID.buildingID);
                     }
                     else if (lastLine.Contains("adding another dome"))
                     {
-                        await Outprint("We've Created a New Double Dome!", ChannelID.buildingID);
+                        await Outprint(Path.GetFileName(filePath) + " Created a New Double Dome!", ChannelID.buildingID);
                         await Outprint("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
                     }

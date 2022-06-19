@@ -81,14 +81,17 @@ namespace DiscordBotUpdates.Modules
 
         public static async Task Outprint(string message, ulong channelId)
         {
+            System.Console.WriteLine(message);
+
             Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
             await channel.SendMessageAsync(message);
         }
 
         public static async Task Say(string message, ulong channelId)
         {
-            Discord.IVoiceChannel channel = Program.client.GetChannel(channelId) as Discord.IVoiceChannel;
+            System.Console.WriteLine(message);
 
+            Discord.IVoiceChannel channel = Program.client.GetChannel(channelId) as Discord.IVoiceChannel;
             await channel.SendMessageAsync(message, isTTS: true);
         }
     }

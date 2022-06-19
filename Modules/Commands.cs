@@ -49,7 +49,7 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Echo (BotName)" +
                 '\n' +
-                "    run ListenerChatLog" +
+                "    run ListenerChatLog (Client/Bot Name)" +
                 '\n' +
                 "    run Listener (Listener type)" +
                 '\n' +
@@ -68,7 +68,7 @@ namespace DiscordBotUpdates.Modules
         {
             _ = Task.Run(() => BotUpdaterPost());
             _ = Task.Run(() => ListenerPost("All"));
-            _ = Task.Run(() => ListenerChatLogPost());
+            _ = Task.Run(() => ListenerChatLogPost("All"));
 
             await Task.Delay(33);
         }
@@ -79,8 +79,8 @@ namespace DiscordBotUpdates.Modules
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
             await MessageUpdater(ChannelID.botUpdatesID, "Message Updater", "Client", "botUpdates");
-            await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
-            await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
+            //await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
+            //await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
 
             await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
         }
@@ -132,20 +132,30 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "Kombat: " + TaskInitator.kombat +
                 '\n' +
-                "Server Reset: " + TaskInitator.serverReset);
+                "Server Reset: " + TaskInitator.alerts);
         }
 
         [Command("run ListenerChatLog")]
-        public async Task ListenerChatLogPost()
+        public async Task ListenerChatLogPost([Remainder] string text)
         {
             await ReplyAsync("By Your Command! Listening for Chatlog changes!");
 
-            uint listenerNum = DBUTask.dbuTaskNum++;
-            Task listener = Task.Run(() => init.ChatLogListener(listenerNum, ChannelID.botUpdatesID));
-
-            DBUTask.DBUTaskObj dbuListener = new DBUTask.DBUTaskObj(listener, "Chat Log Listener", "Client", listenerNum, null);
-
-            DBUTask.runningTasks.Add(dbuListener);
+            if (text.Equals("All"))
+            {
+                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+                foreach (string botName in botNames)
+                {
+                    await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", botName);
+                }
+            }
+            else if (botNames.Any(s => text.Contains(s)))
+            {
+                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", text);
+            }
+            else if (text.Equals("Client"))
+            {
+                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+            }
         }
 
         [Command("run Deactivate")]
@@ -189,9 +199,9 @@ namespace DiscordBotUpdates.Modules
                 {
                     await Task.Run(() => init.SetKombat(true));
                 }
-                else if (listener.Equals("serverResets"))
+                else if (listener.Equals("alerts"))
                 {
-                    await Task.Run(() => init.SetServerReset(true));
+                    await Task.Run(() => init.SetAlerts(true));
                 }
                 else if (text.Equals("All"))
                 {
@@ -300,7 +310,7 @@ namespace DiscordBotUpdates.Modules
                 }
                 else if (listener.Equals("serverResets"))
                 {
-                    await Task.Run(() => init.SetServerReset(false));
+                    await Task.Run(() => init.SetAlerts(false));
                 }
                 else if (listener.Equals("All"))
                 {
@@ -308,6 +318,14 @@ namespace DiscordBotUpdates.Modules
                 }
                 await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
             }
+        }
+
+        private async Task ChatLogListener(ulong channelID, string purpose, string owner)
+        {
+            uint listenerNum = DBUTask.dbuTaskNum++;
+            Task task = Task.Run(() => init.ChatLogListener(listenerNum, channelID, owner));
+            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, listenerNum, null));
+            await Task.Delay(500);
         }
 
         private async Task PictureUpdater(ulong channelID, string purpose, string owner)
