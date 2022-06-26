@@ -13,6 +13,7 @@ namespace DiscordBotUpdates.Modules
     {
         private Discord.IMessageChannel pictureChannel;
 
+        public static string lastLand { get; set; }
         public static bool building { get; set; }
         public static bool distress { get; set; }
         public static bool kombat { get; set; }
@@ -289,6 +290,17 @@ namespace DiscordBotUpdates.Modules
             {
                 string lastLine = fileStrArr[fileStrArr.Length - 1];
 
+                if (lastLine.Contains("Landed on ") && lastLine.Contains("world"))
+                {
+                    string temp = lastLine;
+                    string[] tempArr = temp.Split("on");
+                    tempArr = tempArr[1].Split(",");
+                    tempArr[0] = tempArr[0].TrimStart();
+                    tempArr[0] = tempArr[0].Replace("on", "");
+                    tempArr[0] = tempArr[0].Replace("world", "");
+                    lastLand = tempArr[0];
+                }
+
                 if (kombat)
                 {
                     //warped in
@@ -422,7 +434,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     //col died
 
-                    if (lastLine.Contains("was finally abandoned"))
+                    if (lastLine.Contains("was finally abandoned") && !bot)
                     {
                         System.TimeSpan days3 = new System.TimeSpan(0, 72, 0, 0);
                         System.DateTime end = System.DateTime.Now + days3;
@@ -443,15 +455,19 @@ namespace DiscordBotUpdates.Modules
                     {
                         await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                     }
+                    else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
+                    {
+                        await Outprint(lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                    }
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await Outprint(chatLogOwner + " Colonized a New World!", ChannelID.buildingID);
+                        await Outprint(chatLogOwner + " Colonized " + lastLand + "!", ChannelID.buildingID);
                     }
                     else if (lastLine.Contains("adding another dome"))
                     {
-                        await Outprint(chatLogOwner + " Created a New Double Dome!", ChannelID.buildingID);
+                        await Outprint(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.buildingID);
                         await Outprint("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
                     }
