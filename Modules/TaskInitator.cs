@@ -1,29 +1,16 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 
+using StarportObjects;
+using DiscordBotUpdates.Objects;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-        private string[] allies =
-        {
-            "Allie", "Anxiety.jar", "Bodhi", "CaptArcher",
-            "Depression.Wav",  "Devila", "Hokujinn",
-            "Leaderkiller","Probation", "Taterchip", "WW3"
-        };
-
-        private string[] enemies =
-                {
-            "Altair","Awmalzo","B-radk.","Dad","Darkside", "Demon", "Deegs",
-            "DOG-WHISPERER", "Flint", "Meshuggah","McGee","Pluto","Presto",
-            "Revelation", "RepealThe2ndA","Scar-Face"
-        };
-
         private Discord.IMessageChannel pictureChannel;
 
         public static bool building { get; set; }
@@ -36,7 +23,7 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task ChatLogListener(uint id, ulong channelID, string owner)
+        public async Task ChatLogListenerAsync(uint id, ulong channelID, string owner)
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
@@ -68,7 +55,7 @@ namespace DiscordBotUpdates.Modules
                                      | NotifyFilters.FileName | NotifyFilters.DirectoryName;
                 watcher.Filter = "*.*";
 
-                watcher.Changed += new FileSystemEventHandler(OnChatChanged);
+                watcher.Changed += new FileSystemEventHandler(OnChatChangedAsync);
 
                 watcher.EnableRaisingEvents = true;
 
@@ -92,7 +79,7 @@ namespace DiscordBotUpdates.Modules
 
                     if (i == 1)
                     {
-                        System.Console.WriteLine("ChatLogListener Updater: First pass completed!For " + owner);
+                        System.Console.WriteLine("ChatLogListener Updater: First pass completed For " + owner + "!");
                     }
 
                     task.ticker++;
@@ -116,7 +103,7 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the picture updater
         /// </summary>
         /// <returns></returns>
-        public async Task PictureUpdater(uint id, ulong channelID)
+        public async Task PictureUpdaterAsync(uint id, ulong channelID)
         {
             pictureChannel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
             //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
@@ -128,7 +115,7 @@ namespace DiscordBotUpdates.Modules
             pictureWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             pictureWatcher.Filter = "*.*";
-            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChanged);
+            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChangedAsync);
             pictureWatcher.EnableRaisingEvents = true;
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
@@ -165,7 +152,7 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Message Updater
         /// </summary>
         /// <returns></returns>
-        public async Task TextUpdater(uint id, ulong channelID, string type)
+        public async Task TextUpdaterAsync(uint id, ulong channelID, string type)
         {
             //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
             await Task.Delay(500);
@@ -223,7 +210,7 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        internal async Task SetAll(bool v)
+        internal async Task SetAllAsync(bool v)
         {
             building = v;
             distress = v;
@@ -232,25 +219,25 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
-        internal async Task SetBuilding(bool v)
+        internal async Task SetBuildingAsync(bool v)
         {
             building = v;
             await Task.Delay(0);
         }
 
-        internal async Task SetDistress(bool v)
+        internal async Task SetDistressAsync(bool v)
         {
             distress = v;
             await Task.Delay(0);
         }
 
-        internal async Task SetKombat(bool v)
+        internal async Task SetKombatAsync(bool v)
         {
             kombat = v;
             await Task.Delay(0);
         }
 
-        internal async Task SetAlerts(bool v)
+        internal async Task SetAlertsAsync(bool v)
         {
             alerts = v;
             await Task.Delay(0);
@@ -275,10 +262,13 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        private async void OnChatChanged(object sender, FileSystemEventArgs fileSysEvent)
+        private async void OnChatChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
         {
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
+
+            string[] split = Path.GetFileName(filePath).Split(" ");
+            string chatLogOwner = split[0];
 
             bool bot = true;
             if (filePath.Contains("Users"))
@@ -286,8 +276,14 @@ namespace DiscordBotUpdates.Modules
                 bot = false;
                 //System.Console.WriteLine("On Changed Client Not Bot");
             }
-
-            fileStrArr = await File.ReadAllLinesAsync(filePath);
+            try
+            {
+                fileStrArr = await File.ReadAllLinesAsync(filePath);
+            }
+            catch (System.Exception ex)
+            {
+                await Outprint(ex.ToString(), ChannelID.botUpdatesID);
+            }
 
             if (fileStrArr.Length > 0)
             {
@@ -296,33 +292,33 @@ namespace DiscordBotUpdates.Modules
                 if (kombat)
                 {
                     //warped in
-                    if (enemies.Any(s => lastLine.Contains(s)) && (lastLine.Contains("warped into") || lastLine.Contains("entered the system")))
+                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && (lastLine.Contains("warped into") || lastLine.Contains("entered the system")))
                     {
-                        List<string> enemiesList = enemies.ToList<string>();
+                        List<string> enemiesList = Diplomacy.enemies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await Outprint(Path.GetFileName(filePath) + ": " + lastLine, ChannelID.distressCallsID);
-                        await Say(enemy + " spotted! By " + Path.GetFileName(filePath), ChannelID.slaversOnlyVoiceID);
+                        await Outprint(chatLogOwner + ": " + lastLine, ChannelID.distressCallsID);
+                        await Say(enemy + " spotted! By " + chatLogOwner, ChannelID.slaversOnlyVoiceID);
                     }
-                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
+                    else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
-                        List<string> enemiesList = allies.ToList<string>();
+                        List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.distressCallsID);
                         await Say(enemy + " ran away cause he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
                     }
-                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
+                    else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
                     {
-                        List<string> enemiesList = allies.ToList<string>();
+                        List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
                         await Say(enemy + " landed!", ChannelID.slaversOnlyVoiceID);
                     }
-                    else if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
+                    else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
                     {
-                        List<string> enemiesList = allies.ToList<string>();
+                        List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
@@ -330,10 +326,10 @@ namespace DiscordBotUpdates.Modules
                     }
 
                     //shot downs
-                    if (enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot)
+                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot)
                     {
-                        List<string> alliesList = allies.ToList<string>();
-                        List<string> enemiesList = enemies.ToList<string>();
+                        List<string> alliesList = Diplomacy.allies.ToList<string>();
+                        List<string> enemiesList = Diplomacy.enemies.ToList<string>();
 
                         string ally = alliesList.Find(s => lastLine.Contains(s));
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
@@ -370,10 +366,18 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (lastLine.Contains("captured"))
                     {
-                        List<string> alliesList = allies.ToList<string>();
+                        List<string> alliesList = Diplomacy.allies.ToList<string>();
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(ally + " captured a command post!" + '\n' + lastLine, ChannelID.slaversID);
+                        await Say("We've Captured a Command Post!", ChannelID.slaversOnlyVoiceID);
+                    }
+                    else if (lastLine.Contains("You claim ownership of the colony owned by"))
+                    {
+                        List<string> alliesList = Diplomacy.allies.ToList<string>();
+                        string ally = alliesList.Find(s => lastLine.Contains(s));
+
+                        await Outprint(ally + " captured a command post!" + '\n' + fileStrArr[fileStrArr.Length - 2], ChannelID.slaversID);
                         await Say("We've Captured a Command Post!", ChannelID.slaversOnlyVoiceID);
                     }
                 }
@@ -394,7 +398,7 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (lastLine.Contains("U.N. Hotline"))
                     {
-                        List<string> alliesList = allies.ToList<string>();
+                        List<string> alliesList = Diplomacy.allies.ToList<string>();
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
@@ -417,41 +421,37 @@ namespace DiscordBotUpdates.Modules
                 if (building)
                 {
                     //col died
-                    /*
+
                     if (lastLine.Contains("was finally abandoned"))
                     {
-                        System.TimeSpan days3 = new System.TimeSpan(72, 0, 0, 0);
-                        System.TimeSpan days3thirtyMin = new System.TimeSpan(72, 0, 30, 0);
-
-                        System.DateTime start = new System.DateTime() + days3;
-
-                        System.DateTime end = System.DateTime.Now + days3thirtyMin;
+                        System.TimeSpan days3 = new System.TimeSpan(0, 72, 0, 0);
+                        System.DateTime end = System.DateTime.Now + days3;
 
                         //await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
 
                         await Outprint(lastLine +
-                            '\n' + "Add redome time to Discord Calendar!" +
-                            '\n' + end.ToString(), ChannelID.buildingID);
+                            '\n' + "Add redome time to Discord Calendar Unimplemented!" +
+                            '\n' + end.ToString(), ChannelID.redomeID);
                     }
-                    */
+
                     //aa
                     if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
                     {
-                        await Outprint(lastLine, ChannelID.buildingID);
+                        await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                     }
                     else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
                     {
-                        await Outprint(lastLine, ChannelID.buildingID);
+                        await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                     }
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await Outprint(Path.GetFileName(filePath) + " Colonized a New World!", ChannelID.buildingID);
+                        await Outprint(chatLogOwner + " Colonized a New World!", ChannelID.buildingID);
                     }
                     else if (lastLine.Contains("adding another dome"))
                     {
-                        await Outprint(Path.GetFileName(filePath) + " Created a New Double Dome!", ChannelID.buildingID);
+                        await Outprint(chatLogOwner + " Created a New Double Dome!", ChannelID.buildingID);
                         await Outprint("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
                     }
@@ -459,7 +459,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        private async void OnPictureChanged(object sender, FileSystemEventArgs fileSysEvent)
+        private async void OnPictureChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
         {
             string path = fileSysEvent.FullPath;
 

@@ -1,5 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using Discord.Commands;
+using DiscordBotUpdates.Objects;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        private string[] botNames = { "Allie", "Bitcoin", "Probation", "Towlie" };
+        private string[] builderBots = { "Allie" };
+        private string[] kombatBots = { "Bitcoin", "Probation", "Towlie" };
         private string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
         private TaskInitator init = new TaskInitator();
 
@@ -47,7 +49,7 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Deactivate" +
                 '\n' +
-                "    run Echo (BotName)" +
+                "    run Echo (BotName) (Command/Chat) (line)" +
                 '\n' +
                 "    run ListenerChatLog (Client/Bot Name)" +
                 '\n' +
@@ -101,12 +103,20 @@ namespace DiscordBotUpdates.Modules
         [Command("run Echo")]
         public async Task EchoPost([Remainder] string text)
         {
-            if (botNames.Any(s => text.Contains(s)))
+            if (kombatBots.Any(s => text.Contains(s) || builderBots.Any(s => text.Contains(s))))
             {
-                List<string> botNamesList = botNames.ToList<string>();
+                List<string> botNamesList = kombatBots.ToList<string>();
 
                 string bot = botNamesList.Find(s => text.Contains(s));
+
+                if (string.IsNullOrEmpty(bot) || bot.Equals(" "))
+                {
+                    botNamesList = builderBots.ToList<string>();
+                    bot = botNamesList.Find(s => text.Contains(s));
+                }
+
                 string botEcho = text.Replace(bot + " ", "");
+                botEcho.TrimStart();
 
                 if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
                 {
@@ -118,7 +128,7 @@ namespace DiscordBotUpdates.Modules
                     await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
                 }
 
-                await ReplyAsync(bot + " will say: " + botEcho);
+                await ReplyAsync("Sending: " + botEcho + " to " + bot);
             }
         }
 
@@ -143,12 +153,12 @@ namespace DiscordBotUpdates.Modules
             if (text.Equals("All"))
             {
                 await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
-                foreach (string botName in botNames)
+                foreach (string botName in kombatBots)
                 {
                     await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", botName);
                 }
             }
-            else if (botNames.Any(s => text.Contains(s)))
+            else if (kombatBots.Any(s => text.Contains(s)))
             {
                 await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", text);
             }
@@ -171,6 +181,8 @@ namespace DiscordBotUpdates.Modules
             System.TimeSpan lifetime = System.DateTime.Now - Program.dateTime;
             await ReplyAsync("Initiated at " + Program.dateTime + " EST. Has been running for: " +
                 '\n' +
+                lifetime.Days + " Days " +
+                '\n' +
                 lifetime.Hours + " Hours " +
                 '\n' +
                 lifetime.Minutes + " Minutes " +
@@ -189,23 +201,23 @@ namespace DiscordBotUpdates.Modules
 
                 if (listener.Equals("building"))
                 {
-                    await Task.Run(() => init.SetBuilding(true));
+                    await Task.Run(() => init.SetBuildingAsync(true));
                 }
                 else if (listener.Equals("distress"))
                 {
-                    await Task.Run(() => init.SetDistress(true));
+                    await Task.Run(() => init.SetDistressAsync(true));
                 }
                 else if (listener.Equals("kombat"))
                 {
-                    await Task.Run(() => init.SetKombat(true));
+                    await Task.Run(() => init.SetKombatAsync(true));
                 }
                 else if (listener.Equals("alerts"))
                 {
-                    await Task.Run(() => init.SetAlerts(true));
+                    await Task.Run(() => init.SetAlertsAsync(true));
                 }
                 else if (text.Equals("All"))
                 {
-                    await Task.Run(() => init.SetAll(true));
+                    await Task.Run(() => init.SetAllAsync(true));
                 }
                 await ReplyAsync("By Your Command! Listening for " + listener + " updates");
             }
@@ -259,7 +271,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    List<string> botNamesList = botNames.ToList<string>();
+                    List<string> botNamesList = kombatBots.ToList<string>();
                     string bot = botNamesList.Find(s => text.Contains(s));
 
                     if (dbuTask.owner.Equals(bot))
@@ -298,23 +310,23 @@ namespace DiscordBotUpdates.Modules
 
                 if (listener.Equals("building"))
                 {
-                    await Task.Run(() => init.SetBuilding(false));
+                    await Task.Run(() => init.SetBuildingAsync(false));
                 }
                 else if (listener.Equals("distress"))
                 {
-                    await Task.Run(() => init.SetDistress(false));
+                    await Task.Run(() => init.SetDistressAsync(false));
                 }
                 else if (listener.Equals("kombat"))
                 {
-                    await Task.Run(() => init.SetKombat(false));
+                    await Task.Run(() => init.SetKombatAsync(false));
                 }
                 else if (listener.Equals("serverResets"))
                 {
-                    await Task.Run(() => init.SetAlerts(false));
+                    await Task.Run(() => init.SetAlertsAsync(false));
                 }
                 else if (listener.Equals("All"))
                 {
-                    await Task.Run(() => init.SetAll(false));
+                    await Task.Run(() => init.SetAllAsync(false));
                 }
                 await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
             }
@@ -323,7 +335,7 @@ namespace DiscordBotUpdates.Modules
         private async Task ChatLogListener(ulong channelID, string purpose, string owner)
         {
             uint listenerNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.ChatLogListener(listenerNum, channelID, owner));
+            Task task = Task.Run(() => init.ChatLogListenerAsync(listenerNum, channelID, owner));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, listenerNum, null));
             await Task.Delay(500);
         }
@@ -331,7 +343,7 @@ namespace DiscordBotUpdates.Modules
         private async Task PictureUpdater(ulong channelID, string purpose, string owner)
         {
             uint picturesNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.PictureUpdater(picturesNum, channelID));
+            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum, channelID));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
             await Task.Delay(500);
         }
@@ -339,15 +351,15 @@ namespace DiscordBotUpdates.Modules
         private async Task MessageUpdater(ulong channelID, string purpose, string owner, string type)
         {
             uint id = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.TextUpdater(id, channelID, type));
+            Task task = Task.Run(() => init.TextUpdaterAsync(id, channelID, type));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
             await Task.Delay(500);
         }
 
         private string SecondsToTime(uint seconds)
         {
-            System.TimeSpan timespan = new System.TimeSpan(0, 0, (int)seconds);
-            string timeSpanString = timespan.Hours + ":" + timespan.Minutes + ":" + timespan.Seconds + "";
+            System.TimeSpan timespan = new System.TimeSpan(0, 0, 0, (int)seconds);
+            string timeSpanString = timespan.Days + " Days:" + timespan.Hours + ":" + timespan.Minutes + ":" + timespan.Seconds + "";
             return timeSpanString;
         }
     }
