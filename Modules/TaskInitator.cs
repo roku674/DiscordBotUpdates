@@ -394,7 +394,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
 
-                if (distress)
+                if (distress && !bot)
                 {
                     ///Console.WriteLine("Distress");
                     if (lastLine.Contains("***") && lastLine.Contains("landed"))
@@ -434,30 +434,33 @@ namespace DiscordBotUpdates.Modules
                 {
                     //col died
 
-                    if (lastLine.Contains("was finally abandoned") && !bot)
+                    if (!bot)
                     {
-                        System.TimeSpan days3 = new System.TimeSpan(0, 72, 0, 0);
-                        System.DateTime end = System.DateTime.Now + days3;
+                        if (lastLine.Contains("was finally abandoned"))
+                        {
+                            System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
+                            System.DateTime days3 = System.DateTime.Now + days3TimeSpan;
 
-                        //await CreateCalendarEvent(start, end, lastLine, ChannelID.buildingID);
+                            await CreateCalendarEvent(days3, lastLine, ChannelID.buildingID);
+                            /*
+                            await Outprint(lastLine +
+                                '\n' + "Add redome time to Discord Calendar Unimplemented!" +
+                                '\n' + end.ToString(), ChannelID.redomeID);*/
+                        }
 
-                        await Outprint(lastLine +
-                            '\n' + "Add redome time to Discord Calendar Unimplemented!" +
-                            '\n' + end.ToString(), ChannelID.redomeID);
-                    }
-
-                    //aa
-                    if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5"))
-                    {
-                        await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
-                    }
-                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
-                    {
-                        await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
-                    }
-                    else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
-                    {
-                        await Outprint(lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                        //aa
+                        if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
+                        {
+                            await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                        }
+                        else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
+                        {
+                            await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                        }
+                        else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
+                        {
+                            await Outprint(lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                        }
                     }
 
                     //Domed new colony && dd

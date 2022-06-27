@@ -91,3 +91,8 @@ H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.genruntimeconfig.cache
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Google.Apis.dll
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Auth.PlatformServices.dll
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Auth.dll
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Calendar.v3.dll
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Google.Apis.Core.dll

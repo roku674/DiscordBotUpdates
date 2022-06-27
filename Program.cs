@@ -11,8 +11,35 @@ namespace DiscordBotUpdates
     {
         private static void Main(string[] args)
         {
+            Google.Apis.Auth.OAuth2.UserCredential credential;
+
+            using (System.IO.FileStream stream =
+                new System.IO.FileStream(System.IO.Directory.GetCurrentDirectory() + "/client_secret.json", System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                // The file token.json stores the user's access and refresh tokens, and is created
+                // automatically when the authorization flow completes for the first time.
+                string credPath = System.IO.Directory.GetCurrentDirectory() + "/token.json";
+
+                credential = Google.Apis.Auth.OAuth2.GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    Google.Apis.Auth.OAuth2.GoogleClientSecrets.FromStream(stream).Secrets,
+                    scopes,
+                    "user",
+                    System.Threading.CancellationToken.None,
+                    new Google.Apis.Util.Store.FileDataStore(credPath, true)).Result;
+                System.Console.WriteLine("Credential file saved to: " + credPath);
+            }
+
+            _service = new Google.Apis.Calendar.v3.CalendarService(new Google.Apis.Services.BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+
             new Program().RunBotAsync().GetAwaiter().GetResult();
         }
+
+        private static string[] scopes = { Google.Apis.Calendar.v3.CalendarService.Scope.Calendar };
+        private static string ApplicationName = "DiscordBotUpdates";
 
         private static System.DateTime _dateTime;
 
@@ -20,11 +47,13 @@ namespace DiscordBotUpdates
         private static DiscordSocketClient _client;
 
         private static CommandService _commands;
+        private static Google.Apis.Calendar.v3.CalendarService _service;
         private System.IServiceProvider _services;
 
         public static CommandService commands { get => _commands; set => _commands = value; }
         public static DiscordSocketClient client { get => _client; set => _client = value; }
         public static System.DateTime dateTime { get => _dateTime; set => _dateTime = value; }
+        public static Google.Apis.Calendar.v3.CalendarService service { get => _service; set => _service = value; }
 
         public async Task RunBotAsync()
         {
