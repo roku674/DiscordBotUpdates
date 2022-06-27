@@ -52,7 +52,7 @@ namespace DiscordBotUpdates.Modules
         public static uint dbuTaskNum { get => _dbuTaskNum; set => _dbuTaskNum = value; }
         public static List<DBUTaskObj> runningTasks { get => _runningTasks; set => _runningTasks = value; }
 
-        public static async Task CreateCalendarEvent(System.DateTime startTime, string summary, ulong channelId)
+        public static async Task CreateCalendarEvent(System.DateTime startTime, string title, string description, ulong channelId)
         {
             Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
             request.TimeMin = System.DateTime.Now;
@@ -69,11 +69,32 @@ namespace DiscordBotUpdates.Modules
 
             ev.Start = start;
             ev.End = end;
-            ev.Description = summary;
+            ev.Summary = title;
+            ev.Description = description;
 
             string calendarId = "primary";
             _ = Program.service.Events.Insert(ev, calendarId).Execute();
-            System.Console.WriteLine("Calendar Event Posted!");
+
+            System.Random random = new System.Random();
+            int num = random.Next(1, 4);  // creates a number between 1 and 12
+
+            switch (num)
+            {
+                case 1:
+                    System.Console.WriteLine("Redome Calendar Event Posted Better show up to redome it before Niggas with Oranges!");
+                    break;
+
+                case 2:
+                    System.Console.WriteLine("Redome Calendar Event Posted!");
+                    break;
+
+                case 3:
+                    System.Console.WriteLine("I added a redome to your calendar!");
+                    break;
+
+                default:
+                    break;
+            }
 
             await Outprint("Calendar Event Updated!", channelId);
         }

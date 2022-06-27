@@ -440,8 +440,12 @@ namespace DiscordBotUpdates.Modules
                         {
                             System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
                             System.DateTime days3 = System.DateTime.Now + days3TimeSpan;
+                            string[] temp = lastLine.Split("colony");
+                            temp = temp[1].Split("was");
 
-                            await CreateCalendarEvent(days3, lastLine, ChannelID.buildingID);
+                            string title = temp[0];
+
+                            await CreateCalendarEvent(days3, title, lastLine, ChannelID.buildingID);
                             /*
                             await Outprint(lastLine +
                                 '\n' + "Add redome time to Discord Calendar Unimplemented!" +
