@@ -292,13 +292,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (lastLine.Contains("Landed on ") && lastLine.Contains("world"))
                 {
-                    string temp = lastLine;
-                    string[] tempArr = temp.Split("on");
-                    tempArr = tempArr[1].Split(",");
-                    tempArr[0] = tempArr[0].TrimStart();
-                    tempArr[0] = tempArr[0].Replace("on", "");
-                    tempArr[0] = tempArr[0].Replace("world", "");
-                    lastLand = tempArr[0];
+                    lastLand = Algorithms.StringManipulation.GetBetween(lastLine, "on", "world");
                 }
 
                 if (kombat)
@@ -310,7 +304,7 @@ namespace DiscordBotUpdates.Modules
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(chatLogOwner + ": " + lastLine, ChannelID.distressCallsID);
-                        await Say(enemy + " spotted! By " + chatLogOwner, ChannelID.slaversOnlyVoiceID);
+                        await Say(enemy + " spotted! By " + chatLogOwner, ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
@@ -318,7 +312,7 @@ namespace DiscordBotUpdates.Modules
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.distressCallsID);
-                        await Say(enemy + " ran away cause he's a bitch nigga", ChannelID.slaversOnlyVoiceID);
+                        await Say(enemy + " ran away cause he's a bitch nigga", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
                     {
@@ -326,7 +320,7 @@ namespace DiscordBotUpdates.Modules
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
-                        await Say(enemy + " landed!", ChannelID.slaversOnlyVoiceID);
+                        await Say(enemy + " landed!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
                     {
@@ -334,7 +328,7 @@ namespace DiscordBotUpdates.Modules
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
-                        await Say(enemy + " Re-Shielded!", ChannelID.slaversOnlyVoiceID);
+                        await Say(enemy + " Re-Shielded!", ChannelID.voiceSlaversOnlyID);
                     }
 
                     //shot downs
@@ -361,12 +355,12 @@ namespace DiscordBotUpdates.Modules
                                 await Outprint(lastLine, ChannelID.slaversID);
                             }
 
-                            await Say(enemy + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                            await Say(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
                         }
                         else if (lastLine.Contains("shot down " + ally) && !ally.Equals(" "))
                         {
                             await Outprint(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
-                            await Say(ally + " Has Been Slain!", ChannelID.slaversOnlyVoiceID);
+                            await Say(ally + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
                         }
                     }
 
@@ -374,7 +368,7 @@ namespace DiscordBotUpdates.Modules
                     if (lastLine.Contains("was invaded"))
                     {
                         await Outprint(lastLine, ChannelID.recapListID);
-                        await Say("We've Lost a Command Post!", ChannelID.slaversOnlyVoiceID);
+                        await Say("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (lastLine.Contains("captured"))
                     {
@@ -382,7 +376,7 @@ namespace DiscordBotUpdates.Modules
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(ally + " captured a command post!" + '\n' + lastLine, ChannelID.slaversID);
-                        await Say("We've Captured a Command Post!", ChannelID.slaversOnlyVoiceID);
+                        await Say("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (lastLine.Contains("You claim ownership of the colony owned by"))
                     {
@@ -390,7 +384,7 @@ namespace DiscordBotUpdates.Modules
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(ally + " captured a command post!" + '\n' + fileStrArr[fileStrArr.Length - 2], ChannelID.slaversID);
-                        await Say("We've Captured a Command Post!", ChannelID.slaversOnlyVoiceID);
+                        await Say("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                     }
                 }
 
@@ -414,7 +408,7 @@ namespace DiscordBotUpdates.Modules
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
                         await Outprint(lastLine, ChannelID.slaversID);
-                        await Say(ally + " I see you!", ChannelID.slaversOnlyVoiceID);
+                        await Say(ally + " I see you!", ChannelID.voiceSlaversOnlyID);
                     }
                 }
 
@@ -440,10 +434,8 @@ namespace DiscordBotUpdates.Modules
                         {
                             System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
                             System.DateTime days3 = System.DateTime.Now + days3TimeSpan;
-                            string[] temp = lastLine.Split("colony");
-                            temp = temp[1].Split("was");
 
-                            string title = temp[0];
+                            string title = Algorithms.StringManipulation.GetBetween(lastLine, "colony", "was");
 
                             await CreateCalendarEvent(days3, title, lastLine, ChannelID.buildingID);
                             /*
@@ -456,26 +448,31 @@ namespace DiscordBotUpdates.Modules
                         if ((lastLine.Contains("Advanced Architecture lvl 4") && !lastLine.Contains("Des")) || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
                         {
                             await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
                         }
                         else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
                         {
                             await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
                         }
                         else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
                         {
                             await Outprint(lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
                         }
                     }
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await Outprint(chatLogOwner + " Colonized " + lastLand + "!", ChannelID.buildingID);
+                        await Outprint(chatLogOwner + " colonized " + lastLand + "!", ChannelID.buildingID);
+                        await Say(chatLogOwner + " colonized a new world!", ChannelID.voiceBuildingID);
                     }
                     else if (lastLine.Contains("adding another dome"))
                     {
                         await Outprint(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.buildingID);
                         await Outprint("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
+                        await Say(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.voiceSlaversOnlyID);
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
                     }
                 }
