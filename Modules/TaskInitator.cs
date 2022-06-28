@@ -453,7 +453,7 @@ namespace DiscordBotUpdates.Modules
                         }
 
                         //aa
-                        if (lastLine.Contains("Advanced Architecture lvl 4") || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
+                        if ((lastLine.Contains("Advanced Architecture lvl 4") && !lastLine.Contains("Des")) || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
                         {
                             await Outprint(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                         }
