@@ -10,8 +10,7 @@ namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        private string[] builderBots = { "Allie" };
-        private string[] kombatBots = { "Bitcoin", "Probation", "Towlie" };
+        private string[] cylons = { "Allie", "Bitcoin", "Probation", "Towlie" };
         private string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
         private TaskInitator init = new TaskInitator();
 
@@ -103,17 +102,18 @@ namespace DiscordBotUpdates.Modules
         [Command("run Echo")]
         public async Task EchoPost([Remainder] string text)
         {
-            if (kombatBots.Any(s => text.Contains(s) || builderBots.Any(s => text.Contains(s))))
+            if (cylons.Any(s => text.Contains(s)))
             {
-                List<string> botNamesList = kombatBots.ToList<string>();
+                List<string> botNamesList = cylons.ToList<string>();
 
                 string bot = botNamesList.Find(s => text.Contains(s));
 
+                /*
                 if (string.IsNullOrEmpty(bot) || bot.Equals(" "))
                 {
                     botNamesList = builderBots.ToList<string>();
                     bot = botNamesList.Find(s => text.Contains(s));
-                }
+                }*/
 
                 string botEcho = text.Replace(bot + " ", "");
                 botEcho.TrimStart();
@@ -153,12 +153,12 @@ namespace DiscordBotUpdates.Modules
             if (text.Equals("All"))
             {
                 await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
-                foreach (string botName in kombatBots)
+                foreach (string botName in cylons)
                 {
                     await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", botName);
                 }
             }
-            else if (kombatBots.Any(s => text.Contains(s)))
+            else if (cylons.Any(s => text.Contains(s)))
             {
                 await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", text);
             }
@@ -271,7 +271,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    List<string> botNamesList = kombatBots.ToList<string>();
+                    List<string> botNamesList = cylons.ToList<string>();
                     string bot = botNamesList.Find(s => text.Contains(s));
 
                     if (dbuTask.owner.Equals(bot))

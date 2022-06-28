@@ -52,11 +52,51 @@ namespace DiscordBotUpdates.Modules
         public static uint dbuTaskNum { get => _dbuTaskNum; set => _dbuTaskNum = value; }
         public static List<DBUTaskObj> runningTasks { get => _runningTasks; set => _runningTasks = value; }
 
-        public static async Task CreateCalendarEvent(System.DateTime start, System.DateTime end, string summary, ulong channelId)
+        public static async Task CreateCalendarEvent(System.DateTime startTime, string title, string description, ulong channelId)
         {
-            Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
-            await Outprint("Calendar Updater Unimplemented!", channelId);
-            //channel.
+            Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
+            request.TimeMin = System.DateTime.Now;
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.OrderBy = Google.Apis.Calendar.v3.EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            Google.Apis.Calendar.v3.Data.Event ev = new Google.Apis.Calendar.v3.Data.Event();
+            Google.Apis.Calendar.v3.Data.EventDateTime start = new Google.Apis.Calendar.v3.Data.EventDateTime();
+            Google.Apis.Calendar.v3.Data.EventDateTime end = new Google.Apis.Calendar.v3.Data.EventDateTime();
+
+            start.DateTime = startTime;
+            end.DateTime = startTime + new System.TimeSpan(0, 5, 0);
+
+            ev.Start = start;
+            ev.End = end;
+            ev.Summary = title;
+            ev.Description = description;
+
+            string calendarId = "primary";
+            _ = Program.service.Events.Insert(ev, calendarId).Execute();
+
+            System.Random random = new System.Random();
+            int num = random.Next(1, 4);  // creates a number between 1 and 12
+
+            switch (num)
+            {
+                case 1:
+                    System.Console.WriteLine("Redome Calendar Event Posted Better show up to redome it before Niggas with Oranges!");
+                    break;
+
+                case 2:
+                    System.Console.WriteLine("Redome Calendar Event Posted!");
+                    break;
+
+                case 3:
+                    System.Console.WriteLine("I added a redome to your calendar!");
+                    break;
+
+                default:
+                    break;
+            }
+
+            await Outprint("Calendar Event Updated!", channelId);
         }
 
         public static async Task CelebrateUser(string title, string message, ulong channelId)

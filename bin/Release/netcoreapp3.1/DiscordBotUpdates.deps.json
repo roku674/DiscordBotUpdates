@@ -9,6 +9,8 @@
       "DiscordBotUpdates/1.0.0": {
         "dependencies": {
           "Discord.Net": "3.7.2",
+          "Google.Apis.Auth": "1.57.0",
+          "Google.Apis.Calendar.v3": "1.57.0.2696",
           "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "System.Reactive.Reference": "5.0.0.0"
         },
@@ -99,6 +101,56 @@
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {
             "assemblyVersion": "3.7.2.0",
             "fileVersion": "3.7.2.0"
+          }
+        }
+      },
+      "Google.Apis/1.57.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.57.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.dll": {
+            "assemblyVersion": "1.57.0.0",
+            "fileVersion": "1.57.0.0"
+          }
+        }
+      },
+      "Google.Apis.Auth/1.57.0": {
+        "dependencies": {
+          "Google.Apis": "1.57.0",
+          "Google.Apis.Core": "1.57.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Auth.PlatformServices.dll": {
+            "assemblyVersion": "1.57.0.0",
+            "fileVersion": "1.57.0.0"
+          },
+          "lib/netstandard2.0/Google.Apis.Auth.dll": {
+            "assemblyVersion": "1.57.0.0",
+            "fileVersion": "1.57.0.0"
+          }
+        }
+      },
+      "Google.Apis.Calendar.v3/1.57.0.2696": {
+        "dependencies": {
+          "Google.Apis": "1.57.0",
+          "Google.Apis.Auth": "1.57.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Calendar.v3.dll": {
+            "assemblyVersion": "1.57.0.2696",
+            "fileVersion": "1.57.0.2696"
+          }
+        }
+      },
+      "Google.Apis.Core/1.57.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Core.dll": {
+            "assemblyVersion": "1.57.0.0",
+            "fileVersion": "1.57.0.0"
           }
         }
       },
@@ -231,6 +283,34 @@
       "sha512": "sha512-pYCd6ET44ADaNiyEw82TaJnR7TKYHfrKCytWFWMPL5faJhoh260avZn3Hwunlf331lEQ0f4K1CujPkQbNuq7kQ==",
       "path": "discord.net.websocket/3.7.2",
       "hashPath": "discord.net.websocket.3.7.2.nupkg.sha512"
+    },
+    "Google.Apis/1.57.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-30V7T2G98HQjfI6y0AzBOXJUu7j7Trl1ZzH0e6DKmUaXNCvdMPwxApjBKESeTOkWjMdFRmkpAGyDEoxim+Xq1A==",
+      "path": "google.apis/1.57.0",
+      "hashPath": "google.apis.1.57.0.nupkg.sha512"
+    },
+    "Google.Apis.Auth/1.57.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xNY9rprn3iih1H5dymbxxHeZggn4bMYKtYdwO3Yr+Cj06f6xrxnL0LqEi1bmG46LBY2FlVMy9NKIF99tZ6ZBZg==",
+      "path": "google.apis.auth/1.57.0",
+      "hashPath": "google.apis.auth.1.57.0.nupkg.sha512"
+    },
+    "Google.Apis.Calendar.v3/1.57.0.2696": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wOkQFjN8xDGunhkbW+ZrDPmKXAyV7dM9YTmrBgTY0ZBzK9+32ut9n73DTuK68afmdqienw7y+hiHtlWWX71sSQ==",
+      "path": "google.apis.calendar.v3/1.57.0.2696",
+      "hashPath": "google.apis.calendar.v3.1.57.0.2696.nupkg.sha512"
+    },
+    "Google.Apis.Core/1.57.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5wuY88PewhfaWsk37EEHcwU6CFqxpaWMm20ogWLXmaCw8NbTlV/Lna0gjtr2jpTLgb3mtVa7RC1AG/mgi530SQ==",
+      "path": "google.apis.core/1.57.0",
+      "hashPath": "google.apis.core.1.57.0.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection/6.0.0": {
       "type": "package",
