@@ -52,7 +52,7 @@ namespace DiscordBotUpdates.Modules
         public static uint dbuTaskNum { get => _dbuTaskNum; set => _dbuTaskNum = value; }
         public static List<DBUTaskObj> runningTasks { get => _runningTasks; set => _runningTasks = value; }
 
-        public static async Task CreateCalendarEvent(System.DateTime startTime, string title, string description, ulong channelId)
+        public static async Task CreateCalendarEventAsync(System.DateTime startTime, string title, string description, ulong channelId)
         {
             Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
             request.TimeMin = System.DateTime.Now;
@@ -78,25 +78,28 @@ namespace DiscordBotUpdates.Modules
             System.Random random = new System.Random();
             int num = random.Next(1, 4);  // creates a number between 1 and 12
 
+            string message = "";
             switch (num)
             {
                 case 1:
-                    System.Console.WriteLine("Redome Calendar Event Posted Better show up to redome it before Niggas with Oranges!");
+                    message = "Redome Calendar Event Posted Better show up to redome it before Niggas with Oranges!";
+                    System.Console.WriteLine(message);
                     break;
 
                 case 2:
-                    System.Console.WriteLine("Redome Calendar Event Posted!");
+                    message = "Redome Calendar Event Posted!";
+                    System.Console.WriteLine(message);
                     break;
 
                 case 3:
-                    System.Console.WriteLine("I added a redome to your calendar!");
+                    message = "I added a redome to your calendar!";
+                    System.Console.WriteLine(message);
                     break;
 
                 default:
                     break;
             }
-
-            await Outprint("Calendar Event Updated!", channelId);
+            await OutprintAsync(message, Objects.ChannelID.botUpdatesID);
         }
 
         public static async Task CelebrateUser(string title, string message, ulong channelId)
@@ -119,7 +122,7 @@ namespace DiscordBotUpdates.Modules
             await channel.SendMessageAsync("", embed: embeded);
         }
 
-        public static async Task Outprint(string message, ulong channelId)
+        public static async Task OutprintAsync(string message, ulong channelId)
         {
             System.Console.WriteLine(message);
 
@@ -127,7 +130,13 @@ namespace DiscordBotUpdates.Modules
             await channel.SendMessageAsync(message);
         }
 
-        public static async Task Say(string message, ulong channelId)
+        public static async Task OutprintFileAsync(string path, ulong channelId)
+        {
+            Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
+            await channel.SendFileAsync(path, System.IO.Path.GetFileName(path));
+        }
+
+        public static async Task SayAsync(string message, ulong channelId)
         {
             System.Console.WriteLine(message);
 

@@ -1,9 +1,1 @@
- Command Build Omicron Piscium IX
- Omicron Piscium X Type0 Greenhouse
- Omicron Piscium VI Type1 Oceanic
- Omicron Piscium VI Type2 Oceanic
- Omicron Piscium VI Type3 Oceanic
- Omicron Piscium VI Type4 Oceanic
- Omicron Piscium VI Type5 Oceanic
- Omicron Piscium VI Type6 Oceanic
- Omicron Piscium VI Type7 Oceanic
+ 

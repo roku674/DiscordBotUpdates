@@ -9,7 +9,7 @@
         private static readonly ulong _nuetrinoID = 943753103042289675;
         private static readonly ulong _recapListID = 941389866137169920;
         private static readonly ulong _redomeID = 989310361666740244;
-        private static readonly ulong _slaversID = 966941055444467743;
+        private static readonly ulong _slaversID = 991797227209113691;
         private static readonly ulong _voiceBuildingID = 941391455002431488;
         private static readonly ulong _voiceInvadingID = 941396278271688734;
         private static readonly ulong _voiceKombatID = 941391368117440544;

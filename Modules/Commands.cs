@@ -54,6 +54,12 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Listener (Listener type)" +
                 '\n' +
+                "    request planetTallies" +
+                 '\n' +
+                "    request planetsCaptured #" +
+                 '\n' +
+                "    request planetsLost #" +
+                '\n' +
                 "    run StopAllTasks" +
                 '\n' +
                 "    run StopClientTasks" +
@@ -221,6 +227,32 @@ namespace DiscordBotUpdates.Modules
                 }
                 await ReplyAsync("By Your Command! Listening for " + listener + " updates");
             }
+        }
+
+        [Command("request planetTallies")]
+        public async Task PlanetTalliesGet()
+        {
+            await DBUTask.OutprintAsync(
+                "We Lost: " + TaskInitator.planetsLost + '\n'
+                + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+        }
+
+        [Command("run planetsCaptured")]
+        public async Task PlanetsCapturedChange([Remainder] string text)
+        {
+            text = text.Trim();
+            TaskInitator.planetsKaptured = uint.Parse(text);
+
+            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+        }
+
+        [Command("run planetsLost")]
+        public async Task PlanetsLostChange([Remainder] string text)
+        {
+            text = text.Trim();
+            TaskInitator.planetsLost = uint.Parse(text);
+
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.slaversID);
         }
 
         [Command("request RunningTasks")]

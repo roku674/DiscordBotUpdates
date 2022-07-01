@@ -107,7 +107,7 @@ namespace DiscordBotUpdates
                 if (!result.IsSuccess)
                 {
                     System.Console.WriteLine(result.ErrorReason + " | " + context.Message);
-                    await Modules.DBUTask.Outprint(result.ErrorReason + " | " + context.Message, Objects.ChannelID.botCommandsID);
+                    await Modules.DBUTask.OutprintAsync(result.ErrorReason + " | " + context.Message, Objects.ChannelID.botCommandsID);
                 }
             }
         }
