@@ -20,6 +20,10 @@ namespace DiscordBotUpdates.Modules
         public static bool alerts { get; set; }
         public static uint planetsLost { get; set; }
         public static uint planetsKaptured { get; set; }
+        public static uint alliesSlain { get; set; }
+        public static uint enemiesSlain { get; set; }
+        public static uint colsAbandoned { get; set; }
+        public static uint landings { get; set; }
 
         /// </summary>
         /// <summary>
@@ -205,11 +209,29 @@ namespace DiscordBotUpdates.Modules
                 {
                     System.Console.WriteLine(type + " Updater: First pass completed!");
                 }
-                if (System.DateTime.Now == System.DateTime.Today.AddDays(1).AddSeconds(-1))
+
+                System.TimeSpan timeSpan = System.DateTime.Now - System.DateTime.Today.AddDays(1).AddSeconds(-1);
+
+                //System.Console.WriteLine(timeSpan.Hours + ":" + timeSpan.Minutes + ":" + timeSpan.Seconds);
+
+                if (timeSpan.Hours == 0 && timeSpan.Minutes == 0 && timeSpan.Seconds == 0)
                 {
                     await OutprintAsync(
-                        "We Lost: " + planetsLost + '\n'
-                        + "We Kaptured: " + planetsKaptured, ChannelID.slaversID);
+                        "@everyone Daily Report: " + '\n'
+                        + "We Lost: " + planetsLost + '\n'
+                        + "We Kaptured: " + planetsKaptured + '\n'
+                        + "Allies Slain: " + alliesSlain + '\n'
+                        + "Enemies Slain: " + enemiesSlain + '\n'
+                        + "landings: " + landings + '\n'
+                        + "Colonies Abanonded: " + colsAbandoned + " (They just went out for milk and cigarettes)"
+                        , ChannelID.slaversID);
+
+                    planetsKaptured = 0;
+                    planetsLost = 0;
+                    alliesSlain = 0;
+                    enemiesSlain = 0;
+                    landings = 0;
+                    colsAbandoned = 0;
                 }
 
                 task.ticker++;
@@ -356,9 +378,11 @@ namespace DiscordBotUpdates.Modules
 
                         if (lastLine.Contains("shot down " + enemy))
                         {
+                            enemiesSlain++;
                             if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
                                 await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
+                                enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
@@ -373,6 +397,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (lastLine.Contains("shot down " + ally) && !ally.Equals(" "))
                         {
+                            alliesSlain++;
                             await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
                             await SayAsync(ally + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
                         }
@@ -415,6 +440,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (lastLine.Contains("*** Distress"))
                     {
+                        landings++;
                         string colonyName = Algorithms.StringManipulation.GetBetween(lastLine, "from", "on");
                         if (colonyName.Contains("(") && colonyName.Contains("."))
                         {
@@ -435,6 +461,7 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (lastLine.Contains("***") && lastLine.Contains("landed"))
                     {
+                        landings++;
                         await OutprintAsync(lastLine, ChannelID.distressCallsID);
                     }
                 }
@@ -480,6 +507,7 @@ namespace DiscordBotUpdates.Modules
                             string title = Algorithms.StringManipulation.GetBetween(lastLine, "colony", "was");
 
                             await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingID);
+                            colsAbandoned++;
                             /*
                             await Outprint(lastLine +
                                 '\n' + "Add redome time to Discord Calendar Unimplemented!" +

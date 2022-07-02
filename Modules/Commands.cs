@@ -50,15 +50,17 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Echo (BotName) (Command/Chat) (line)" +
                 '\n' +
+                "    run/request Info" +
+                '\n' +
                 "    run ListenerChatLog (Client/Bot Name)" +
                 '\n' +
                 "    run Listener (Listener type)" +
                 '\n' +
                 "    request planetTallies" +
                  '\n' +
-                "    request planetsCaptured #" +
+                "    run planetsCaptured #" +
                  '\n' +
-                "    request planetsLost #" +
+                "    run planetsLost #" +
                 '\n' +
                 "    run StopAllTasks" +
                 '\n' +
@@ -136,6 +138,37 @@ namespace DiscordBotUpdates.Modules
 
                 await ReplyAsync("Sending: " + botEcho + " to " + bot);
             }
+        }
+
+        [Command("request Info")]
+        public async Task InfoGet()
+        {
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost + '\n'
+                        + "We Kaptured: " + TaskInitator.planetsKaptured + '\n'
+                        + "Allies Slain: " + TaskInitator.alliesSlain + '\n'
+                        + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
+                        + "landings: " + TaskInitator.landings + '\n'
+                        + "Colonies Abanonded: " + TaskInitator.colsAbandoned, ChannelID.botCommandsID);
+        }
+
+        [Command("run Info")]
+        public async Task InfoPost([Remainder] string text)
+        {
+            string[] temp = text.Split(" ");
+
+            for (int i = 0; i < temp.Length; i++)
+            {
+                temp[i] = temp[i].Trim();
+            }
+
+            TaskInitator.planetsLost = uint.Parse(temp[0]);
+            TaskInitator.planetsKaptured = uint.Parse(temp[1]);
+            TaskInitator.alliesSlain = uint.Parse(temp[2]);
+            TaskInitator.enemiesSlain = uint.Parse(temp[3]);
+            TaskInitator.landings = uint.Parse(temp[4]);
+            TaskInitator.colsAbandoned = uint.Parse(temp[5]);
+
+            await InfoGet();
         }
 
         [Command("request Listeners")]
@@ -233,7 +266,7 @@ namespace DiscordBotUpdates.Modules
         public async Task PlanetTalliesGet()
         {
             await DBUTask.OutprintAsync(
-                "We Lost: " + TaskInitator.planetsLost + '\n'
+                "We Lauwst: " + TaskInitator.planetsLost + '\n'
                 + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
         }
 
@@ -243,7 +276,7 @@ namespace DiscordBotUpdates.Modules
             text = text.Trim();
             TaskInitator.planetsKaptured = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.botCommandsID);
         }
 
         [Command("run planetsLost")]
@@ -252,7 +285,7 @@ namespace DiscordBotUpdates.Modules
             text = text.Trim();
             TaskInitator.planetsLost = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.slaversID);
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
         }
 
         [Command("request RunningTasks")]
