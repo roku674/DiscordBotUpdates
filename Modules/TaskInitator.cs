@@ -216,13 +216,17 @@ namespace DiscordBotUpdates.Modules
 
                 if (timeSpan.Hours == 0 && timeSpan.Minutes == 0 && timeSpan.Seconds == 0)
                 {
+                    if ((planetsKaptured - planetsLost) >= 20)
+                    {
+                        await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversID);
+                    }
                     await OutprintAsync(
                         "@everyone Daily Report: " + '\n'
-                        + "We Lost: " + planetsLost + '\n'
+                        + "We Lawst: " + planetsLost + '\n'
                         + "We Kaptured: " + planetsKaptured + '\n'
                         + "Allies Slain: " + alliesSlain + '\n'
                         + "Enemies Slain: " + enemiesSlain + '\n'
-                        + "landings: " + landings + '\n'
+                        + "Landings: " + landings + '\n'
                         + "Colonies Abanonded: " + colsAbandoned + " (They just went out for milk and cigarettes)"
                         , ChannelID.slaversID);
 
@@ -375,6 +379,15 @@ namespace DiscordBotUpdates.Modules
 
                         string ally = alliesList.Find(s => lastLine.Contains(s));
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
+
+                        if (ally == null)
+                        {
+                            ally = " ";
+                        }
+                        if (enemy == null)
+                        {
+                            enemy = " ";
+                        }
 
                         if (lastLine.Contains("shot down " + enemy))
                         {

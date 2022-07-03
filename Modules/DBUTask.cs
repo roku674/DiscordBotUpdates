@@ -97,6 +97,8 @@ namespace DiscordBotUpdates.Modules
                     break;
 
                 default:
+                    message = "Redome Calendar Event Posted!";
+                    System.Console.WriteLine(message);
                     break;
             }
             await OutprintAsync(message, Objects.ChannelID.botUpdatesID);
