@@ -545,7 +545,7 @@ namespace DiscordBotUpdates.Modules
                             //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
                         }
                         //if bio3
-                        else if (lastLine.Contains("completed work on the Biodome Level 2."))
+                        else if (lastLine.Contains("completed work on the Biodome Level 3."))
                         {
                             await OutprintAsync(lastLine, ChannelID.buildingID);
                             colsBuilt++;

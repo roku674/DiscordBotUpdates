@@ -101,7 +101,9 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine(message);
                     break;
             }
-            await OutprintAsync(message, Objects.ChannelID.botUpdatesID);
+            await OutprintAsync(message + '\n'
+                + title + '\n'
+                + "Redome Time: " + startTime.ToString() + " EST", Objects.ChannelID.redomeID);
         }
 
         public static async Task CelebrateUser(string title, string message, ulong channelId)
