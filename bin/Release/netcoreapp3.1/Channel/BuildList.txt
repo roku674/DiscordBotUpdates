@@ -1,4 +1,4 @@
-
+53 Ceti IIc (108,697)
 
 Kappa Reticuli VIIb [156,596]
 Kappa Reticuli VIIa [156,596]
@@ -17,3 +17,4 @@ Theta Reticuli Vc [176,566]
 Theta Reticuli IIIc [176,566]
 Theta Reticuli IIIa [176,566]
 Theta Reticuli VIIa [176,566]
+

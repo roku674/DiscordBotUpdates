@@ -148,7 +148,8 @@ namespace DiscordBotUpdates.Modules
                         + "Allies Slain: " + TaskInitator.alliesSlain + '\n'
                         + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
                         + "landings: " + TaskInitator.landings + '\n'
-                        + "Colonies Abanonded: " + TaskInitator.colsAbandoned, ChannelID.botCommandsID);
+                        + "Colonies Abanonded: " + TaskInitator.colsAbandoned + '\n'
+                        + "Colonies Built: " + TaskInitator.colsBuilt, ChannelID.botCommandsID);
         }
 
         [Command("run Info")]
@@ -167,6 +168,7 @@ namespace DiscordBotUpdates.Modules
             TaskInitator.enemiesSlain = uint.Parse(temp[3]);
             TaskInitator.landings = uint.Parse(temp[4]);
             TaskInitator.colsAbandoned = uint.Parse(temp[5]);
+            TaskInitator.colsBuilt = uint.Parse(temp[6]);
 
             await InfoGet();
         }

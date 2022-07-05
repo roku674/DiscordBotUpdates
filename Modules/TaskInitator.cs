@@ -23,6 +23,7 @@ namespace DiscordBotUpdates.Modules
         public static uint alliesSlain { get; set; }
         public static uint enemiesSlain { get; set; }
         public static uint colsAbandoned { get; set; }
+        public static uint colsBuilt { get; set; }
         public static uint landings { get; set; }
 
         /// </summary>
@@ -220,6 +221,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversID);
                     }
+
                     await OutprintAsync(
                         "@everyone Daily Report: " + '\n'
                         + "We Lawst: " + planetsLost + '\n'
@@ -227,8 +229,8 @@ namespace DiscordBotUpdates.Modules
                         + "Allies Slain: " + alliesSlain + '\n'
                         + "Enemies Slain: " + enemiesSlain + '\n'
                         + "Landings: " + landings + '\n'
-                        + "Colonies Abanonded: " + colsAbandoned + " (They just went out for milk and cigarettes)"
-                        , ChannelID.slaversID);
+                        + "Colonies Abanonded: " + colsAbandoned + " (They just went out for milk and cigarettes)" + '\n'
+                        + "Colonies Built: " + colsBuilt, ChannelID.slaversID);
 
                     planetsKaptured = 0;
                     planetsLost = 0;
@@ -526,9 +528,8 @@ namespace DiscordBotUpdates.Modules
                                 '\n' + "Add redome time to Discord Calendar Unimplemented!" +
                                 '\n' + end.ToString(), ChannelID.redomeID);*/
                         }
-
                         //aa
-                        if ((lastLine.Contains("Advanced Architecture lvl 4") && !lastLine.Contains("Des")) || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
+                        else if ((lastLine.Contains("Advanced Architecture lvl 4") && !lastLine.Contains("Des")) || lastLine.Contains("Advanced Architecture lvl 5") && !(lastLine.Contains("Arc")))
                         {
                             await OutprintAsync(lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                             //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
@@ -542,6 +543,12 @@ namespace DiscordBotUpdates.Modules
                         {
                             await OutprintAsync(lastLine + " Decent Huge Metro col", ChannelID.buildingID);
                             //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
+                        }
+                        //if bio3
+                        else if (lastLine.Contains("completed work on the Biodome Level 2."))
+                        {
+                            await OutprintAsync(lastLine, ChannelID.buildingID);
+                            colsBuilt++;
                         }
                     }
 
