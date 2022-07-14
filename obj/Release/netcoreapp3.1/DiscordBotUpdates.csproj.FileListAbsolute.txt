@@ -88,6 +88,7 @@ H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\System.Reactive.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\System.Reactive.xml
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.GeneratedMSBuildEditorConfig.editorconfig
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.AssemblyInfoInputs.cache
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.AssemblyInfo.cs

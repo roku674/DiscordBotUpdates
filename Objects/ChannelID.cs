@@ -2,6 +2,7 @@
 {
     internal static class ChannelID
     {
+        private static readonly ulong _alliedChatID = 979776850236702720;
         private static readonly ulong _botCommandsID = 986833502135779328;
         private static readonly ulong _botUpdatesID = 986837157819858944;
         private static readonly ulong _buildingID = 977770208183848990;
@@ -15,6 +16,7 @@
         private static readonly ulong _voiceKombatID = 941391368117440544;
         private static readonly ulong _voiceSlaversOnlyID = 941134782048395369;
 
+        public static ulong alliedChatID => _alliedChatID;
         public static ulong botCommandsID => _botCommandsID;
         public static ulong botUpdatesID => _botUpdatesID;
         public static ulong buildingID => _buildingID;

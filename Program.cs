@@ -39,7 +39,7 @@ namespace DiscordBotUpdates
         }
 
         private static string[] scopes = { Google.Apis.Calendar.v3.CalendarService.Scope.Calendar };
-        private static string ApplicationName = "DiscordBotUpdates";
+        private static readonly string ApplicationName = "DiscordBotUpdates";
 
         private static System.DateTime _dateTime;
 
