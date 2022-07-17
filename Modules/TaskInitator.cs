@@ -395,7 +395,7 @@ namespace DiscordBotUpdates.Modules
                     }
 
                     //shot downs
-                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot)
+                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot && !lastLine.Contains("shouts"))
                     {
                         List<string> alliesList = Diplomacy.allies.ToList<string>();
                         List<string> enemiesList = Diplomacy.enemies.ToList<string>();
