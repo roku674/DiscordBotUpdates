@@ -664,19 +664,19 @@ namespace DiscordBotUpdates.Modules
             {
                 return "<@530669734413205505> ";
             }
-            else if (line.Contains("Dev"))
+            else if (line.Contains("Dev") || line.Contains("DEV"))
             {
                 return "<@276593195767431168> ";
             }
-            else if (line.Contains("lk"))
+            else if (line.Contains("lk") || line.Contains("LK"))
             {
                 return "<@429101973145387019> ";
             }
-            else if (line.Contains("Banana"))
+            else if (line.Contains("Banana") || line.Contains("BANANA"))
             {
                 return "<@535618193251762176> ";
             }
-            else if (line.Contains("Jum"))
+            else if (line.Contains("Jum") || line.Contains("JUM"))
             {
                 return "<@941167776163323944> ";
             }
