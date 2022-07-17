@@ -50,9 +50,9 @@ namespace DiscordBotUpdates.Modules
             }
             else
             {
-                if (Directory.Exists("H:/My Drive/" + owner + "/StarportGE/ChatLogs"))
+                if (Directory.Exists("G:/My Drive/" + owner + "/StarportGE/ChatLogs"))
                 {
-                    watcher.Path = "H:/My Drive/Probation/StarportGE/ChatLogs";
+                    watcher.Path = "G:/My Drive/Probation/StarportGE/ChatLogs";
                 }
             }
 
@@ -184,26 +184,37 @@ namespace DiscordBotUpdates.Modules
 
                 await Task.Delay(1000);
 
-                string filePath = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
-                string fileAsText = "";
-
-                if (File.Exists(filePath))
+                string filePath = "";
+                if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt"))
                 {
-                    fileAsText = await File.ReadAllTextAsync(filePath, default);
-
-                    if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
-                    {
-                        Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-                        await channel.SendMessageAsync(fileAsText); //let it rain
-
-                        await File.WriteAllTextAsync(filePath, " "); //now clear it out
-                    }
+                    filePath = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
                 }
-                else
+                else if (Directory.Exists("G:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt"))
                 {
-                    File.Create(filePath).Close();
+                    filePath = "G:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
+                }
+                if (!string.IsNullOrEmpty(filePath) && !filePath.Equals(""))
+                {
+                    string fileAsText = "";
 
-                    await OutprintAsync("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botCommandsID);
+                    if (File.Exists(filePath))
+                    {
+                        fileAsText = await File.ReadAllTextAsync(filePath, default);
+
+                        if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
+                        {
+                            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
+                            await channel.SendMessageAsync(fileAsText); //let it rain
+
+                            await File.WriteAllTextAsync(filePath, " "); //now clear it out
+                        }
+                    }
+                    else
+                    {
+                        File.Create(filePath).Close();
+
+                        await OutprintAsync("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botCommandsID);
+                    }
                 }
 
                 if (i == 1)
@@ -460,23 +471,26 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListID);
                         await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
 
-                        string experience = Algorithms.StringManipulation.GetBetween(lastLine, "lost", "experience");
-                        experience = experience.Replace(",", "");
-                        experience = experience.Trim();
-                        uint exp = 50001;
+                        if (lastLine.Contains("experience"))
+                        {
+                            string experience = Algorithms.StringManipulation.GetBetween(lastLine, "lost", "experience");
+                            experience = experience.Replace(",", "");
+                            experience = experience.Trim();
+                            uint exp = 50001;
 
-                        try
-                        {
-                            exp = uint.Parse(experience);
-                        }
-                        catch (System.Exception e)
-                        {
-                            await OutprintAsync(experience + '\n' + e.ToString(), ChannelID.botUpdatesID);
-                        }
+                            try
+                            {
+                                exp = uint.Parse(experience);
+                            }
+                            catch (System.Exception e)
+                            {
+                                await OutprintAsync(experience + '\n' + e.ToString(), ChannelID.botUpdatesID);
+                            }
 
-                        if (exp > 50000)
-                        {
-                            planetsLost++;
+                            if (exp > 50000)
+                            {
+                                planetsLost++;
+                            }
                         }
                     }
                     else if (lastLine.Contains("captured the colony"))
@@ -645,6 +659,10 @@ namespace DiscordBotUpdates.Modules
             if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Freeman"))
             {
                 return "<@139536795858632705> ";
+            }
+            else if (line.Contains("Avacado") || line.Contains("Archer") || line.Contains("Archie"))
+            {
+                return "<@530669734413205505> ";
             }
             else if (line.Contains("Dev"))
             {
