@@ -232,13 +232,17 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversID);
                     }
-                    if (colsBuilt > 10)
+                    if (colsBuilt >= 10)
                     {
                         await OutprintAsync("https://tenor.com/view/construct-construction-nail-and-hammer-build-worker-gif-13899535", ChannelID.slaversID);
                     }
-                    if (enemiesSlain > 10)
+                    if (enemiesSlain >= 10)
                     {
                         await OutprintAsync("https://tenor.com/view/starwars-the-force-awakens-xwing-air-combat-gif-4813295", ChannelID.slaversID);
+                    }
+                    if (alliesSlain >= 10)
+                    {
+                        await OutprintAsync("https://tenor.com/view/press-f-pay-respect-coffin-burial-gif-12855021", ChannelID.slaversID);
                     }
 
                     await OutprintAsync(
@@ -523,7 +527,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
 
-                if (distress && !bot)
+                if (distress)
                 {
                     if (lastLine.Contains("*** Distress"))
                     {
