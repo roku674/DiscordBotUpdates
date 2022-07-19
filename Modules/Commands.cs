@@ -87,7 +87,7 @@ namespace DiscordBotUpdates.Modules
         {
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
-            await MessageUpdater(ChannelID.botUpdatesID, "Message Updater", "Client", "botUpdates");
+            await MessageUpdater("Message Updater", "Client");
             //await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
             //await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
 
@@ -410,15 +410,15 @@ namespace DiscordBotUpdates.Modules
         private async Task PictureUpdater(ulong channelID, string purpose, string owner)
         {
             uint picturesNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum, channelID));
+            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
             await Task.Delay(500);
         }
 
-        private async Task MessageUpdater(ulong channelID, string purpose, string owner, string type)
+        private async Task MessageUpdater(string purpose, string owner)
         {
             uint id = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.TextUpdaterAsync(id, channelID, type));
+            Task task = Task.Run(() => init.TextUpdaterAsync(id));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
             await Task.Delay(500);
         }

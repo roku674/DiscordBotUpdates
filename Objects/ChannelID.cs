@@ -10,7 +10,9 @@
         private static readonly ulong _nuetrinoID = 943753103042289675;
         private static readonly ulong _recapListID = 941389866137169920;
         private static readonly ulong _redomeID = 989310361666740244;
+        private static readonly ulong _scoutReportsID = 962444379245649940;
         private static readonly ulong _slaversID = 991797227209113691;
+        private static readonly ulong _targetsID = 941389899108593734;
         private static readonly ulong _voiceBuildingID = 941391455002431488;
         private static readonly ulong _voiceInvadingID = 941396278271688734;
         private static readonly ulong _voiceKombatID = 941391368117440544;
@@ -24,10 +26,14 @@
         public static ulong nuetrinoID => _nuetrinoID;
         public static ulong recapListID => _recapListID;
         public static ulong redomeID => _redomeID;
-        public static ulong slaversID => _slaversID;
+        public static ulong scoutReportsID => _scoutReportsID;
+        public static ulong slaversID => _slaversID; 
+        public static ulong targetsID => _targetsID;
         public static ulong voiceBuildingID => _voiceBuildingID;
         public static ulong voiceInvadingID => _voiceInvadingID;
         public static ulong voiceKombatID => _voiceKombatID;
         public static ulong voiceSlaversOnlyID => _voiceSlaversOnlyID;
+
+        
     }
 }

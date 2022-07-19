@@ -11,7 +11,7 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-        private Discord.IMessageChannel pictureChannel;
+
 
         public static string lastLand { get; set; }
         public static bool building { get; set; }
@@ -111,20 +111,11 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the picture updater
         /// </summary>
         /// <returns></returns>
-        public async Task PictureUpdaterAsync(uint id, ulong channelID)
+        public async Task PictureUpdaterAsync(uint id)
         {
-            pictureChannel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
             //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
             System.Console.WriteLine("Sucessfully Initiated Picture Listener!");
             await Task.Delay(2000);
-
-            FileSystemWatcher pictureWatcher = new FileSystemWatcher();
-            pictureWatcher.Path = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures";
-            pictureWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            pictureWatcher.Filter = "*.*";
-            pictureWatcher.Changed += new FileSystemEventHandler(OnPictureChangedAsync);
-            pictureWatcher.EnableRaisingEvents = true;
 
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -142,8 +133,48 @@ namespace DiscordBotUpdates.Modules
                     i = duration;
                     break;
                 }
-                await Task.Delay(1000);
 
+                await Task.Delay(1000);
+                string[] paths =
+                {
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Building",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Distress",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets"
+                };
+
+                for(int j = 0; j < paths.Length; j++)
+                {
+                    string[] pictures = Directory.GetFiles(paths[j]);
+                    if (pictures.Length > 0)
+                    {
+                        foreach (string picture in pictures)
+                        {
+                            System.Console.WriteLine(Path.GetFileName(paths[j]));
+                            switch (j)
+                            {
+                                case 0:
+                                    await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                    break;
+                                case 1:
+                                    await OutprintFileAsync(picture, ChannelID.buildingID);
+                                    break;
+                                case 2:
+                                    await OutprintFileAsync(picture, ChannelID.distressCallsID);
+                                    break;
+                                case 3:
+                                    await OutprintFileAsync(picture, ChannelID.targetsID);
+                                    break;
+                                default:
+                                    await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                    break;
+                            }
+                            
+                            File.Delete(picture);
+                        }
+                    }
+                }
+                
                 if (i == 1)
                 {
                     System.Console.WriteLine("Picture Updater: First pass completed!");
@@ -151,7 +182,7 @@ namespace DiscordBotUpdates.Modules
 
                 task.ticker++;
             }
-            await pictureChannel.SendMessageAsync("No Longer Listening for Pictures Updates!");
+            await OutprintAsync("No Longer Listening for Pictures Updates!", ChannelID.botCommandsID);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
@@ -160,7 +191,7 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Message Updater
         /// </summary>
         /// <returns></returns>
-        public async Task TextUpdaterAsync(uint id, ulong channelID, string type)
+        public async Task TextUpdaterAsync(uint id)
         {
             //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
             await Task.Delay(500);
@@ -172,7 +203,7 @@ namespace DiscordBotUpdates.Modules
             }
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
-            System.Console.WriteLine("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
+            System.Console.WriteLine("Sucessfully Initiated Text Listener!", ChannelID.botCommandsID);
 
             for (int i = 0; i < duration; i++)
             {
@@ -184,42 +215,49 @@ namespace DiscordBotUpdates.Modules
 
                 await Task.Delay(1000);
 
-                string filePath = "";
-                if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt"))
+                if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
                 {
-                    filePath = "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
-                }
-                else if (Directory.Exists("G:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt"))
-                {
-                    filePath = "G:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel/" + type + ".txt";
-                }
-                if (!string.IsNullOrEmpty(filePath) && !filePath.Equals(""))
-                {
-                    string fileAsText = "";
+                    string[] filePaths = Directory.GetFiles("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel");
 
-                    if (File.Exists(filePath))
+                    for (int j = 0; j < filePaths.Length; j++)
                     {
-                        fileAsText = await File.ReadAllTextAsync(filePath, default);
-
-                        if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
+                        if (!string.IsNullOrEmpty(filePaths[j]) && !filePaths[j].Equals(""))
                         {
-                            Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
-                            await channel.SendMessageAsync(fileAsText); //let it rain
+                            string fileAsText = "";
 
-                            await File.WriteAllTextAsync(filePath, " "); //now clear it out
+                            if (File.Exists(filePaths[j]))
+                            {
+                                fileAsText = await File.ReadAllTextAsync(filePaths[j], default);
+
+                                if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
+                                {
+                                    if (Path.GetFileName(filePaths[j]).Equals("botUpdates.txt"))
+                                    {
+                                        await OutprintAsync(fileAsText, ChannelID.botUpdatesID);
+                                    }
+                                    else if (Path.GetFileName(filePaths[j]).Equals("building.txt"))
+                                    {
+                                        await OutprintAsync(fileAsText, ChannelID.buildingID);
+                                    }
+                                    else if (Path.GetFileName(filePaths[j]).Equals("distress.txt"))
+                                    {
+                                        await OutprintAsync(fileAsText, ChannelID.distressCallsID);
+                                    }
+                                    else if (Path.GetFileName(filePaths[j]).Equals("scoutReports.txt"))
+                                    {
+                                        await OutprintAsync(fileAsText, ChannelID.scoutReportsID);
+                                    }
+                                    await File.WriteAllTextAsync(filePaths[j], " "); //now clear it out
+                                }
+                            }
                         }
                     }
-                    else
-                    {
-                        File.Create(filePath).Close();
-
-                        await OutprintAsync("Created " + type + ".txt ! Recommend Rerunning!", ChannelID.botCommandsID);
-                    }
                 }
+                
 
                 if (i == 1)
                 {
-                    System.Console.WriteLine(type + " Updater: First pass completed!");
+                    System.Console.WriteLine("Text Updater: First pass completed!");
                 }
 
                 System.TimeSpan timeSpan = System.DateTime.Now - System.DateTime.Today.AddDays(1).AddSeconds(-1);
@@ -266,7 +304,7 @@ namespace DiscordBotUpdates.Modules
 
                 task.ticker++;
             }
-            await OutprintAsync("No Longer Listening for " + type + "!", ChannelID.botCommandsID);
+            await OutprintAsync("No Longer Listening for Text Updates!", ChannelID.botCommandsID);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
@@ -647,15 +685,6 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-        }
-
-        private async void OnPictureChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
-        {
-            string path = fileSysEvent.FullPath;
-
-            System.Console.WriteLine(Path.GetFileName(path));
-            await pictureChannel.SendFileAsync(path, Path.GetFileName(path));
-            File.Delete(path);
         }
 
         private string AtUser(string line)
