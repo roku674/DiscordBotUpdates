@@ -7,6 +7,7 @@
         private static readonly ulong _botUpdatesID = 986837157819858944;
         private static readonly ulong _buildingID = 977770208183848990;
         private static readonly ulong _distressCallsID = 941795796523819048;
+        private static readonly ulong _enemySightingsID = 999454210116563126;
         private static readonly ulong _nuetrinoID = 943753103042289675;
         private static readonly ulong _recapListID = 941389866137169920;
         private static readonly ulong _redomeID = 989310361666740244;
@@ -23,6 +24,7 @@
         public static ulong botUpdatesID => _botUpdatesID;
         public static ulong buildingID => _buildingID;
         public static ulong distressCallsID => _distressCallsID;
+        public static ulong enemySightingsID => _enemySightingsID;
         public static ulong nuetrinoID => _nuetrinoID;
         public static ulong recapListID => _recapListID;
         public static ulong redomeID => _redomeID;
@@ -34,6 +36,6 @@
         public static ulong voiceKombatID => _voiceKombatID;
         public static ulong voiceSlaversOnlyID => _voiceSlaversOnlyID;
 
-        
+
     }
 }

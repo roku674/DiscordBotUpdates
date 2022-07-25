@@ -11,8 +11,6 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
-
-
         public static string lastLand { get; set; }
         public static bool building { get; set; }
         public static bool distress { get; set; }
@@ -223,31 +221,31 @@ namespace DiscordBotUpdates.Modules
                     {
                         if (!string.IsNullOrEmpty(filePaths[j]) && !filePaths[j].Equals(""))
                         {
-                            string fileAsText = "";
 
                             if (File.Exists(filePaths[j]))
                             {
-                                fileAsText = await File.ReadAllTextAsync(filePaths[j], default);
+                                string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[j], default);
 
-                                if (!string.IsNullOrEmpty(fileAsText) && fileAsText != " ")
+                                if (fileAsArr.Length >0)
                                 {
                                     if (Path.GetFileName(filePaths[j]).Equals("botUpdates.txt"))
                                     {
-                                        await OutprintAsync(fileAsText, ChannelID.botUpdatesID);
+                                        await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
                                     }
                                     else if (Path.GetFileName(filePaths[j]).Equals("building.txt"))
                                     {
-                                        await OutprintAsync(fileAsText, ChannelID.buildingID);
+                                        await OutprintAsync(fileAsArr, ChannelID.buildingID);
                                     }
                                     else if (Path.GetFileName(filePaths[j]).Equals("distress.txt"))
                                     {
-                                        await OutprintAsync(fileAsText, ChannelID.distressCallsID);
+                                        await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
                                     }
                                     else if (Path.GetFileName(filePaths[j]).Equals("scoutReports.txt"))
                                     {
-                                        await OutprintAsync(fileAsText, ChannelID.scoutReportsID);
+                                        await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
                                     }
                                     await File.WriteAllTextAsync(filePaths[j], " "); //now clear it out
+                                    System.Console.WriteLine(filePaths[j] + " cleared!");
                                 }
                             }
                         }
@@ -408,7 +406,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.enemies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine, ChannelID.distressCallsID);
+                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " spotted! By " + chatLogOwner, ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
@@ -416,7 +414,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
+                        await OutprintAsync("@everyone " + lastLine, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " ran away cause he's a bitch nigga", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
@@ -424,7 +422,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.distressCallsID);
+                        await OutprintAsync(lastLine, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " landed!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
@@ -432,7 +430,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.slaversID);
+                        await OutprintAsync(lastLine, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " Re-Shielded!", ChannelID.voiceSlaversOnlyID);
                     }
 
@@ -510,6 +508,7 @@ namespace DiscordBotUpdates.Modules
                     //invasions
                     if (lastLine.Contains("was invaded and taken"))
                     {
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.distressCallsID);
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListID);
                         await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
 

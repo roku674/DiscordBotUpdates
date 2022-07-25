@@ -140,6 +140,23 @@ namespace DiscordBotUpdates.Modules
                 await channel.SendMessageAsync(message);
             }
         }
+        public static async Task OutprintAsync(string[] messages, ulong channelId)
+        {
+            for(int i = 0; i < messages.Length; i++)
+            {
+                System.Console.WriteLine(messages[i]);
+                if (messages[i].Contains("shouts") || messages[i].Contains("radios") || messages[i].Contains("tells"))
+                {
+                    Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesID) as Discord.IMessageChannel;
+                    await channel.SendMessageAsync(messages[i]);
+                }
+                else
+                {
+                    Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
+                    await channel.SendMessageAsync(messages[i]);
+                }
+            }        
+        }
 
         public static async Task OutprintFileAsync(string path, ulong channelId)
         {
