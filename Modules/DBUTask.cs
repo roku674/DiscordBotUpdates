@@ -155,7 +155,7 @@ namespace DiscordBotUpdates.Modules
                     Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
                     await channel.SendMessageAsync(messages[i]);
                 }
-            }        
+            }
         }
 
         public static async Task OutprintFileAsync(string path, ulong channelId)
