@@ -211,47 +211,7 @@ namespace DiscordBotUpdates.Modules
                     break;
                 }
 
-                await Task.Delay(1000);
-
-                if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
-                {
-                    string[] filePaths = Directory.GetFiles("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel");
-
-                    for (int j = 0; j < filePaths.Length; j++)
-                    {
-                        if (!string.IsNullOrEmpty(filePaths[j]) && !filePaths[j].Equals(""))
-                        {
-
-                            if (File.Exists(filePaths[j]))
-                            {
-                                string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[j], default);
-
-                                if (fileAsArr.Length >0)
-                                {
-                                    if (Path.GetFileName(filePaths[j]).Equals("botUpdates.txt"))
-                                    {
-                                        await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
-                                    }
-                                    else if (Path.GetFileName(filePaths[j]).Equals("building.txt"))
-                                    {
-                                        await OutprintAsync(fileAsArr, ChannelID.buildingID);
-                                    }
-                                    else if (Path.GetFileName(filePaths[j]).Equals("distress.txt"))
-                                    {
-                                        await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
-                                    }
-                                    else if (Path.GetFileName(filePaths[j]).Equals("scoutReports.txt"))
-                                    {
-                                        await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
-                                    }
-                                    await File.WriteAllTextAsync(filePaths[j], " "); //now clear it out
-                                    System.Console.WriteLine(filePaths[j] + " cleared!");
-                                }
-                            }
-                        }
-                    }
-                }
-                
+                await Task.Delay(1000);                
 
                 if (i == 1)
                 {
@@ -300,11 +260,75 @@ namespace DiscordBotUpdates.Modules
                     colsBuilt = 0;
                 }
 
+                if(i % 10 == 0)
+                {
+                    _ = Task.Run(() => RunThroughText());
+                }
+                
+
                 task.ticker++;
             }
+
             await OutprintAsync("No Longer Listening for Text Updates!", ChannelID.botCommandsID);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
+        }
+
+        private async Task RunThroughText()
+        {
+            if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
+            {
+                string[] filePaths = Directory.GetFiles("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel");
+
+                for (int i = 0; i < filePaths.Length; i++)
+                {
+                    if (File.Exists(filePaths[i]))
+                    {
+                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
+
+                        if (fileAsArr != null)
+                        {
+                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
+                            {
+                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.buildingID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         internal async Task SetAllAsync(bool v)

@@ -91,4 +91,3 @@ H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Debug\netcoreapp3.1\G
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Debug\netcoreapp3.1\Google.Apis.Auth.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Debug\netcoreapp3.1\Google.Apis.Calendar.v3.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Debug\netcoreapp3.1\Google.Apis.Core.dll
-H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Debug\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
