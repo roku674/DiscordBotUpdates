@@ -12,6 +12,7 @@ namespace DiscordBotUpdates.Modules
     internal class TaskInitator : DBUTask
     {
         public static string lastLand { get; set; }
+        public static string lastSystem { get; set; }
         public static bool building { get; set; }
         public static bool distress { get; set; }
         public static bool kombat { get; set; }
@@ -416,6 +417,10 @@ namespace DiscordBotUpdates.Modules
                     lastLand = Algorithms.StringManipulation.GetBetween(lastLine, "on", ",");
                     lastLand = lastLand.Replace("world ", "");
                 }
+                else if (lastLine.Contains("Warped to"))
+                {
+                    lastSystem = Algorithms.StringManipulation.GetBetween(lastLine, "to", ",");
+                }
                 else if (lastLine.Contains("Taking you directly"))
                 {
                     lastLand = Algorithms.StringManipulation.GetBetween(secondToLastLine, "on", ",");
@@ -430,8 +435,8 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.enemies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine, ChannelID.enemySightingsID);
-                        await SayAsync(enemy + " spotted! By " + chatLogOwner, ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
+                        await SayAsync(enemy + " spotted! By " + chatLogOwner + " in " + lastSystem, ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
@@ -446,7 +451,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.enemySightingsID);
+                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " landed!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
@@ -454,7 +459,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.enemySightingsID);
+                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " Re-Shielded!", ChannelID.voiceSlaversOnlyID);
                     }
 
