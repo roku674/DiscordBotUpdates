@@ -10,7 +10,7 @@ namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        private readonly string[] cylons = { "Allie", "Bitcoin", "Probation", "Towlie" };
+        private readonly string[] cylons = { "Allie", "Bitcoin", "Probation" };
         private readonly string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
         private TaskInitator init = new TaskInitator();
 

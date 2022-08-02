@@ -51,7 +51,7 @@ namespace DiscordBotUpdates.Modules
             {
                 if (Directory.Exists("G:/My Drive/" + owner + "/StarportGE/ChatLogs"))
                 {
-                    watcher.Path = "G:/My Drive/Probation/StarportGE/ChatLogs";
+                    watcher.Path = "G:/My Drive/" + owner + "/StarportGE/ChatLogs";
                 }
             }
 
@@ -139,6 +139,7 @@ namespace DiscordBotUpdates.Modules
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Building",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Distress",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Scout-Reports",                    
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets"
                 };
 
@@ -162,6 +163,9 @@ namespace DiscordBotUpdates.Modules
                                     await OutprintFileAsync(picture, ChannelID.distressCallsID);
                                     break;
                                 case 3:
+                                    await OutprintFileAsync(picture, ChannelID.scoutReportsID);
+                                    break;
+                                case 4:
                                     await OutprintFileAsync(picture, ChannelID.targetsID);
                                     break;
                                 default:
@@ -225,7 +229,11 @@ namespace DiscordBotUpdates.Modules
 
                 if (timeSpan.Hours == 0 && timeSpan.Minutes == 0 && timeSpan.Seconds == 0)
                 {
-                    if (((int)planetsKaptured - (int)planetsLost) >= 20)
+                    if (planetsLost >= 15)
+                    {
+                        await OutprintAsync("https://tenor.com/view/correr-despavoridos-enchufe-tv-huir-invasion-extraterrestre-corran-por-sus-vidas-gif-24995288", ChannelID.slaversID);
+                    }
+                    if (((int)planetsKaptured - (int)planetsLost) >= 15)
                     {
                         await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversID);
                     }
@@ -241,6 +249,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync("https://tenor.com/view/press-f-pay-respect-coffin-burial-gif-12855021", ChannelID.slaversID);
                     }
+      
 
                     await OutprintAsync(
                         "@everyone Daily Report: " + '\n'
@@ -599,22 +608,33 @@ namespace DiscordBotUpdates.Modules
                     {
                         landings++;
                         string colonyName = Algorithms.StringManipulation.GetBetween(lastLine, "from", "on");
+                        string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
                         if (colonyName.Contains("(") && colonyName.Contains("."))
                         {
                             colonyName = Algorithms.StringManipulation.GetBetween(colonyName, ")", ".");
+                            
                         }
 
-                        System.Console.WriteLine("colonyName: " + colonyName);
-                        string path = "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + colonyName + ".png";
-                        if (File.Exists(path))
+                        //System.Console.WriteLine("colonyName: " + colonyName);
+                        string colonyPath = "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + colonyName + ".png";
+                        string planetPath = "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + planetName + ".png";
+
+                        if (File.Exists(colonyPath))
                         {
                             await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
-                            await OutprintFileAsync(path, ChannelID.distressCallsID);
+                            await OutprintFileAsync(colonyPath, ChannelID.distressCallsID);
+                        }
+                        else if (File.Exists(planetPath))
+                        {
+                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
+                            await OutprintFileAsync(planetPath, ChannelID.distressCallsID);
                         }
                         else
                         {
                             await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
                         }
+
+
                     }
                     else if (lastLine.Contains("***") && lastLine.Contains("landed"))
                     {
