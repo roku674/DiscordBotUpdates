@@ -47,13 +47,6 @@ namespace DiscordBotUpdates.Modules
                     watcher.Path = "C:/Users/ALEX/StarportGE/ChatLogs";
                 }
             }
-            else
-            {
-                if (Directory.Exists("G:/My Drive/" + owner + "/StarportGE/ChatLogs"))
-                {
-                    watcher.Path = "G:/My Drive/" + owner + "/StarportGE/ChatLogs";
-                }
-            }
 
             if (!watcher.Path.Equals(" ") && !string.IsNullOrEmpty(watcher.Path))
             {
@@ -139,8 +132,9 @@ namespace DiscordBotUpdates.Modules
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Building",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Distress",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Scout-Reports",                    
-                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets"
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets",
                 };
 
                 for(int j = 0; j < paths.Length; j++)
@@ -163,9 +157,31 @@ namespace DiscordBotUpdates.Modules
                                     await OutprintFileAsync(picture, ChannelID.distressCallsID);
                                     break;
                                 case 3:
-                                    await OutprintFileAsync(picture, ChannelID.scoutReportsID);
+                                    
+                                    if(Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
+                                    {
+                                        if(!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
+                                        {
+                                            File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture));
+                                            await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesID);
+                                            await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                        }
+                                        else
+                                        {
+                                            await OutprintAsync("Colony Picture was not downloaded as there was a duplicate!", ChannelID.planetPicturesID);
+                                            await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                        }                                     
+                                    }
+                                    else
+                                    {
+                                        await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesID);
+                                    }
+                                   
                                     break;
                                 case 4:
+                                    await OutprintFileAsync(picture, ChannelID.scoutReportsID);
+                                    break;
+                                case 5:
                                     await OutprintFileAsync(picture, ChannelID.targetsID);
                                     break;
                                 default:
@@ -401,12 +417,6 @@ namespace DiscordBotUpdates.Modules
             string[] split = Path.GetFileName(filePath).Split(" ");
             string chatLogOwner = split[0];
 
-            bool bot = true;
-            if (filePath.Contains("Users"))
-            {
-                bot = false;
-                //System.Console.WriteLine("On Changed Client Not Bot");
-            }
             try
             {
                 fileStrArr = await File.ReadAllLinesAsync(filePath);
@@ -473,7 +483,7 @@ namespace DiscordBotUpdates.Modules
                     }
 
                     //shot downs
-                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !bot && !lastLine.Contains("shouts"))
+                    if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("shot down") && !lastLine.Contains("shouts"))
                     {
                         List<string> alliesList = Diplomacy.allies.ToList<string>();
                         List<string> enemiesList = Diplomacy.enemies.ToList<string>();
@@ -624,7 +634,7 @@ namespace DiscordBotUpdates.Modules
                             await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
                             await OutprintFileAsync(colonyPath, ChannelID.distressCallsID);
                         }
-                        else if (File.Exists(planetPath))
+                        if (File.Exists(planetPath))
                         {
                             await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
                             await OutprintFileAsync(planetPath, ChannelID.distressCallsID);
@@ -642,12 +652,16 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(lastLine, ChannelID.distressCallsID);
                     }
                 }
-                if (alerts && !bot)
+                if (alerts)
                 {
                     if (lastLine.Contains("Server Alert!"))
                     {
+                        if(secondToLastLine.Contains("Server Alert!"))
+                        {
+                            await OutprintAsync("@everyone " + secondToLastLine, ChannelID.slaversID);
+                        }
                         await OutprintAsync("@everyone " + lastLine, ChannelID.slaversID);
-                        await OutprintAsync("@everyone " + lastLine, ChannelID.alliedChatID);
+                        //await OutprintAsync("@everyone " + lastLine, ChannelID.alliedChatID);
                     }
                     else if (lastLine.Contains("U.N. Hotline"))
                     {
@@ -674,9 +688,6 @@ namespace DiscordBotUpdates.Modules
                 if (building)
                 {
                     //col died
-
-                    if (!bot)
-                    {
                         if (lastLine.Contains("was finally abandoned"))
                         {
                             System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
@@ -716,7 +727,7 @@ namespace DiscordBotUpdates.Modules
                             await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.buildingID);
                             colsBuilt++;
                         }
-                    }
+                    
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))

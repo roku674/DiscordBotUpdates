@@ -8,6 +8,7 @@
     <PackageIconUrl />
     <Description>Updates to discord server based on Chatlogs</Description>
     <Authors>Alexander Fields</Authors>
+    <Copyright>Alexander Fields © 2022</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

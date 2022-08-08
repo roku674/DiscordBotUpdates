@@ -107,6 +107,18 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        [Command("request diplomacy")]
+        public async Task DiplomacyGet()
+        {
+            string allies = string.Join('\n', StarportObjects.Diplomacy.allies);
+            string enemies = string.Join('\n', StarportObjects.Diplomacy.enemies);
+            string nap = string.Join('\n', StarportObjects.Diplomacy.nap);
+            await ReplyAsync("Allies: " + '\n' + allies + '\n'
+                + '\n' + "Enemies: " + '\n' + enemies + '\n'
+                + '\n' + "NAP: " + '\n' + nap
+                );
+        }
+
         [Command("run Echo")]
         public async Task EchoPost([Remainder] string text)
         {
@@ -194,10 +206,11 @@ namespace DiscordBotUpdates.Modules
             if (text.Equals("All"))
             {
                 await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+                /*
                 foreach (string botName in cylons)
                 {
                     await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", botName);
-                }
+                }*/
             }
             else if (cylons.Any(s => text.Contains(s)))
             {
