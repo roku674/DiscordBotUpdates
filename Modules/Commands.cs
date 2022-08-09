@@ -62,7 +62,11 @@ namespace DiscordBotUpdates.Modules
                  '\n' +
                 "    run planetsLost #" +
                 '\n' +
+                "    request planet (planetName)" +
+                '\n' +
                 "    run StopAllTasks" +
+                '\n' +
+                "    run readFolders" +
                 '\n' +
                 "    run StopClientTasks" +
                 '\n' +
@@ -303,12 +307,33 @@ namespace DiscordBotUpdates.Modules
             await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
         }
 
+        [Command("request planet")]
+        public async Task PlanetPictureGet([Remainder] string text)
+        {
+            string[] allfiles = Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures", "*.*", SearchOption.AllDirectories);
+            text = text + ".png";
+
+            foreach (string file in allfiles)
+            {
+                if (text.Equals(Path.GetFileName(file)))
+                {
+                    System.Console.WriteLine(text
+                       + '\n' + file);
+                    await DBUTask.OutprintFileAsync(file, ChannelID.botCommandsID);
+                    return;
+                }
+            }
+
+            await ReplyAsync("no planet was found in our folders!");
+        }
+
         [Command("run readFolders")]
         public async Task ReadPlanetPicturesAndInfoFolders()
         {
             _ = Task.Run(() => init.ReadPlanetPicturesAndInfoFolders());
             await Task.Delay(1);
         }
+
         [Command("request RunningTasks")]
         public async Task RunningTasksGet()
         {

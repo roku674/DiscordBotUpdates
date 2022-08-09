@@ -134,11 +134,11 @@ namespace DiscordBotUpdates.Modules
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Building",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Distress",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures",
-                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Scout-Reports",                    
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Scout-Reports",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets",
                 };
 
-                for(int j = 0; j < paths.Length; j++)
+                for (int j = 0; j < paths.Length; j++)
                 {
                     string[] pictures = Directory.GetFiles(paths[j]);
                     if (pictures.Length > 0)
@@ -151,17 +151,20 @@ namespace DiscordBotUpdates.Modules
                                 case 0:
                                     await OutprintFileAsync(picture, ChannelID.botUpdatesID);
                                     break;
+
                                 case 1:
                                     await OutprintFileAsync(picture, ChannelID.buildingID);
                                     break;
+
                                 case 2:
                                     await OutprintFileAsync(picture, ChannelID.distressCallsID);
                                     break;
+
                                 case 3:
-                                    
-                                    if(Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
+
+                                    if (Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
                                     {
-                                        if(!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
+                                        if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
                                         {
                                             File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture));
                                             await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesID);
@@ -171,30 +174,33 @@ namespace DiscordBotUpdates.Modules
                                         {
                                             await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesID);
                                             //await OutprintFileAsync(picture, ChannelID.botUpdatesID);
-                                        }                                     
+                                        }
                                     }
                                     else
                                     {
                                         await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesID);
                                     }
-                                   
+
                                     break;
+
                                 case 4:
                                     await OutprintFileAsync(picture, ChannelID.scoutReportsID);
                                     break;
+
                                 case 5:
                                     await OutprintFileAsync(picture, ChannelID.targetsID);
                                     break;
+
                                 default:
                                     await OutprintFileAsync(picture, ChannelID.botUpdatesID);
                                     break;
                             }
-                            
+
                             File.Delete(picture);
                         }
                     }
                 }
-                
+
                 if (i == 1)
                 {
                     System.Console.WriteLine("Picture Updater: First pass completed!");
@@ -233,7 +239,7 @@ namespace DiscordBotUpdates.Modules
                     break;
                 }
 
-                await Task.Delay(1000);                
+                await Task.Delay(1000);
 
                 if (i == 1)
                 {
@@ -266,7 +272,6 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync("https://tenor.com/view/press-f-pay-respect-coffin-burial-gif-12855021", ChannelID.slaversID);
                     }
-      
 
                     await OutprintAsync(
                         "@everyone Daily Report: " + '\n'
@@ -287,11 +292,10 @@ namespace DiscordBotUpdates.Modules
                     colsBuilt = 0;
                 }
 
-                if(i % 10 == 0)
+                if (i % 10 == 0)
                 {
                     _ = Task.Run(() => RunThroughText());
                 }
-                
 
                 task.ticker++;
             }
@@ -310,6 +314,7 @@ namespace DiscordBotUpdates.Modules
                 foreach (string dir in dirs)
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(dir);
+
                     if (directoryInfo.Name == "our_colonies")
                     {
                         string[] pictures = Directory.GetFiles(dir);
@@ -323,6 +328,38 @@ namespace DiscordBotUpdates.Modules
                             if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
                             {
                                 File.Copy(picture, "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures/" + Path.GetFileName(picture));
+                            }
+                        }
+                    }
+                    else if (directoryInfo.Name == "enemy_colonies")
+                    {
+                        string[] pictures = Directory.GetFiles(dir);
+
+                        foreach (string picture in pictures)
+                        {
+                            string newName = Path.GetFileName(picture);
+                            newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
+
+                            //File.Move(picture, dir + "/" + newName);
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + Path.GetFileName(picture)))
+                            {
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + Path.GetFileName(picture));
+                            }
+                        }
+                    }
+                    else if (directoryInfo.Name == "open_to_build")
+                    {
+                        string[] pictures = Directory.GetFiles(dir);
+
+                        foreach (string picture in pictures)
+                        {
+                            string newName = Path.GetFileName(picture);
+                            newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
+
+                            //File.Move(picture, dir + "/" + newName);
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + Path.GetFileName(picture)))
+                            {
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + Path.GetFileName(picture));
                             }
                         }
                     }
@@ -399,6 +436,7 @@ namespace DiscordBotUpdates.Modules
                 return "";
             }
         }
+
         /// <summary>
         /// If the file can be opened for exclusive access it means that the file
         /// is no longer locked by another process.
@@ -631,7 +669,6 @@ namespace DiscordBotUpdates.Modules
                         if (colonyName.Contains("(") && colonyName.Contains("."))
                         {
                             colonyName = Algorithms.StringManipulation.GetBetween(colonyName, ")", ".");
-                            
                         }
 
                         //System.Console.WriteLine("colonyName: " + colonyName);
@@ -652,8 +689,6 @@ namespace DiscordBotUpdates.Modules
                         {
                             await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
                         }
-
-
                     }
                     else if (lastLine.Contains("***") && lastLine.Contains("landed"))
                     {
@@ -665,7 +700,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (lastLine.Contains("Server Alert!"))
                     {
-                        if(secondToLastLine.Contains("Server Alert!"))
+                        if (secondToLastLine.Contains("Server Alert!"))
                         {
                             await OutprintAsync("@everyone " + secondToLastLine, ChannelID.slaversID);
                         }
@@ -697,46 +732,45 @@ namespace DiscordBotUpdates.Modules
                 if (building)
                 {
                     //col died
-                        if (lastLine.Contains("was finally abandoned"))
-                        {
-                            System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
-                            System.DateTime days3 = System.DateTime.Now + days3TimeSpan;
+                    if (lastLine.Contains("was finally abandoned"))
+                    {
+                        System.TimeSpan days3TimeSpan = new System.TimeSpan(0, 72, 0, 0);
+                        System.DateTime days3 = System.DateTime.Now + days3TimeSpan;
 
-                            string title = Algorithms.StringManipulation.GetBetween(lastLine, "colony", "was");
+                        string title = Algorithms.StringManipulation.GetBetween(lastLine, "colony", "was");
 
-                            await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingID);
-                            colsAbandoned++;
-                            /*
-                            await Outprint(lastLine +
-                                '\n' + "Add redome time to Discord Calendar Unimplemented!" +
-                                '\n' + end.ToString(), ChannelID.redomeID);*/
-                        }
-                        //aa
-                        else if (
-                            (lastLine.Contains("Advanced Architecture lvl 4") && (!lastLine.Contains("Des") || !lastLine.Contains("Mou"))) ||
-                            (lastLine.Contains("Advanced Architecture lvl 5") && !lastLine.Contains(".Arc"))
-                            )
-                        {
-                            await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
-                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
-                        }
-                        else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
-                        {
-                            await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
-                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
-                        }
-                        else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
-                        {
-                            await OutprintAsync(AtUser(lastLine) + lastLine + " Decent Huge Metro col", ChannelID.buildingID);
-                            //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
-                        }
-                        //if bio3
-                        else if (lastLine.Contains("completed work on the Biodome Level 3."))
-                        {
-                            await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.buildingID);
-                            colsBuilt++;
-                        }
-                    
+                        await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingID);
+                        colsAbandoned++;
+                        /*
+                        await Outprint(lastLine +
+                            '\n' + "Add redome time to Discord Calendar Unimplemented!" +
+                            '\n' + end.ToString(), ChannelID.redomeID);*/
+                    }
+                    //aa
+                    else if (
+                        (lastLine.Contains("Advanced Architecture lvl 4") && (!lastLine.Contains("Des") || !lastLine.Contains("Mou"))) ||
+                        (lastLine.Contains("Advanced Architecture lvl 5") && !lastLine.Contains(".Arc"))
+                        )
+                    {
+                        await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                        //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
+                    }
+                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
+                    {
+                        await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
+                        //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
+                    }
+                    else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
+                    {
+                        await OutprintAsync(AtUser(lastLine) + lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                        //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
+                    }
+                    //if bio3
+                    else if (lastLine.Contains("completed work on the Biodome Level 3."))
+                    {
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.buildingID);
+                        colsBuilt++;
+                    }
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
@@ -803,13 +837,11 @@ namespace DiscordBotUpdates.Modules
                                     await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
                                     System.Console.WriteLine(filePaths[i] + " cleared!");
                                 }
-
                             }
                         }
                     }
                 }
             }
-
         }
     }
 }
