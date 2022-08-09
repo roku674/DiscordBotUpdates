@@ -34,7 +34,7 @@ namespace DiscordBotUpdates
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
             });
-
+         
             new Program().RunBotAsync().GetAwaiter().GetResult();
         }
 
@@ -74,7 +74,7 @@ namespace DiscordBotUpdates
             await _client.StartAsync();
 
             _dateTime = System.DateTime.Now;
-
+         
             await Task.Delay(System.Threading.Timeout.Infinite);
         }
 

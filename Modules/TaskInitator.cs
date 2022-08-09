@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace DiscordBotUpdates.Modules
 {
@@ -168,8 +169,8 @@ namespace DiscordBotUpdates.Modules
                                         }
                                         else
                                         {
-                                            await OutprintAsync("Colony Picture was not downloaded as there was a duplicate!", ChannelID.planetPicturesID);
-                                            await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                            await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesID);
+                                            //await OutprintFileAsync(picture, ChannelID.botUpdatesID);
                                         }                                     
                                     }
                                     else
@@ -300,61 +301,34 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        private async Task RunThroughText()
+        internal async Task ReadPlanetPicturesAndInfoFolders()
         {
-            if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
+            if (Directory.Exists("H:/My Drive/planet_pictures_and_info"))
             {
-                string[] filePaths = Directory.GetFiles("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel");
+                string[] dirs = Directory.GetDirectories("H:/My Drive/planet_pictures_and_info", "*", SearchOption.AllDirectories);
 
-                for (int i = 0; i < filePaths.Length; i++)
+                foreach (string dir in dirs)
                 {
-                    if (File.Exists(filePaths[i]))
+                    DirectoryInfo directoryInfo = new DirectoryInfo(dir);
+                    if (directoryInfo.Name == "our_colonies")
                     {
-                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
+                        string[] pictures = Directory.GetFiles(dir);
 
-                        if (fileAsArr != null)
+                        foreach (string picture in pictures)
                         {
-                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
+                            string newName = Path.GetFileName(picture);
+                            newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
+
+                            //File.Move(picture, dir + "/" + newName);
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
                             {
-                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, ChannelID.buildingID);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-
+                                File.Copy(picture, "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures/" + Path.GetFileName(picture));
                             }
                         }
                     }
                 }
             }
-
+            await Task.Delay(1);
         }
 
         internal async Task SetAllAsync(bool v)
@@ -390,6 +364,41 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
+        private string AtUser(string line)
+        {
+            if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Freeman"))
+            {
+                return "<@139536795858632705> ";
+            }
+            else if (line.Contains("Avacado") || line.Contains("Archer") || line.Contains("Archie"))
+            {
+                return "<@530669734413205505> ";
+            }
+            else if (line.Contains("Dev") || line.Contains("DEV"))
+            {
+                return "<@276593195767431168> ";
+            }
+            else if (line.Contains("lk") || line.Contains("LK"))
+            {
+                return "<@429101973145387019> ";
+            }
+            else if (line.Contains("Banana") || line.Contains("BANANA"))
+            {
+                return "<@535618193251762176> ";
+            }
+            else if (line.Contains("Jum") || line.Contains("JUM"))
+            {
+                return "<@941167776163323944> ";
+            }
+            else if (line.Contains("tater"))
+            {
+                return "<@969258165831106581> ";
+            }
+            else
+            {
+                return "";
+            }
+        }
         /// <summary>
         /// If the file can be opened for exclusive access it means that the file
         /// is no longer locked by another process.
@@ -746,40 +755,61 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        private string AtUser(string line)
+        private async Task RunThroughText()
         {
-            if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Freeman"))
+            if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
             {
-                return "<@139536795858632705> ";
+                string[] filePaths = Directory.GetFiles("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel");
+
+                for (int i = 0; i < filePaths.Length; i++)
+                {
+                    if (File.Exists(filePaths[i]))
+                    {
+                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
+
+                        if (fileAsArr != null)
+                        {
+                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
+                            {
+                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.buildingID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+
+                            }
+                        }
+                    }
+                }
             }
-            else if (line.Contains("Avacado") || line.Contains("Archer") || line.Contains("Archie"))
-            {
-                return "<@530669734413205505> ";
-            }
-            else if (line.Contains("Dev") || line.Contains("DEV"))
-            {
-                return "<@276593195767431168> ";
-            }
-            else if (line.Contains("lk") || line.Contains("LK"))
-            {
-                return "<@429101973145387019> ";
-            }
-            else if (line.Contains("Banana") || line.Contains("BANANA"))
-            {
-                return "<@535618193251762176> ";
-            }
-            else if (line.Contains("Jum") || line.Contains("JUM"))
-            {
-                return "<@941167776163323944> ";
-            }
-            else if (line.Contains("tater"))
-            {
-                return "<@969258165831106581> ";
-            }
-            else
-            {
-                return "";
-            }
+
         }
     }
 }

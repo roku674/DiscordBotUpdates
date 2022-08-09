@@ -303,6 +303,12 @@ namespace DiscordBotUpdates.Modules
             await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
         }
 
+        [Command("run readFolders")]
+        public async Task ReadPlanetPicturesAndInfoFolders()
+        {
+            _ = Task.Run(() => init.ReadPlanetPicturesAndInfoFolders());
+            await Task.Delay(1);
+        }
         [Command("request RunningTasks")]
         public async Task RunningTasksGet()
         {

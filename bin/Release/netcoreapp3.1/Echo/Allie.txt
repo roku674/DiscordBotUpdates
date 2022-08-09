@@ -1,9 +1,1 @@
- Command Build 76 Tauri Ve
- 76 Tauri IVe Type0 Rocky
- 76 Tauri IVe Type1 Rocky
- Delta Equulei Xc Type2 Arctic
- Delta Equulei Xc Type3 Arctic
- Delta Equulei Xc Type4 Arctic
- 76 Tauri IVe Type5 Rocky
- 76 Tauri IVe Type6 Rocky
- 76 Tauri IVe Type7 Rocky
+ 
