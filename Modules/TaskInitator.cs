@@ -292,7 +292,7 @@ namespace DiscordBotUpdates.Modules
                     colsBuilt = 0;
                 }
 
-                if (i % 10 == 0)
+                if (i % 120 == 0)
                 {
                     _ = Task.Run(() => RunThroughText());
                 }
@@ -325,9 +325,9 @@ namespace DiscordBotUpdates.Modules
                             newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
 
                             //File.Move(picture, dir + "/" + newName);
-                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + newName))
                             {
-                                File.Copy(picture, "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures/" + Path.GetFileName(picture));
+                                File.Copy(picture, "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures/" + newName);
                             }
                         }
                     }
@@ -341,9 +341,9 @@ namespace DiscordBotUpdates.Modules
                             newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
 
                             //File.Move(picture, dir + "/" + newName);
-                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + Path.GetFileName(picture)))
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + newName))
                             {
-                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + Path.GetFileName(picture));
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + newName);
                             }
                         }
                     }
@@ -357,15 +357,15 @@ namespace DiscordBotUpdates.Modules
                             newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
 
                             //File.Move(picture, dir + "/" + newName);
-                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + Path.GetFileName(picture)))
+                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName))
                             {
-                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + Path.GetFileName(picture));
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName);
                             }
                         }
                     }
                 }
             }
-            await Task.Delay(1);
+            await OutprintAsync("Read Folders Completed!", ChannelID.botUpdatesID);
         }
 
         internal async Task SetAllAsync(bool v)

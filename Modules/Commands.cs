@@ -311,15 +311,41 @@ namespace DiscordBotUpdates.Modules
         public async Task PlanetPictureGet([Remainder] string text)
         {
             string[] allfiles = Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures", "*.*", SearchOption.AllDirectories);
-            text = text + ".png";
+            string textPNG = text + ".png";
 
             foreach (string file in allfiles)
             {
-                if (text.Equals(Path.GetFileName(file)))
+                if (textPNG.Equals(Path.GetFileName(file)))
                 {
-                    System.Console.WriteLine(text
+                    System.Console.WriteLine(textPNG
                        + '\n' + file);
-                    await DBUTask.OutprintFileAsync(file, ChannelID.botCommandsID);
+
+                    DirectoryInfo directoryInfo = Directory.GetParent(file);
+                    //System.Console.WriteLine(directoryInfo.Name);
+                    if (directoryInfo.Name == "PlanetPictures")
+                    {
+                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.planetPicturesID);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesID);
+
+                        await ReplyAsync("File printed to planet pictures!");
+                    }
+                    else if (directoryInfo.Name == "Enemy Planets")
+                    {
+                        await DBUTask.OutprintAsync("Enemy Planet Requested: ", ChannelID.slaversID);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.slaversID);
+                        if (File.Exists(directoryInfo.FullName + "/" + text + ".txt"))
+                        {
+                            await DBUTask.OutprintFileAsync(directoryInfo.FullName + "/" + text + ".txt", ChannelID.slaversID);
+                        }
+                        await ReplyAsync("File printed to slavers!");
+                    }
+                    else if (directoryInfo.Name == "Undomed")
+                    {
+                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.buildingID);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.buildingID);
+                        await ReplyAsync("File printed to building!");
+                    }
+
                     return;
                 }
             }
