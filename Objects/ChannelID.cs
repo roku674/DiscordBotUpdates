@@ -4,6 +4,7 @@
     {
         private static readonly ulong _alliedChatID = 979776850236702720;
         private static readonly ulong _botCommandsID = 986833502135779328;
+        private static readonly ulong _botErrorsID = 1007334322803580949;
         private static readonly ulong _botUpdatesID = 986837157819858944;
         private static readonly ulong _buildingID = 977770208183848990;
         private static readonly ulong _distressCallsID = 941795796523819048;
@@ -22,6 +23,7 @@
 
         public static ulong alliedChatID => _alliedChatID;
         public static ulong botCommandsID => _botCommandsID;
+        public static ulong botErrorsID => _botErrorsID;
         public static ulong botUpdatesID => _botUpdatesID;
         public static ulong buildingID => _buildingID;
         public static ulong distressCallsID => _distressCallsID;
@@ -31,13 +33,11 @@
         public static ulong recapListID => _recapListID;
         public static ulong redomeID => _redomeID;
         public static ulong scoutReportsID => _scoutReportsID;
-        public static ulong slaversID => _slaversID; 
+        public static ulong slaversID => _slaversID;
         public static ulong targetsID => _targetsID;
         public static ulong voiceBuildingID => _voiceBuildingID;
         public static ulong voiceInvadingID => _voiceInvadingID;
         public static ulong voiceKombatID => _voiceKombatID;
         public static ulong voiceSlaversOnlyID => _voiceSlaversOnlyID;
-
-
     }
 }

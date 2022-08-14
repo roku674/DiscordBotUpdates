@@ -146,54 +146,57 @@ namespace DiscordBotUpdates.Modules
                         foreach (string picture in pictures)
                         {
                             System.Console.WriteLine(Path.GetFileName(paths[j]));
-                            switch (j)
+                            if (Path.GetFileName(picture) != "desktop.ini")
                             {
-                                case 0:
-                                    await OutprintFileAsync(picture, ChannelID.botUpdatesID);
-                                    break;
+                                switch (j)
+                                {
+                                    case 0:
+                                        await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                        break;
 
-                                case 1:
-                                    await OutprintFileAsync(picture, ChannelID.buildingID);
-                                    break;
+                                    case 1:
+                                        await OutprintFileAsync(picture, ChannelID.buildingID);
+                                        break;
 
-                                case 2:
-                                    await OutprintFileAsync(picture, ChannelID.distressCallsID);
-                                    break;
+                                    case 2:
+                                        await OutprintFileAsync(picture, ChannelID.distressCallsID);
+                                        break;
 
-                                case 3:
+                                    case 3:
 
-                                    if (Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
-                                    {
-                                        if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
+                                        if (Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
                                         {
-                                            File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture));
-                                            await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesID);
-                                            await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                            if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
+                                            {
+                                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture));
+                                                await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesID);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                            }
+                                            else
+                                            {
+                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesID);
+                                                //await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                            }
                                         }
                                         else
                                         {
-                                            await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesID);
-                                            //await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesID);
                                         }
-                                    }
-                                    else
-                                    {
-                                        await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesID);
-                                    }
 
-                                    break;
+                                        break;
 
-                                case 4:
-                                    await OutprintFileAsync(picture, ChannelID.scoutReportsID);
-                                    break;
+                                    case 4:
+                                        await OutprintFileAsync(picture, ChannelID.scoutReportsID);
+                                        break;
 
-                                case 5:
-                                    await OutprintFileAsync(picture, ChannelID.targetsID);
-                                    break;
+                                    case 5:
+                                        await OutprintFileAsync(picture, ChannelID.targetsID);
+                                        break;
 
-                                default:
-                                    await OutprintFileAsync(picture, ChannelID.botUpdatesID);
-                                    break;
+                                    default:
+                                        await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                        break;
+                                }
                             }
 
                             File.Delete(picture);
@@ -470,13 +473,14 @@ namespace DiscordBotUpdates.Modules
             }
             catch (System.Exception ex)
             {
-                await OutprintAsync(ex.ToString(), ChannelID.botUpdatesID);
+                await OutprintAsync(ex.ToString(), ChannelID.botErrorsID);
             }
 
             if (fileStrArr.Length > 0)
             {
                 string lastLine = fileStrArr[fileStrArr.Length - 1];
                 string secondToLastLine = fileStrArr[fileStrArr.Length - 2];
+                string thirdToLastLine = fileStrArr[fileStrArr.Length - 3];
 
                 if (lastLine.Contains("Landed on ") && lastLine.Contains("world"))
                 {
@@ -586,6 +590,28 @@ namespace DiscordBotUpdates.Modules
                             else
                             {
                                 await OutprintAsync(secondToLastLine, ChannelID.slaversID);
+                                //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
+                            }
+
+                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
+                        }
+                        else if (lastLine.Contains("You recover"))
+                        {
+                            enemiesSlain++;
+                            if (thirdToLastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
+                            {
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + thirdToLastLine, ChannelID.slaversID);
+                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatID);
+                                enemiesSlain++;
+                            }
+                            else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
+                            {
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + thirdToLastLine, ChannelID.slaversID);
+                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatID);
+                            }
+                            else
+                            {
+                                await OutprintAsync(thirdToLastLine, ChannelID.slaversID);
                                 //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
                             }
 
@@ -714,6 +740,11 @@ namespace DiscordBotUpdates.Modules
 
                         await OutprintAsync(lastLine, ChannelID.slaversID);
                         await SayAsync(ally + " I see you!", ChannelID.voiceSlaversOnlyID);
+                    }
+
+                    if (lastLine.Contains("Empress Allie says to Slavers"))
+                    {
+                        await OutprintAsync(lastLine, ChannelID.botUpdatesID);
                     }
                 }
 
