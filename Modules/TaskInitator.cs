@@ -414,21 +414,25 @@ namespace DiscordBotUpdates.Modules
             {
                 return "<@530669734413205505> ";
             }
+            else if (line.Contains("Banana") || line.Contains("BANANA"))
+            {
+                return "<@535618193251762176> ";
+            }
             else if (line.Contains("Dev") || line.Contains("DEV"))
             {
                 return "<@276593195767431168> ";
+            }
+            else if (line.Contains("Jum") || line.Contains("JUM"))
+            {
+                return "<@941167776163323944> ";
             }
             else if (line.Contains("lk") || line.Contains("LK"))
             {
                 return "<@429101973145387019> ";
             }
-            else if (line.Contains("Banana") || line.Contains("BANANA"))
+            else if (line.Contains("muzza") || line.Contains("MUZZA") || line.Contains("Muzza"))
             {
-                return "<@535618193251762176> ";
-            }
-            else if (line.Contains("Jum") || line.Contains("JUM"))
-            {
-                return "<@941167776163323944> ";
+                return "<@999054521776996372> ";
             }
             else if (line.Contains("tater"))
             {
@@ -631,6 +635,12 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.distressCallsID);
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListID);
+
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/crying-meme-black-guy-cries-sad-man-thank-god-for-my-reefer-hood-news-gif-24902056 " + '\n' +
+                                "WE Lost Double Dome!", ChannelID.slaversID);
+                        }
                         await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
 
                         if (lastLine.Contains("experience"))
@@ -658,6 +668,11 @@ namespace DiscordBotUpdates.Modules
                     else if (lastLine.Contains("captured the colony"))
                     {
                         await OutprintAsync(lastLine, ChannelID.slaversID);
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                               "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                        }
                         //await OutprintAsync(lastLine, ChannelID.alliedChatID);
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
@@ -666,6 +681,11 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync(secondToLastLine, ChannelID.slaversID);
                         //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                        }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
                     }
@@ -673,6 +693,11 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.slaversID);
                         //await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.alliedChatID);
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                        }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
                     }
@@ -680,6 +705,11 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.slaversID);
                         //await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.alliedChatID);
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                        }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
                     }
