@@ -348,6 +348,11 @@ namespace DiscordBotUpdates.Modules
                             {
                                 File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + newName);
                             }
+                            else
+                            {
+                                File.Delete("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + newName);
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets/" + newName);
+                            }
                         }
                     }
                     else if (directoryInfo.Name == "open_to_build")
@@ -362,6 +367,11 @@ namespace DiscordBotUpdates.Modules
                             //File.Move(picture, dir + "/" + newName);
                             if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName))
                             {
+                                File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName);
+                            }
+                            else
+                            {
+                                File.Delete("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName);
                                 File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Undomed/" + newName);
                             }
                         }
@@ -792,6 +802,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (building)
                 {
+                    string[] str = { "]", ")", "_", "." };
                     //col died
                     if (lastLine.Contains("was finally abandoned"))
                     {
@@ -816,7 +827,7 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                         //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
                     }
-                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
+                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
                     {
                         await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                         //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
