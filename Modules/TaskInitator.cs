@@ -496,6 +496,7 @@ namespace DiscordBotUpdates.Modules
                 string secondToLastLine = fileStrArr[fileStrArr.Length - 2];
                 string thirdToLastLine = fileStrArr[fileStrArr.Length - 3];
 
+                //These dont really have a category
                 if (lastLine.Contains("Landed on ") && lastLine.Contains("world"))
                 {
                     lastLand = Algorithms.StringManipulation.GetBetween(lastLine, "on", ",");
@@ -509,6 +510,21 @@ namespace DiscordBotUpdates.Modules
                 {
                     lastLand = Algorithms.StringManipulation.GetBetween(secondToLastLine, "on", ",");
                     lastLand = lastLand.Replace("world ", "");
+                }
+                else if (lastLine.Contains("(automated) picked up"))
+                {
+                    await OutprintAsync(lastLine, ChannelID.botTakingResourcesID);
+                }
+                else if (lastLine.Contains("tons of unidentified compounds"))
+                {
+                    if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
+                    {
+                        await OutprintAsync("Undomed: " + lastLine, ChannelID.buildingID);
+                    }
+                    else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
+                    {
+                        await OutprintAsync(lastLine, ChannelID.nuetrinoID);
+                    }
                 }
 
                 if (kombat)
@@ -785,18 +801,6 @@ namespace DiscordBotUpdates.Modules
                     if (lastLine.Contains("Empress Allie says to Slavers"))
                     {
                         await OutprintAsync(lastLine, ChannelID.botUpdatesID);
-                    }
-                }
-
-                if (lastLine.Contains("tons of unidentified compounds"))
-                {
-                    if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
-                    {
-                        await OutprintAsync("Undomed: " + lastLine, ChannelID.buildingID);
-                    }
-                    else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
-                    {
-                        await OutprintAsync(lastLine, ChannelID.nuetrinoID);
                     }
                 }
 
