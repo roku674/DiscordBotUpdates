@@ -91,6 +91,14 @@ namespace DiscordBotUpdates
             await _client.StartAsync();
 
             _dateTime = System.DateTime.Now;
+            System.Console.WriteLine("The time is now: " + _dateTime);
+
+            await Task.Delay(10000);
+            Modules.Commands commands = new Modules.Commands();
+            await commands.MessageUpdater("Message Updater", "Client");
+            await commands.PictureUpdater(Objects.ChannelID.botUpdatesID, "Picture Updater", "Client");
+            await commands.ChatLogListener(Objects.ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+            await Task.Run(() => commands.init.SetAllAsync(true));
 
             await Task.Delay(System.Threading.Timeout.Infinite);
         }

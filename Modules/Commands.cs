@@ -12,12 +12,155 @@ namespace DiscordBotUpdates.Modules
     {
         private readonly string[] cylons = { "Allie", "Bitcoin", "Probation" };
         private readonly string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
-        private TaskInitator init = new TaskInitator();
+        internal TaskInitator init = new TaskInitator();
 
-        [Command("Ping")]
-        public async Task Ping()
+        [Command("run AllTasks")]
+        public async Task AllTasksRun()
         {
-            await ReplyAsync("Pong");
+            System.Console.WriteLine("All Tasks Running...");
+            _ = Task.Run(() => BotUpdaterPost());
+            _ = Task.Run(() => ListenerPost("All"));
+            _ = Task.Run(() => ListenerChatLogPost("All"));
+
+            await Task.Delay(33);
+        }
+
+        [Command("run StopAllTasks")]
+        public async Task AllTasksStop()
+        {
+            if (DBUTask.runningTasks.Count > 0)
+            {
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
+                {
+                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
+
+                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                        + '\n'
+                        + "Was ended at " + System.DateTime.Now);
+
+                    dbuTask.Cancel();
+                    DBUTask.runningTasks.Remove(dbuTask);
+                }
+            }
+            else
+            {
+                await ReplyAsync("There are no tasks to stop!");
+            }
+        }
+
+        [Command("run StopTasks")]
+        public async Task BotTasksStop([Remainder] string text)
+        {
+            if (DBUTask.runningTasks.Count > 0)
+            {
+                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
+                {
+                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
+
+                    List<string> botNamesList = cylons.ToList<string>();
+                    string bot = botNamesList.Find(s => text.Contains(s));
+
+                    if (dbuTask.owner.Equals(bot))
+                    {
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                            + '\n'
+                            + "Was ended at " + System.DateTime.Now);
+
+                        dbuTask.Cancel();
+                        DBUTask.runningTasks.Remove(dbuTask);
+                    }
+                    else if (dbuTask.owner.Equals("Client"))
+                    {
+                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                            + '\n'
+                            + "Was ended at " + System.DateTime.Now);
+
+                        dbuTask.Cancel();
+                        DBUTask.runningTasks.Remove(dbuTask);
+                    }
+                }
+            }
+            else
+            {
+                await ReplyAsync("There are no tasks to stop!");
+            }
+        }
+
+        [Command("run BotUpdater")]
+        public async Task BotUpdaterPost()
+        {
+            await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
+
+            await MessageUpdater("Message Updater", "Client");
+            //await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
+            //await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
+
+            await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
+        }
+
+        [Command("run ClearBotsEcho")]
+        public async Task ClearBotsEcho()
+        {
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Echo", "*.txt");
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                await File.WriteAllTextAsync(files[i], "");
+
+                await ReplyAsync(Path.GetFileName(files[i]) + "Text Files Cleared!");
+            }
+        }
+
+        [Command("run Deactivate")]
+        public async Task DeactivateProgramPost()
+        {
+            await ReplyAsync("Client will be stopped now...");
+            await Program.client.StopAsync();
+        }
+
+        [Command("request diplomacy")]
+        public async Task DiplomacyGet()
+        {
+            string allies = string.Join('\n', StarportObjects.Diplomacy.allies);
+            string enemies = string.Join('\n', StarportObjects.Diplomacy.enemies);
+            string nap = string.Join('\n', StarportObjects.Diplomacy.nap);
+            await ReplyAsync("Allies: " + '\n' + allies + '\n'
+                + '\n' + "Enemies: " + '\n' + enemies + '\n'
+                + '\n' + "NAP: " + '\n' + nap
+                );
+        }
+
+        [Command("run Echo")]
+        public async Task EchoPost([Remainder] string text)
+        {
+            if (cylons.Any(s => text.Contains(s)))
+            {
+                List<string> botNamesList = cylons.ToList<string>();
+
+                string bot = botNamesList.Find(s => text.Contains(s));
+
+                /*
+                if (string.IsNullOrEmpty(bot) || bot.Equals(" "))
+                {
+                    botNamesList = builderBots.ToList<string>();
+                    bot = botNamesList.Find(s => text.Contains(s));
+                }*/
+
+                string botEcho = text.Replace(bot + " ", "");
+                botEcho.TrimStart();
+
+                if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
+                {
+                    await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
+                }
+                else
+                {
+                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt").Close();
+                    await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
+                }
+
+                await ReplyAsync("Sending: " + botEcho + " to " + bot);
+            }
         }
 
         [Command("Help")]
@@ -76,86 +219,6 @@ namespace DiscordBotUpdates.Modules
                 );
         }
 
-        [Command("run AllTasks")]
-        public async Task AllTasks()
-        {
-            _ = Task.Run(() => BotUpdaterPost());
-            _ = Task.Run(() => ListenerPost("All"));
-            _ = Task.Run(() => ListenerChatLogPost("All"));
-
-            await Task.Delay(33);
-        }
-
-        [Command("run BotUpdater")]
-        public async Task BotUpdaterPost()
-        {
-            await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
-
-            await MessageUpdater("Message Updater", "Client");
-            //await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
-            //await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
-
-            await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
-        }
-
-        [Command("run ClearBotsEcho")]
-        public async Task ClearBotsEcho()
-        {
-            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Echo", "*.txt");
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                await File.WriteAllTextAsync(files[i], "");
-
-                await ReplyAsync(Path.GetFileName(files[i]) + "Text Files Cleared!");
-            }
-        }
-
-        [Command("request diplomacy")]
-        public async Task DiplomacyGet()
-        {
-            string allies = string.Join('\n', StarportObjects.Diplomacy.allies);
-            string enemies = string.Join('\n', StarportObjects.Diplomacy.enemies);
-            string nap = string.Join('\n', StarportObjects.Diplomacy.nap);
-            await ReplyAsync("Allies: " + '\n' + allies + '\n'
-                + '\n' + "Enemies: " + '\n' + enemies + '\n'
-                + '\n' + "NAP: " + '\n' + nap
-                );
-        }
-
-        [Command("run Echo")]
-        public async Task EchoPost([Remainder] string text)
-        {
-            if (cylons.Any(s => text.Contains(s)))
-            {
-                List<string> botNamesList = cylons.ToList<string>();
-
-                string bot = botNamesList.Find(s => text.Contains(s));
-
-                /*
-                if (string.IsNullOrEmpty(bot) || bot.Equals(" "))
-                {
-                    botNamesList = builderBots.ToList<string>();
-                    bot = botNamesList.Find(s => text.Contains(s));
-                }*/
-
-                string botEcho = text.Replace(bot + " ", "");
-                botEcho.TrimStart();
-
-                if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
-                {
-                    await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
-                }
-                else
-                {
-                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt").Close();
-                    await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
-                }
-
-                await ReplyAsync("Sending: " + botEcho + " to " + bot);
-            }
-        }
-
         [Command("request Info")]
         public async Task InfoGet()
         {
@@ -187,6 +250,22 @@ namespace DiscordBotUpdates.Modules
             TaskInitator.colsBuilt = uint.Parse(temp[6]);
 
             await InfoGet();
+        }
+
+        [Command("request Lifetime")]
+        public async Task LifetimeGet()
+        {
+            System.TimeSpan lifetime = System.DateTime.Now - Program.dateTime;
+            await ReplyAsync("Initiated at " + Program.dateTime + " EST. Has been running for: " +
+                '\n' +
+                lifetime.Days + " Days " +
+                '\n' +
+                lifetime.Hours + " Hours " +
+                '\n' +
+                lifetime.Minutes + " Minutes " +
+                '\n' +
+                lifetime.Seconds + " Seconds"
+                );
         }
 
         [Command("request Listeners")]
@@ -226,29 +305,6 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run Deactivate")]
-        public async Task DeactivateProgramPost()
-        {
-            await ReplyAsync("Client will be stopped now...");
-            await Program.client.StopAsync();
-        }
-
-        [Command("request Lifetime")]
-        public async Task LifetimeGet()
-        {
-            System.TimeSpan lifetime = System.DateTime.Now - Program.dateTime;
-            await ReplyAsync("Initiated at " + Program.dateTime + " EST. Has been running for: " +
-                '\n' +
-                lifetime.Days + " Days " +
-                '\n' +
-                lifetime.Hours + " Hours " +
-                '\n' +
-                lifetime.Minutes + " Minutes " +
-                '\n' +
-                lifetime.Seconds + " Seconds"
-                );
-        }
-
         [Command("run Listener")]
         public async Task ListenerPost([Remainder] string text)
         {
@@ -281,30 +337,42 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("request planetTallies")]
-        public async Task PlanetTalliesGet()
+        [Command("run StopListener")]
+        public async Task ListenerStop([Remainder] string text)
         {
-            await DBUTask.OutprintAsync(
-                "We Lauwst: " + TaskInitator.planetsLost + '\n'
-                + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+            if (listenerNames.Any(s => text.Contains(s)))
+            {
+                List<string> listenerList = listenerNames.ToList<string>();
+                string listener = listenerList.Find(s => text.Contains(s));
+
+                if (listener.Equals("building"))
+                {
+                    await Task.Run(() => init.SetBuildingAsync(false));
+                }
+                else if (listener.Equals("distress"))
+                {
+                    await Task.Run(() => init.SetDistressAsync(false));
+                }
+                else if (listener.Equals("kombat"))
+                {
+                    await Task.Run(() => init.SetKombatAsync(false));
+                }
+                else if (listener.Equals("serverResets"))
+                {
+                    await Task.Run(() => init.SetAlertsAsync(false));
+                }
+                else if (listener.Equals("All"))
+                {
+                    await Task.Run(() => init.SetAllAsync(false));
+                }
+                await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
+            }
         }
 
-        [Command("run planetsCaptured")]
-        public async Task PlanetsCapturedChange([Remainder] string text)
+        [Command("Ping")]
+        public async Task Ping()
         {
-            text = text.Trim();
-            TaskInitator.planetsKaptured = uint.Parse(text);
-
-            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.botCommandsID);
-        }
-
-        [Command("run planetsLost")]
-        public async Task PlanetsLostChange([Remainder] string text)
-        {
-            text = text.Trim();
-            TaskInitator.planetsLost = uint.Parse(text);
-
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
+            await ReplyAsync("Pong");
         }
 
         [Command("request planet")]
@@ -353,6 +421,32 @@ namespace DiscordBotUpdates.Modules
             await ReplyAsync("no planet was found in our folders!");
         }
 
+        [Command("run planetsCaptured")]
+        public async Task PlanetsCapturedChange([Remainder] string text)
+        {
+            text = text.Trim();
+            TaskInitator.planetsKaptured = uint.Parse(text);
+
+            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.botCommandsID);
+        }
+
+        [Command("run planetsLost")]
+        public async Task PlanetsLostChange([Remainder] string text)
+        {
+            text = text.Trim();
+            TaskInitator.planetsLost = uint.Parse(text);
+
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
+        }
+
+        [Command("request planetTallies")]
+        public async Task PlanetTalliesGet()
+        {
+            await DBUTask.OutprintAsync(
+                "We Lauwst: " + TaskInitator.planetsLost + '\n'
+                + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+        }
+
         [Command("run readFolders")]
         public async Task ReadPlanetPicturesAndInfoFolders()
         {
@@ -376,100 +470,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        [Command("run StopAllTasks")]
-        public async Task StopAllTasks()
-        {
-            if (DBUTask.runningTasks.Count > 0)
-            {
-                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
-                {
-                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
-
-                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
-                        + '\n'
-                        + "Was ended at " + System.DateTime.Now);
-
-                    dbuTask.Cancel();
-                    DBUTask.runningTasks.Remove(dbuTask);
-                }
-            }
-            else
-            {
-                await ReplyAsync("There are no tasks to stop!");
-            }
-        }
-
-        [Command("run StopTasks")]
-        public async Task StopBotTasks([Remainder] string text)
-        {
-            if (DBUTask.runningTasks.Count > 0)
-            {
-                for (int i = DBUTask.runningTasks.Count - 1; i >= 0; i--)
-                {
-                    DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
-
-                    List<string> botNamesList = cylons.ToList<string>();
-                    string bot = botNamesList.Find(s => text.Contains(s));
-
-                    if (dbuTask.owner.Equals(bot))
-                    {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
-                            + '\n'
-                            + "Was ended at " + System.DateTime.Now);
-
-                        dbuTask.Cancel();
-                        DBUTask.runningTasks.Remove(dbuTask);
-                    }
-                    else if (dbuTask.owner.Equals("Client"))
-                    {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
-                            + '\n'
-                            + "Was ended at " + System.DateTime.Now);
-
-                        dbuTask.Cancel();
-                        DBUTask.runningTasks.Remove(dbuTask);
-                    }
-                }
-            }
-            else
-            {
-                await ReplyAsync("There are no tasks to stop!");
-            }
-        }
-
-        [Command("run StopListener")]
-        public async Task StopListener([Remainder] string text)
-        {
-            if (listenerNames.Any(s => text.Contains(s)))
-            {
-                List<string> listenerList = listenerNames.ToList<string>();
-                string listener = listenerList.Find(s => text.Contains(s));
-
-                if (listener.Equals("building"))
-                {
-                    await Task.Run(() => init.SetBuildingAsync(false));
-                }
-                else if (listener.Equals("distress"))
-                {
-                    await Task.Run(() => init.SetDistressAsync(false));
-                }
-                else if (listener.Equals("kombat"))
-                {
-                    await Task.Run(() => init.SetKombatAsync(false));
-                }
-                else if (listener.Equals("serverResets"))
-                {
-                    await Task.Run(() => init.SetAlertsAsync(false));
-                }
-                else if (listener.Equals("All"))
-                {
-                    await Task.Run(() => init.SetAllAsync(false));
-                }
-                await ReplyAsync("By Your Command! Stopped Listening for " + listener + " updates");
-            }
-        }
-
-        private async Task ChatLogListener(ulong channelID, string purpose, string owner)
+        internal async Task ChatLogListener(ulong channelID, string purpose, string owner)
         {
             uint listenerNum = DBUTask.dbuTaskNum++;
             Task task = Task.Run(() => init.ChatLogListenerAsync(listenerNum, channelID, owner));
@@ -477,19 +478,19 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(500);
         }
 
-        private async Task PictureUpdater(ulong channelID, string purpose, string owner)
-        {
-            uint picturesNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum));
-            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
-            await Task.Delay(500);
-        }
-
-        private async Task MessageUpdater(string purpose, string owner)
+        internal async Task MessageUpdater(string purpose, string owner)
         {
             uint id = DBUTask.dbuTaskNum++;
             Task task = Task.Run(() => init.TextUpdaterAsync(id));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
+            await Task.Delay(500);
+        }
+
+        internal async Task PictureUpdater(ulong channelID, string purpose, string owner)
+        {
+            uint picturesNum = DBUTask.dbuTaskNum++;
+            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum));
+            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
             await Task.Delay(500);
         }
 

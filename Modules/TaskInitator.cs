@@ -166,6 +166,10 @@ namespace DiscordBotUpdates.Modules
 
                                         if (Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
                                         {
+                                            if (picture.Contains("_"))
+                                            {
+                                                picture.Replace("_", " ");
+                                            }
                                             if (!File.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture)))
                                             {
                                                 File.Copy(picture, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/" + Path.GetFileName(picture));
@@ -543,7 +547,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + lastLine, ChannelID.enemySightingsID);
+                        await OutprintAsync("@everyone " + lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
                         await SayAsync(enemy + " ran away cause he's a bitch nigga", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
@@ -831,7 +835,11 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                         //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
                     }
-                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains("Arc") || lastLine.Contains("arc")))
+                    else if (lastLine.Contains("Advanced Architecture lvl 3"))
+                    {
+                        await OutprintAsync(AtUser(lastLine) + lastLine + " Possible Zounds if a rocky/greenhouse or on its on its way to being zoundsable.", ChannelID.buildingID);
+                    }
+                    else if (lastLine.Contains("Advanced Architecture lvl 2") && (lastLine.Contains(".Arc") || lastLine.Contains(".arc")))
                     {
                         await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!", ChannelID.buildingID);
                         //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);

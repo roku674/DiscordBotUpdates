@@ -96,4 +96,3 @@ H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.pdb
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.genruntimeconfig.cache
-H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache
