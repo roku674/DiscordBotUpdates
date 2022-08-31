@@ -12,6 +12,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>7</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>00020813-0000-0000-c000-000000000046</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+      <private>true</private>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="C:\Users\ZANDER\Downloads\u-87.ico">
       <Pack>True</Pack>
@@ -20,9 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.7.2" />
+    <PackageReference Include="Discord.Net" Version="3.8.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.57.0" />
-    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.57.0.2696" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.57.0.2759" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 

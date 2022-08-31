@@ -12,6 +12,7 @@
         private static readonly ulong _enemySightingsID = 999454210116563126;
         private static readonly ulong _nuetrinoID = 943753103042289675;
         private static readonly ulong _planetPicturesID = 1003920734114029578;
+        private static readonly ulong _pollutionFinderID = 1014287210041839658;
         private static readonly ulong _recapListID = 941389866137169920;
         private static readonly ulong _redomeID = 989310361666740244;
         private static readonly ulong _scoutReportsID = 962444379245649940;
@@ -32,6 +33,7 @@
         public static ulong enemySightingsID => _enemySightingsID;
         public static ulong nuetrinoID => _nuetrinoID;
         public static ulong planetPicturesID => _planetPicturesID;
+        public static ulong pollutionFinderID => _pollutionFinderID;
         public static ulong recapListID => _recapListID;
         public static ulong redomeID => _redomeID;
         public static ulong scoutReportsID => _scoutReportsID;

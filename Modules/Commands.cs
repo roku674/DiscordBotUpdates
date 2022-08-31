@@ -173,14 +173,13 @@ namespace DiscordBotUpdates.Modules
                 "  Help" +
                 '\n' + '\n' +
                 "  Gets: " +
-                  '\n' +
+                '\n' +
                 "    request Lifetime" +
                 '\n' +
                 "    request Listeners" +
                 '\n' +
                 "    request RunningTasks" +
                 '\n' + '\n' +
-
                 "  Posts: " +
                 '\n' +
                 "    run AllTasks" +
@@ -192,6 +191,8 @@ namespace DiscordBotUpdates.Modules
                 "    run Deactivate" +
                 '\n' +
                 "    run Echo (BotName) (Command/Chat) (line)" +
+                '\n' +
+                "    run FindPollution" +
                 '\n' +
                 "    run/request Info" +
                 '\n' +
@@ -207,7 +208,11 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    request planet (planetName)" +
                 '\n' +
+                "    request planetQuote" +
+                '\n' +
                 "    run StopAllTasks" +
+                '\n' +
+                "    run readExcel" +
                 '\n' +
                 "    run readFolders" +
                 '\n' +
@@ -222,7 +227,17 @@ namespace DiscordBotUpdates.Modules
         [Command("request Info")]
         public async Task InfoGet()
         {
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost + '\n'
+            string owner = "Client";
+            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+            {
+                owner = "Cylon";
+            }
+            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+            {
+                owner = "Laptop";
+            }
+            await DBUTask.OutprintAsync("Owner: " + owner + '\n'
+                        + "We Lost: " + TaskInitator.planetsLost + '\n'
                         + "We Kaptured: " + TaskInitator.planetsKaptured + '\n'
                         + "Allies Slain: " + TaskInitator.alliesSlain + '\n'
                         + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
@@ -445,6 +460,37 @@ namespace DiscordBotUpdates.Modules
             await DBUTask.OutprintAsync(
                 "We Lauwst: " + TaskInitator.planetsLost + '\n'
                 + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+        }
+
+        [Command("request planetsQuote")]
+        public async Task QuoteGet()
+        {
+            /*
+            string quote = "Arc " + arcticsZ + "/" + arctics +
+                "|~{yellow}~Des " + desertsZ + "/" + deserts +
+                "|~{green}~Earth " + earthsZ + "/" + earthlikes +
+                "|~{orange}~Green " + greenhousesZ + "/" + greenhouses +
+                "|~{purple}~Mount " + mountainsZ + "/" + mountains +
+                "|~{blue}~Oce " + oceansZ + "/" + oceans +
+                "|~{pink}~IGPs ~{link}1:" + paradises + "~" +
+                "|~{gray}~Roc " + rockiesZ + "/" + rockies +
+                "|~{red}~Volc " + volcanicsZ + "/" + volcanics +
+                "|~{link}25:Caps:~ " + invasions +
+                "|~{green}~Traded: " + traded +
+                "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";*/
+        }
+
+        [Command("run readExcel")]
+        public async Task ReadExcelDocument()
+        {
+            Task task = Task.Run(() => 
+            init.LoadExcelHoldingsAsync());
+        }
+
+        [Command("run FindPollution")]
+        public async Task FindPollution()
+        {
+            Task task = Task.Run(() => init.FindPollutionListAsync());
         }
 
         [Command("run readFolders")]

@@ -2,6 +2,7 @@
 
 using StarportObjects;
 using DiscordBotUpdates.Objects;
+using ExcelCSharp;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
+        public static List<Holdings> holdingsList { get; set; }
         public static string lastLand { get; set; }
         public static string lastSystem { get; set; }
         public static bool building { get; set; }
@@ -312,6 +314,109 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
+        internal async Task FindPollutionListAsync()
+        {
+            if (holdingsList == null)
+            {
+                await LoadExcelHoldingsAsync();
+            }
+
+            List<string> pollutionHoldings = new List<string>();
+
+            foreach (Holdings holdings in holdingsList)
+            {
+                if (holdings.pollution >= 0)
+                {
+                    pollutionHoldings.Add(holdings.pollution.ToString());
+                }
+            }
+            await OutprintAsync(pollutionHoldings, ChannelID.pollutionFinderID);
+        }
+
+        internal async Task LoadExcelHoldingsAsync()
+        {
+            holdingsList = new List<Holdings>();
+            Excel.Kill();
+            string path = "";
+
+            if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.csv"))
+            {
+                /*
+                if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.xlsx"))
+                {
+                    File.Delete("C:/Users/ZANDER/StarportGE/holdings.xlsx");
+                }
+
+                Excel.ConvertFromCSVtoXLSX("C:/Users/ZANDER/StarportGE/holdings.csv", "C:/Users/ZANDER/StarportGE/holdings.xlsx");*/
+                path = "C:/Users/ZANDER/StarportGE/holdings.xlsx";
+            }
+            else if (File.Exists("C:/Users/ALEX/StarportGE/holdings.csv"))
+            {
+                /*
+                if (File.Exists("C:/Users/ALEX/StarportGE/holdings.xlsx"))
+                {
+                    File.Delete("C:/Users/ALEX/StarportGE/holdings.xlsx");
+                }
+
+                Excel.ConvertFromCSVtoXLSX("C:/Users/ALEX/StarportGE/holdings.csv", "C:/Users/ALEX/StarportGE/holdings.xlsx");*/
+                return;
+                path = "C:/Users/ALEX/StarportGE/holdings.xlsx";
+            }
+            Excel excelHoldings = new Excel(path, 1);
+
+            //im starting this at one becuase column 0 is the title
+            for (int i = 2; i < excelHoldings.rowCount; i++)
+            {
+                object[] rowArr = new object[excelHoldings.rowCount];
+
+                for (int j = 1; j < excelHoldings.colCount; j++)
+                {
+                    rowArr[i] = excelHoldings.ReadCell(i, j);
+
+                    if (j == 2 || j == 5 || j == 6 || j == 10 || j == 15 || j == 17 || j == 19 || (j >= 21 && j <= 24) || (j >= 26 && j <= 44))
+                    {
+                        int cell = excelHoldings.ReadCellInt(i, j);
+                        rowArr[j - 1] = cell;
+                    }
+                    else if (j == 9)
+                    {
+                        DateTime cell = excelHoldings.ReadCellDateTime(i, j);
+                        rowArr[j - 1] = cell;
+                    }
+                    else if ((j >= 11 && j <= 13) || j == 16 || j == 18 || j == 20)
+                    {
+                        float cell = excelHoldings.ReadCellFloat(i, j);
+                        rowArr[j - 1] = cell;
+                    }
+                    else if (j == 46)
+                    {
+                        bool cell = excelHoldings.ReadCellBool(i, j);
+                        rowArr[j - 1] = cell;
+                    }
+                    else
+                    {
+                        string cell = excelHoldings.ReadCellString(i, j);
+                        rowArr[j - 1] = cell;
+                    }
+
+                    if (rowArr[j - 1] == null)
+                    {
+                        return;
+                    }
+                } //end j
+                Holdings holdings = new Holdings(
+                    (string)rowArr[0], (int)rowArr[1], (string)rowArr[2], (string)rowArr[3], (int)rowArr[4], (int)rowArr[5], (string)rowArr[6], (string)rowArr[7], (DateTime)rowArr[8], (int)rowArr[9],
+                    (float)rowArr[10], (float)rowArr[11], (float)rowArr[12], (string)rowArr[13], (int)rowArr[14], (float)rowArr[15], (int)rowArr[16], (float)rowArr[17], (int)rowArr[18], (float)rowArr[19],
+                    (int)rowArr[20], (int)rowArr[21], (int)rowArr[22], (int)rowArr[23], (string)rowArr[24], (int)rowArr[25], (int)rowArr[26], (int)rowArr[27], (int)rowArr[28], (int)rowArr[29],
+                    (int)rowArr[30], (int)rowArr[31], (int)rowArr[32], (int)rowArr[33], (int)rowArr[34], (int)rowArr[35], (int)rowArr[36], (int)rowArr[37], (int)rowArr[38], (int)rowArr[39],
+                    (int)rowArr[40], (int)rowArr[41], (int)rowArr[42], (int)rowArr[43], (string)rowArr[44], (bool)rowArr[45]);
+                holdingsList.Add(holdings);
+            }
+
+            excelHoldings.Close();
+            await OutprintAsync("Excel Document Sucessfully loaded into memory!", ChannelID.botCommandsID);
+        }
+
         internal async Task ReadPlanetPicturesAndInfoFolders()
         {
             if (Directory.Exists("H:/My Drive/planet_pictures_and_info"))
@@ -455,25 +560,6 @@ namespace DiscordBotUpdates.Modules
             else
             {
                 return "";
-            }
-        }
-
-        /// <summary>
-        /// If the file can be opened for exclusive access it means that the file
-        /// is no longer locked by another process.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private static bool IsFileReady(string filename)
-        {
-            try
-            {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
-                    return inputStream.Length > 0;
-            }
-            catch (System.Exception)
-            {
-                return false;
             }
         }
 
