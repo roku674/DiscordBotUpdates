@@ -303,7 +303,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (i % 120 == 0)
                 {
-                    _ = Task.Run(() => RunThroughText());
+                    _ = Task.Run(() => RunThroughTextAsync());
                 }
 
                 task.ticker++;
@@ -314,23 +314,47 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
+        internal async Task FindEnemyColoniesAsync(string enemy, string folder)
+        {
+            Algorithms.FileManipulation.FileDeleteIfExists(folder + "/enemyCols.txt");
+
+            //System.Console.WriteLine("Finding " + enemy + " colonies!");
+            await OutprintAsync(enemy + "'s planets:", ChannelID.fetchAIID);
+
+            File.Create(folder + "/enemyCols.txt").Close();
+            foreach (string fileName in Directory.EnumerateFiles(folder, "*.txt"))
+            {
+                //System.Console.WriteLine(fileName);
+                string fileContents = File.ReadAllText(fileName);
+                if (fileContents.Contains(enemy))
+                {
+                    await File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
+                }
+            }
+            await OutprintFileAsync(folder + "/enemyCols.txt", ChannelID.fetchAIID);
+            File.Delete(folder + "/enemyCols.txt");
+        }
+
         internal async Task FindPollutionListAsync()
         {
             if (holdingsList == null)
             {
                 await LoadExcelHoldingsAsync();
             }
+            string tempPol = Directory.GetCurrentDirectory() + "/pollution.txt";
 
-            List<string> pollutionHoldings = new List<string>();
+            Algorithms.FileManipulation.FileDeleteIfExists(tempPol);
+            File.Create(tempPol).Close();
 
             foreach (Holdings holdings in holdingsList)
             {
                 if (holdings.pollution >= 0)
                 {
-                    pollutionHoldings.Add(holdings.pollution.ToString());
+                    await File.AppendAllTextAsync(tempPol, holdings.name + " : " + holdings.pollution + " + " + holdings.pollutionRate + "/day" + '\n');
                 }
             }
-            await OutprintAsync(pollutionHoldings, ChannelID.pollutionFinderID);
+            await OutprintFileAsync(tempPol, ChannelID.pollutionFinderID);
+            File.Delete(tempPol);
         }
 
         internal async Task LoadExcelHoldingsAsync()
@@ -363,61 +387,105 @@ namespace DiscordBotUpdates.Modules
                 path = "C:/Users/ALEX/StarportGE/holdings.xlsx";
             }
             Excel excelHoldings = new Excel(path, 1);
+            object[,] excelMatrixObj = excelHoldings.ReadCellRange();
+            string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
 
-            //im starting this at one becuase column 0 is the title
+            //im starting this at one becuase column   is the title
             for (int i = 2; i < excelHoldings.rowCount; i++)
             {
-                object[] rowArr = new object[excelHoldings.rowCount];
-
-                for (int j = 1; j < excelHoldings.colCount; j++)
+                for (int j = 1; j <= excelHoldings.colCount; j++)
                 {
-                    rowArr[i] = excelHoldings.ReadCell(i, j);
+                    if (excelMatrixObj[i, j] == null)
+                    {
+                        excelMatrixObj[i, j] = "";
+                    }
+                    excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
 
-                    if (j == 2 || j == 5 || j == 6 || j == 10 || j == 15 || j == 17 || j == 19 || (j >= 21 && j <= 24) || (j >= 26 && j <= 44))
+                    int tempInt = 0;
+                    double tempDouble = 0;
+                    if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
                     {
-                        int cell = excelHoldings.ReadCellInt(i, j);
-                        rowArr[j - 1] = cell;
+                        excelMatrixObj[i, j] = tempInt;
                     }
-                    else if (j == 9)
+                    else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
                     {
-                        DateTime cell = excelHoldings.ReadCellDateTime(i, j);
-                        rowArr[j - 1] = cell;
-                    }
-                    else if ((j >= 11 && j <= 13) || j == 16 || j == 18 || j == 20)
-                    {
-                        float cell = excelHoldings.ReadCellFloat(i, j);
-                        rowArr[j - 1] = cell;
-                    }
-                    else if (j == 46)
-                    {
-                        bool cell = excelHoldings.ReadCellBool(i, j);
-                        rowArr[j - 1] = cell;
+                        excelMatrixObj[i, j] = tempDouble;
                     }
                     else
                     {
-                        string cell = excelHoldings.ReadCellString(i, j);
-                        rowArr[j - 1] = cell;
+                        excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
                     }
 
-                    if (rowArr[j - 1] == null)
-                    {
-                        return;
-                    }
-                } //end j
+                    //System.Console.WriteLine("[" + i + "," + j + "]" + rowArr[i, j].GetType());
+                }
+                excelMatrixObj[i, 9] = DateTime.MaxValue;
+                //System.Console.WriteLine("[" + i + "," + 9 + "]" + rowArr[i, 9].GetType());
+                if ((int)excelMatrixObj[i, 46] == 1)
+                {
+                    excelMatrixObj[i, 46] = true;
+                }
+                else
+                {
+                    excelMatrixObj[i, 46] = false;
+                }
+                //System.Console.WriteLine("[" + i + "," + 46 + "]" + rowArr[i, 46].GetType());
+
                 Holdings holdings = new Holdings(
-                    (string)rowArr[0], (int)rowArr[1], (string)rowArr[2], (string)rowArr[3], (int)rowArr[4], (int)rowArr[5], (string)rowArr[6], (string)rowArr[7], (DateTime)rowArr[8], (int)rowArr[9],
-                    (float)rowArr[10], (float)rowArr[11], (float)rowArr[12], (string)rowArr[13], (int)rowArr[14], (float)rowArr[15], (int)rowArr[16], (float)rowArr[17], (int)rowArr[18], (float)rowArr[19],
-                    (int)rowArr[20], (int)rowArr[21], (int)rowArr[22], (int)rowArr[23], (string)rowArr[24], (int)rowArr[25], (int)rowArr[26], (int)rowArr[27], (int)rowArr[28], (int)rowArr[29],
-                    (int)rowArr[30], (int)rowArr[31], (int)rowArr[32], (int)rowArr[33], (int)rowArr[34], (int)rowArr[35], (int)rowArr[36], (int)rowArr[37], (int)rowArr[38], (int)rowArr[39],
-                    (int)rowArr[40], (int)rowArr[41], (int)rowArr[42], (int)rowArr[43], (string)rowArr[44], (bool)rowArr[45]);
+                    excelMatrix[i, 1],
+                    int.Parse(excelMatrix[i, 2]),
+                    excelMatrix[i, 3],
+                    excelMatrix[i, 4],
+                    int.Parse(excelMatrix[i, 5]),
+                    int.Parse(excelMatrix[i, 6]),
+                    excelMatrix[i, 7],
+                    excelMatrix[i, 8],
+                    (DateTime)excelMatrixObj[i, 9],
+                    int.Parse(excelMatrix[i, 10]),
+                    double.Parse(excelMatrix[i, 11]),
+                    double.Parse(excelMatrix[i, 12]),
+                    double.Parse(excelMatrix[i, 13]),
+                    excelMatrix[i, 14],
+                    int.Parse(excelMatrix[i, 15]),
+                    double.Parse(excelMatrix[i, 16]),
+                    int.Parse(excelMatrix[i, 17]),
+                    double.Parse(excelMatrix[i, 18]),
+                    int.Parse(excelMatrix[i, 19]),
+                    double.Parse(excelMatrix[i, 20]),
+                    int.Parse(excelMatrix[i, 21]),
+                    int.Parse(excelMatrix[i, 22]),
+                    int.Parse(excelMatrix[i, 23]),
+                    int.Parse(excelMatrix[i, 24]),
+                    excelMatrix[i, 25],
+                    int.Parse(excelMatrix[i, 26]),
+                    int.Parse(excelMatrix[i, 27]),
+                    int.Parse(excelMatrix[i, 28]),
+                    int.Parse(excelMatrix[i, 29]),
+                    int.Parse(excelMatrix[i, 40]),
+                    int.Parse(excelMatrix[i, 31]),
+                    int.Parse(excelMatrix[i, 32]),
+                    int.Parse(excelMatrix[i, 33]),
+                    int.Parse(excelMatrix[i, 34]),
+                    int.Parse(excelMatrix[i, 35]),
+                    int.Parse(excelMatrix[i, 36]),
+                    int.Parse(excelMatrix[i, 37]),
+                    int.Parse(excelMatrix[i, 38]),
+                    int.Parse(excelMatrix[i, 39]),
+                    int.Parse(excelMatrix[i, 40]),
+                    int.Parse(excelMatrix[i, 41]),
+                    int.Parse(excelMatrix[i, 42]),
+                    int.Parse(excelMatrix[i, 43]),
+                    int.Parse(excelMatrix[i, 44]),
+                    excelMatrix[i, 45],
+                    (bool)excelMatrixObj[i, 46]
+                    );
+
                 holdingsList.Add(holdings);
             }
-
             excelHoldings.Close();
             await OutprintAsync("Excel Document Sucessfully loaded into memory!", ChannelID.botCommandsID);
         }
 
-        internal async Task ReadPlanetPicturesAndInfoFolders()
+        internal async Task ReadPlanetPicturesAndInfoFoldersAsync()
         {
             if (Directory.Exists("H:/My Drive/planet_pictures_and_info"))
             {
@@ -959,7 +1027,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        private async Task RunThroughText()
+        private async Task RunThroughTextAsync()
         {
             if (Directory.Exists("H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Channel"))
             {

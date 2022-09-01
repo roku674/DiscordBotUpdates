@@ -35,23 +35,28 @@ namespace DiscordBotUpdates
                 ApplicationName = ApplicationName,
             });
             //was clearing out the wrong file names
+
             /*
-            string[] files = System.IO.Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures", "*", System.IO.SearchOption.AllDirectories);
+            string[] files = System.IO.Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets", "*", System.IO.SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 string newName = System.IO.Path.GetFileName(file);
                 newName = Algorithms.StringManipulation.RemoveDuplicates(newName);
 
-                //System.Console.WriteLine(System.IO.Path.GetFileName(file) + '\n' + newName);
+                System.Console.WriteLine(System.IO.Path.GetFileName(file) + '\n' + newName);
                 System.IO.DirectoryInfo parentDir = System.IO.Directory.GetParent(file);
                 if (System.IO.File.Exists(parentDir.FullName + "/" + newName) && System.IO.Path.GetFileName(file) != newName)
                 {
+                    if (System.IO.File.Exists(newName))
+                    {
+                        System.IO.File.Delete(parentDir.FullName + "/" + newName);
+                    }
+                    System.IO.File.Move(file, parentDir.FullName + "/" + newName);
                     System.IO.File.Delete(file);
                     System.Console.WriteLine("Deleted " + System.IO.Path.GetFileName(file));
-                    //System.IO.File.Move(file, parentDir.FullName + "/" + newName);
                 }
-            }
-            */
+            }*/
+
             new Program().RunBotAsync().GetAwaiter().GetResult();
         }
 
