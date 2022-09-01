@@ -2,21 +2,21 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Discord.Net/3.7.2": {
+      "Discord.Net/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Commands": "3.7.2",
-          "Discord.Net.Core": "3.7.2",
-          "Discord.Net.Interactions": "3.7.2",
-          "Discord.Net.Rest": "3.7.2",
-          "Discord.Net.WebSocket": "3.7.2",
-          "Discord.Net.Webhook": "3.7.2"
+          "Discord.Net.Commands": "3.8.0",
+          "Discord.Net.Core": "3.8.0",
+          "Discord.Net.Interactions": "3.8.0",
+          "Discord.Net.Rest": "3.8.0",
+          "Discord.Net.WebSocket": "3.8.0",
+          "Discord.Net.Webhook": "3.8.0"
         }
       },
-      "Discord.Net.Commands/3.7.2": {
+      "Discord.Net.Commands/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Core": "3.7.2"
+          "Discord.Net.Core": "3.8.0"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.Commands.dll": {}
@@ -25,7 +25,7 @@
           "lib/netstandard2.1/Discord.Net.Commands.dll": {}
         }
       },
-      "Discord.Net.Core/3.7.2": {
+      "Discord.Net.Core/3.8.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "13.0.1",
@@ -40,12 +40,12 @@
           "lib/netstandard2.1/Discord.Net.Core.dll": {}
         }
       },
-      "Discord.Net.Interactions/3.7.2": {
+      "Discord.Net.Interactions/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Core": "3.7.2",
-          "Discord.Net.Rest": "3.7.2",
-          "Discord.Net.WebSocket": "3.7.2",
+          "Discord.Net.Core": "3.8.0",
+          "Discord.Net.Rest": "3.8.0",
+          "Discord.Net.WebSocket": "3.8.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "5.0.0",
           "System.Collections.Immutable": "5.0.0",
           "System.Reactive": "5.0.0"
@@ -57,10 +57,10 @@
           "lib/netstandard2.1/Discord.Net.Interactions.dll": {}
         }
       },
-      "Discord.Net.Rest/3.7.2": {
+      "Discord.Net.Rest/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Core": "3.7.2"
+          "Discord.Net.Core": "3.8.0"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.Rest.dll": {}
@@ -69,11 +69,11 @@
           "lib/netstandard2.1/Discord.Net.Rest.dll": {}
         }
       },
-      "Discord.Net.Webhook/3.7.2": {
+      "Discord.Net.Webhook/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Core": "3.7.2",
-          "Discord.Net.Rest": "3.7.2"
+          "Discord.Net.Core": "3.8.0",
+          "Discord.Net.Rest": "3.8.0"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.Webhook.dll": {}
@@ -82,11 +82,11 @@
           "lib/netstandard2.1/Discord.Net.Webhook.dll": {}
         }
       },
-      "Discord.Net.WebSocket/3.7.2": {
+      "Discord.Net.WebSocket/3.8.0": {
         "type": "package",
         "dependencies": {
-          "Discord.Net.Core": "3.7.2",
-          "Discord.Net.Rest": "3.7.2"
+          "Discord.Net.Core": "3.8.0",
+          "Discord.Net.Rest": "3.8.0"
         },
         "compile": {
           "lib/netstandard2.1/Discord.Net.WebSocket.dll": {}
@@ -122,7 +122,7 @@
           "lib/netstandard2.0/Google.Apis.Auth.dll": {}
         }
       },
-      "Google.Apis.Calendar.v3/1.57.0.2696": {
+      "Google.Apis.Calendar.v3/1.57.0.2759": {
         "type": "package",
         "dependencies": {
           "Google.Apis": "1.57.0",
@@ -250,26 +250,26 @@
     }
   },
   "libraries": {
-    "Discord.Net/3.7.2": {
-      "sha512": "FAiCLGu5rp6+Z10FjKbbJ6LLpKjbMBGpozixkJlz5LZvuncPx8f4AWFAw7pBecKUuAh983qiZ8CZYZcNXsI4qg==",
+    "Discord.Net/3.8.0": {
+      "sha512": "sZD2xupS+9GD5n0hrg0i31bC8KszAt+S9COr3Z526vt0CE2TwIdohUjsOK6Pao7Hrl58Nf0BL9+j7iZZz+0VjQ==",
       "type": "package",
-      "path": "discord.net/3.7.2",
+      "path": "discord.net/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "discord.net.3.7.2.nupkg.sha512",
+        "discord.net.3.8.0.nupkg.sha512",
         "discord.net.nuspec"
       ]
     },
-    "Discord.Net.Commands/3.7.2": {
-      "sha512": "aOEGP04X64htsTr7ozKj9qHpmvOfitSw5gfR8Tw9TX0+FdswD2LNL2KfOAIaxRKZmRTm34aXQEJrVq0K8AptmQ==",
+    "Discord.Net.Commands/3.8.0": {
+      "sha512": "NaeScuFoL8O7QfeDxWGiBRAd13Qajn2iWl6MS5HdCFFfKWjNrCmo7v6STap8uN7PyID/14dwFDzCNCudRArJRg==",
       "type": "package",
-      "path": "discord.net.commands/3.7.2",
+      "path": "discord.net.commands/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.commands.3.7.2.nupkg.sha512",
+        "discord.net.commands.3.8.0.nupkg.sha512",
         "discord.net.commands.nuspec",
         "lib/net461/Discord.Net.Commands.dll",
         "lib/net461/Discord.Net.Commands.xml",
@@ -283,15 +283,15 @@
         "lib/netstandard2.1/Discord.Net.Commands.xml"
       ]
     },
-    "Discord.Net.Core/3.7.2": {
-      "sha512": "apwswc6LjN4dj3u27SO3Hr56Jzl91wzReahieoD7IQhV+BJQaRxhTRiEEWFTrBzHfeFHEOQ7r6vZnra3zeFhKA==",
+    "Discord.Net.Core/3.8.0": {
+      "sha512": "anq5FvYE5Uls7zIbMJt6IT9yXndoJpPh/fMiNhFDMqgzQlZtCoOODGHcHtG50hDNn777kYTpWPQ8Q0UosqHjWQ==",
       "type": "package",
-      "path": "discord.net.core/3.7.2",
+      "path": "discord.net.core/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.core.3.7.2.nupkg.sha512",
+        "discord.net.core.3.8.0.nupkg.sha512",
         "discord.net.core.nuspec",
         "lib/net461/Discord.Net.Core.dll",
         "lib/net461/Discord.Net.Core.xml",
@@ -305,15 +305,15 @@
         "lib/netstandard2.1/Discord.Net.Core.xml"
       ]
     },
-    "Discord.Net.Interactions/3.7.2": {
-      "sha512": "dwGhEdDB0yyo/lGtjwIDVZmsuD52di7lIZWu/sBtvvA05dMgYZq5S6ILdsBXjOyaHeXd+EV4YMlj2VS/rm619w==",
+    "Discord.Net.Interactions/3.8.0": {
+      "sha512": "rbnSyD6GqNledBVzbjtkhIsnmoz8tKt2vTzEkNg4d4h8Q2Eh066Co5oVSO7jNH07ugT8kyZSdW87Q60YrrD7+w==",
       "type": "package",
-      "path": "discord.net.interactions/3.7.2",
+      "path": "discord.net.interactions/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.interactions.3.7.2.nupkg.sha512",
+        "discord.net.interactions.3.8.0.nupkg.sha512",
         "discord.net.interactions.nuspec",
         "lib/net461/Discord.Net.Interactions.dll",
         "lib/net461/Discord.Net.Interactions.xml",
@@ -327,15 +327,15 @@
         "lib/netstandard2.1/Discord.Net.Interactions.xml"
       ]
     },
-    "Discord.Net.Rest/3.7.2": {
-      "sha512": "dyp8YaMBNJ837EH1KNz2PNGZqc2y71WFd1+pdldF+pLQJ3Gf/+V7685paAR7bQw7yFNyqEBR/QRBCNp+QIQ7Wg==",
+    "Discord.Net.Rest/3.8.0": {
+      "sha512": "D8CGSkWqeRg3D8ZawthWdwKFHPVhdYB8dxltT5wAgN5op6lZd8BjEzCCOlsDrnIGcah3BkOnVqgPk1u0SBxqWw==",
       "type": "package",
-      "path": "discord.net.rest/3.7.2",
+      "path": "discord.net.rest/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.rest.3.7.2.nupkg.sha512",
+        "discord.net.rest.3.8.0.nupkg.sha512",
         "discord.net.rest.nuspec",
         "lib/net461/Discord.Net.Rest.dll",
         "lib/net461/Discord.Net.Rest.xml",
@@ -349,15 +349,15 @@
         "lib/netstandard2.1/Discord.Net.Rest.xml"
       ]
     },
-    "Discord.Net.Webhook/3.7.2": {
-      "sha512": "da3i/mTq2y7mfj3xlHH14S4PivHbflJCVr8OUikJtQrxBOxvPkqP7ZYk3Y9S28q0K8qik+TUjCcjL5gELKrh/A==",
+    "Discord.Net.Webhook/3.8.0": {
+      "sha512": "5TZavUm1OqZKWr98JH1J9dZNixu32Kylz+9iL2czvR+IfdfpG6UXr40qk79Po6WLjWHmtBEpULVwSN11otTG3g==",
       "type": "package",
-      "path": "discord.net.webhook/3.7.2",
+      "path": "discord.net.webhook/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.webhook.3.7.2.nupkg.sha512",
+        "discord.net.webhook.3.8.0.nupkg.sha512",
         "discord.net.webhook.nuspec",
         "lib/net5.0/Discord.Net.Webhook.dll",
         "lib/net5.0/Discord.Net.Webhook.xml",
@@ -369,15 +369,15 @@
         "lib/netstandard2.1/Discord.Net.Webhook.xml"
       ]
     },
-    "Discord.Net.WebSocket/3.7.2": {
-      "sha512": "pYCd6ET44ADaNiyEw82TaJnR7TKYHfrKCytWFWMPL5faJhoh260avZn3Hwunlf331lEQ0f4K1CujPkQbNuq7kQ==",
+    "Discord.Net.WebSocket/3.8.0": {
+      "sha512": "DOPGQLqyf2km0UyOcLxeV6TP4WA2f18aWJAaU4TxInYMqAVSOZVaQfB0bBf307uNNlYqCE6loYwrysH8zQNbpQ==",
       "type": "package",
-      "path": "discord.net.websocket/3.7.2",
+      "path": "discord.net.websocket/3.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "PackageLogo.png",
-        "discord.net.websocket.3.7.2.nupkg.sha512",
+        "discord.net.websocket.3.8.0.nupkg.sha512",
         "discord.net.websocket.nuspec",
         "lib/net461/Discord.Net.WebSocket.dll",
         "lib/net461/Discord.Net.WebSocket.xml",
@@ -443,16 +443,16 @@
         "lib/netstandard2.0/Google.Apis.Auth.xml"
       ]
     },
-    "Google.Apis.Calendar.v3/1.57.0.2696": {
-      "sha512": "wOkQFjN8xDGunhkbW+ZrDPmKXAyV7dM9YTmrBgTY0ZBzK9+32ut9n73DTuK68afmdqienw7y+hiHtlWWX71sSQ==",
+    "Google.Apis.Calendar.v3/1.57.0.2759": {
+      "sha512": "pKArc5Xz52croZuQ7sUDwiH6HT0AqheNGYfUqYqIXnPl90Bp5CSTsPMq5ZxX8rw7JeLXuoz234cEX0nTk63kiQ==",
       "type": "package",
-      "path": "google.apis.calendar.v3/1.57.0.2696",
+      "path": "google.apis.calendar.v3/1.57.0.2759",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.calendar.v3.1.57.0.2696.nupkg.sha512",
+        "google.apis.calendar.v3.1.57.0.2759.nupkg.sha512",
         "google.apis.calendar.v3.nuspec",
         "lib/net40/Google.Apis.Calendar.v3.dll",
         "lib/net40/Google.Apis.Calendar.v3.pdb",
@@ -743,9 +743,9 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "Discord.Net >= 3.7.2",
+      "Discord.Net >= 3.8.0",
       "Google.Apis.Auth >= 1.57.0",
-      "Google.Apis.Calendar.v3 >= 1.57.0.2696",
+      "Google.Apis.Calendar.v3 >= 1.57.0.2759",
       "Microsoft.Extensions.DependencyInjection >= 6.0.0"
     ]
   },
@@ -797,7 +797,7 @@
         "dependencies": {
           "Discord.Net": {
             "target": "Package",
-            "version": "[3.7.2, )"
+            "version": "[3.8.0, )"
           },
           "Google.Apis.Auth": {
             "target": "Package",
@@ -805,7 +805,7 @@
           },
           "Google.Apis.Calendar.v3": {
             "target": "Package",
-            "version": "[1.57.0.2696, )"
+            "version": "[1.57.0.2759, )"
           },
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",

@@ -10,9 +10,9 @@ namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
+        internal TaskInitator init = new TaskInitator();
         private readonly string[] cylons = { "Allie", "Bitcoin", "Probation" };
         private readonly string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
-        internal TaskInitator init = new TaskInitator();
 
         [Command("run AllTasks")]
         public async Task AllTasksRun()
@@ -163,6 +163,18 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        [Command("request enemyPlanets")]
+        public async Task EnemyPlanetsGet([Remainder] string text)
+        {
+            await Task.Run(() => init.FindEnemyColoniesAsync(text, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets"));
+        }
+
+        [Command("run FindPollution")]
+        public async Task FindPollution()
+        {
+            await Task.Run(() => init.FindPollutionListAsync());
+        }
+
         [Command("Help")]
         public async Task Help()
         {
@@ -173,14 +185,21 @@ namespace DiscordBotUpdates.Modules
                 "  Help" +
                 '\n' + '\n' +
                 "  Gets: " +
-                  '\n' +
+                '\n' +
+                "    request enemyPlanets (ownerName/corporation)" +
+                '\n' +
                 "    request Lifetime" +
                 '\n' +
                 "    request Listeners" +
                 '\n' +
+                "    request planet (planetName)" +
+                '\n' +
+                "    request planetQuote" +
+                 '\n' +
+                "    request planetTallies" +
+                '\n' +
                 "    request RunningTasks" +
                 '\n' + '\n' +
-
                 "  Posts: " +
                 '\n' +
                 "    run AllTasks" +
@@ -193,21 +212,21 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Echo (BotName) (Command/Chat) (line)" +
                 '\n' +
+                "    run FindPollution" +
+                '\n' +
                 "    run/request Info" +
                 '\n' +
                 "    run ListenerChatLog (Client/Bot Name)" +
                 '\n' +
                 "    run Listener (Listener type)" +
-                '\n' +
-                "    request planetTallies" +
                  '\n' +
                 "    run planetsCaptured #" +
                  '\n' +
                 "    run planetsLost #" +
                 '\n' +
-                "    request planet (planetName)" +
-                '\n' +
                 "    run StopAllTasks" +
+                '\n' +
+                "    run readExcel" +
                 '\n' +
                 "    run readFolders" +
                 '\n' +
@@ -222,7 +241,17 @@ namespace DiscordBotUpdates.Modules
         [Command("request Info")]
         public async Task InfoGet()
         {
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost + '\n'
+            string owner = "Client";
+            if (Directory.Exists("C:/Users/ZANDER/StarportGE/ChatLogs"))
+            {
+                owner = "Cylon";
+            }
+            else if (Directory.Exists("C:/Users/ALEX/StarportGE/ChatLogs"))
+            {
+                owner = "Laptop";
+            }
+            await DBUTask.OutprintAsync("Owner: " + owner + '\n'
+                        + "We Lost: " + TaskInitator.planetsLost + '\n'
                         + "We Kaptured: " + TaskInitator.planetsKaptured + '\n'
                         + "Allies Slain: " + TaskInitator.alliesSlain + '\n'
                         + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
@@ -447,10 +476,37 @@ namespace DiscordBotUpdates.Modules
                 + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
         }
 
+        [Command("request planetsQuote")]
+        public async Task QuoteGet()
+        {
+            string quote = "";
+            /*
+            string quote = "Arc " + arcticsZ + "/" + arctics +
+                "|~{yellow}~Des " + desertsZ + "/" + deserts +
+                "|~{green}~Earth " + earthsZ + "/" + earthlikes +
+                "|~{orange}~Green " + greenhousesZ + "/" + greenhouses +
+                "|~{purple}~Mount " + mountainsZ + "/" + mountains +
+                "|~{blue}~Oce " + oceansZ + "/" + oceans +
+                "|~{pink}~IGPs ~{link}1:" + paradises + "~" +
+                "|~{gray}~Roc " + rockiesZ + "/" + rockies +
+                "|~{red}~Volc " + volcanicsZ + "/" + volcanics +
+                "|~{link}25:Caps:~ " + invasions +
+                "|~{green}~Traded: " + traded +
+                "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";*/
+
+            await ReplyAsync(quote);
+        }
+
+        [Command("run readExcel")]
+        public async Task ReadExcelDocument()
+        {
+            await Task.Run(() => init.LoadExcelHoldingsAsync());
+        }
+
         [Command("run readFolders")]
         public async Task ReadPlanetPicturesAndInfoFolders()
         {
-            _ = Task.Run(() => init.ReadPlanetPicturesAndInfoFolders());
+            _ = Task.Run(() => init.ReadPlanetPicturesAndInfoFoldersAsync());
             await Task.Delay(1);
         }
 
