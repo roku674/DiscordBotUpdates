@@ -99,3 +99,4 @@ H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\Interop.Microsoft.Office.Interop.Excel.dll
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.ResolveComReference.cache
 H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\bin\Release\netcoreapp3.1\Interop.Microsoft.Office.Interop.Excel.dll
+H:\My Drive\Shared\DiscordBotUpdates\DiscordBotUpdates\obj\Release\netcoreapp3.1\DiscordBotUpdates.csproj.AssemblyReference.cache

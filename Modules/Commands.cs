@@ -172,7 +172,31 @@ namespace DiscordBotUpdates.Modules
         [Command("request pollution")]
         public async Task PollutionGet()
         {
-            await Task.Run(() => init.FindPollutionListAsync());
+            await Task.Run(() => init.FindListAsync("Pollution"));
+        }
+
+        [Command("request revolts")]
+        public async Task RevoltGet()
+        {
+            await Task.Run(() => init.FindListAsync("Revolt"));
+        }
+
+        [Command("request defenses")]
+        public async Task DefensesGet()
+        {
+            await Task.Run(() => init.FindWeaponsNearMeAsync(false, true));
+        }
+
+        [Command("request nukes")]
+        public async Task NukesGet()
+        {
+            await Task.Run(() => init.FindWeaponsNearMeAsync(true, false));
+        }
+
+        [Command("request shrinking")]
+        public async Task ShrinkingGet()
+        {
+            await Task.Run(() => init.FindListAsync("Shrinking"));
         }
 
         [Command("Help")]
@@ -186,11 +210,15 @@ namespace DiscordBotUpdates.Modules
                 '\n' + '\n' +
                 "  Gets: " +
                 '\n' +
+                "    request defenses" +
+                '\n' +
                 "    request enemyPlanets (ownerName/corporation)" +
                 '\n' +
                 "    request Lifetime" +
                 '\n' +
                 "    request Listeners" +
+                '\n' +
+                "    request nukes" +
                 '\n' +
                 "    request planet (planetName)" +
                 '\n' +
@@ -199,6 +227,10 @@ namespace DiscordBotUpdates.Modules
                 "    request planetTallies" +
                 '\n' +
                 "    request pollution" +
+                 '\n' +
+                "    request revolts" +
+                '\n' +
+                "    request shrinking" +
                 '\n' +
                 "    request RunningTasks" +
                 '\n' + '\n' +
