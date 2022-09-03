@@ -101,7 +101,7 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine(message);
                     break;
             }
-            await OutprintAsync(message + '\n'
+            await OutprintAsync(AtUser(title) + message + '\n'
                 + title + '\n'
                 + "Redome Time: " + startTime.ToString() + " EST", Objects.ChannelID.redomeID);
         }
@@ -189,6 +189,46 @@ namespace DiscordBotUpdates.Modules
 
             Discord.IVoiceChannel channel = Program.client.GetChannel(channelId) as Discord.IVoiceChannel;
             await channel.SendMessageAsync(message, isTTS: true);
+        }
+
+        internal static string AtUser(string line)
+        {
+            if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Anxiety.jar") || line.Contains("Freeman") || line.Contains("139536795858632705"))
+            {
+                return "<@139536795858632705> ";
+            }
+            else if (line.Contains("Avacado") || line.Contains("Archer") || line.Contains("Archie") || line.Contains("CaptArcher") || line.Contains("530669734413205505"))
+            {
+                return "<@530669734413205505> ";
+            }
+            else if (line.Contains("Banana") || line.Contains("BANANA") || line.Contains("BananaDei") || line.Contains("535618193251762176"))
+            {
+                return "<@535618193251762176> ";
+            }
+            else if (line.Contains("Dev") || line.Contains("DEV") || line.Contains("276593195767431168"))
+            {
+                return "<@276593195767431168> ";
+            }
+            else if (line.Contains("Jum") || line.Contains("JUM") || line.Contains("Jumjumbub1410") || line.Contains("941167776163323944"))
+            {
+                return "<@941167776163323944> ";
+            }
+            else if (line.Contains("lk") || line.Contains("LK") || line.Contains("leader") || line.Contains("Leader") || line.Contains("Leaderkiller") || line.Contains("429101973145387019"))
+            {
+                return "<@429101973145387019> ";
+            }
+            else if (line.Contains("muzza") || line.Contains("MUZZA") || line.Contains("Muzza") || line.Contains("Muzza269u") || line.Contains("999054521776996372"))
+            {
+                return "<@999054521776996372> ";
+            }
+            else if (line.Contains("tater") || line.Contains("Tater") || line.Contains("Taterchip") || line.Contains("969258165831106581"))
+            {
+                return "<@969258165831106581> ";
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

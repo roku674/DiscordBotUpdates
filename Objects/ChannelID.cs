@@ -12,6 +12,7 @@
         private static readonly ulong _colonyManagementID = 1015217251386937435;
         private static readonly ulong _distressCallsID = 941795796523819048;
         private static readonly ulong _enemySightingsID = 999454210116563126;
+        private static readonly ulong _newsID = 1015564608481808425;
         private static readonly ulong _nuetrinoID = 943753103042289675;
         private static readonly ulong _planetPicturesID = 1003920734114029578;
         private static readonly ulong _pollutionFinderID = 1014287210041839658;
@@ -37,6 +38,7 @@
         public static ulong colonyManagementID => _colonyManagementID;
         public static ulong distressCallsID => _distressCallsID;
         public static ulong enemySightingsID => _enemySightingsID;
+        public static ulong newsID => _newsID;
         public static ulong nuetrinoID => _nuetrinoID;
         public static ulong planetPicturesID => _planetPicturesID;
         public static ulong pollutionFinderID => _pollutionFinderID;

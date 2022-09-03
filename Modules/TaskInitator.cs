@@ -104,6 +104,72 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        public async Task UpdateAllieTxt(string text)
+        {
+            string alliePath = Directory.GetCurrentDirectory() + "/Echo/AllieTemp.txt";
+
+            if (holdingsList == null)
+            {
+                await LoadExcelHoldingsAsync();
+            }
+            string[] lines = new string[9];
+            lines[0] = "  Command Build " + text;
+            Holding planetToBuild = holdingsList.Find(p => p.location == text);
+
+            foreach (Holding planet in holdingsList)
+            {
+                if (planetToBuild.galaxyX == planet.galaxyX && planetToBuild.galaxyY == planet.galaxyY)
+                {
+                    string planetType = planet.planetType.Replace(
+                               planet.planetType[0].ToString(),
+                               planet.planetType[0].ToString().ToUpper());
+                    if (planet.ore >= 20000)
+                    {
+                        lines[1] = planet.location + " Type0 " + planetType;
+                    }
+                    if (planet.ana >= 10000)
+                    {
+                        lines[2] = planet.location + " Type1 " + planetType;
+                    }
+                    if (planet.med >= 10000)
+                    {
+                        lines[3] = planet.location + " Type2 " + planetType;
+                    }
+                    if (planet.org >= 10000)
+                    {
+                        lines[4] = planet.location + " Type3 " + planetType;
+                    }
+                    if (planet.oil >= 10000)
+                    {
+                        lines[5] = planet.location + " Type4 " + planetType;
+                    }
+                    if (planet.ura >= 10000)
+                    {
+                        lines[6] = planet.location + " Type5 " + planetType;
+                    }
+                    if (planet.equ >= 10000)
+                    {
+                        lines[7] = planet.location + " Type6 " + planetType;
+                    }
+                    if (planet.spi >= 10000)
+                    {
+                        lines[8] = planet.location + " Type7 " + planetType;
+                    }
+                }
+            }
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                {
+                }
+            }
+
+            await File.WriteAllLinesAsync(alliePath, lines);
+
+            await OutprintFileAsync(alliePath, ChannelID.botUpdatesID);
+        }
+
         /// <summary>
         /// Call this to start the picture updater
         /// </summary>
@@ -352,13 +418,16 @@ namespace DiscordBotUpdates.Modules
                 Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir");
             }
             await File.WriteAllTextAsync(tempPath, "");
+            Holding origin = holdingsList.Find(planet => planet.location.Contains("Beta Doradus"));
+            localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
+            int negativeGrowth = 0, negativeMorale = 0, polluting = 0;
 
-            localHoldingsList.OrderBy(hops => hops.hopsAway);
             if (type == "Pollution")
             {
                 channel = ChannelID.pollutionFinderID;
                 foreach (Holding planet in localHoldingsList)
                 {
+                    polluting++;
                     if (planet.pollution > 0 || planet.pollutionRate > 0)
                     {
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
@@ -373,6 +442,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (planet.morale < 0 || planet.moraleChange < 0.00d)
                     {
+                        negativeMorale++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
@@ -385,47 +455,58 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (planet.popGrowth < -1d && planet.popGrowth > -2000)
                     {
+                        negativeGrowth++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
             }
-            else if (type == "Zoundsable")
+            else if (type == "Zoundsables")
             {
                 channel = ChannelID.buildingID;
+                int zoundsableCounter = 0;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.population < 100000 && isZoundsable(planet.planetType, planet.discoveries))
+                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
                     {
+                        zoundsableCounter++;
                         string message =
                            planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
                            + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                           + "Resources: " + '\n' + "_______________________________________" + '\n'
+                           + "Resources: " + '\n'
                            + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
                            + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                           + "Equipment: " + planet.equ + " | Spice: " + planet.spi + '\n' + '\n';
+                           + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                           +'\n' + '\n'
+                           + " ___________________________________________________________________________"
+                           + '\n' + '\n';
 
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
+                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
             }
             else if (type == "All")
             {
                 channel = ChannelID.colonyManagementID;
+
                 foreach (Holding planet in localHoldingsList)
                 {
                     if (planet.popGrowth < -1d && planet.popGrowth > -2000)
                     {
+                        negativeGrowth++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                     if (planet.morale < 0 || planet.moraleChange < 0.00d)
                     {
+                        negativeMorale++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                     if (planet.pollution > 0 || planet.pollutionRate > 0)
                     {
+                        polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
@@ -436,11 +517,17 @@ namespace DiscordBotUpdates.Modules
                 await OutprintAsync(type + " was not recognized!", ChannelID.botErrorsID);
             }
 
+            await OutprintAsync("Totals: " + '\n'
+                           + "Negative Growth: " + negativeGrowth + '\n'
+                           + "Negative Morale: " + negativeMorale + '\n'
+                           + "Polluting: " + polluting, channel);
+
             foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir"))
             {
                 if (AtUser(file) != "")
                 {
                     await OutprintAsync(AtUser(file), channel);
+
                     if (!string.IsNullOrEmpty(File.ReadAllText(file)))
                     {
                         await OutprintFileAsync(file, channel);
@@ -714,72 +801,6 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
-        private string AtUser(string line)
-        {
-            if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Anxiety.jar") || line.Contains("Freeman") || line.Contains("139536795858632705"))
-            {
-                return "<@139536795858632705> ";
-            }
-            else if (line.Contains("Avacado") || line.Contains("Archer") || line.Contains("Archie") || line.Contains("CaptArcher") || line.Contains("530669734413205505"))
-            {
-                return "<@530669734413205505> ";
-            }
-            else if (line.Contains("Banana") || line.Contains("BANANA") || line.Contains("BananaDei") || line.Contains("535618193251762176"))
-            {
-                return "<@535618193251762176> ";
-            }
-            else if (line.Contains("Dev") || line.Contains("DEV") || line.Contains("276593195767431168"))
-            {
-                return "<@276593195767431168> ";
-            }
-            else if (line.Contains("Jum") || line.Contains("JUM") || line.Contains("Jumjumbub1410") || line.Contains("941167776163323944"))
-            {
-                return "<@941167776163323944> ";
-            }
-            else if (line.Contains("lk") || line.Contains("LK") || line.Contains("leader") || line.Contains("Leader") || line.Contains("Leaderkiller") || line.Contains("429101973145387019"))
-            {
-                return "<@429101973145387019> ";
-            }
-            else if (line.Contains("muzza") || line.Contains("MUZZA") || line.Contains("Muzza") || line.Contains("Muzza269u") || line.Contains("999054521776996372"))
-            {
-                return "<@999054521776996372> ";
-            }
-            else if (line.Contains("tater") || line.Contains("Tater") || line.Contains("Taterchip") || line.Contains("969258165831106581"))
-            {
-                return "<@969258165831106581> ";
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        private bool isZoundsable(string planetType, string research)
-        {
-            string[] arch2Up = new string[] { "Arch lvl 2", "Arch lvl 3", "Arch lvl 4", "Arch lvl 5" };
-            string[] arch3Up = new string[] { "Arch lvl 3", "Arch lvl 4", "Arch lvl 5" };
-            string[] arch4Up = new string[] { "Arch lvl 4", "Arch lvl 5" };
-
-            if (planetType == "arctic" && arch2Up.Any(s => research.Contains(s)))
-            {
-                return true;
-            }
-            else if ((planetType == "rocky" || planetType == "greenhouse" || planetType == "Intergalactic paradise") && arch3Up.Any(s => research.Contains(s)))
-            {
-                return true;
-            }
-            else if ((planetType == "earthlike" || planetType == "volcanic" || planetType == "oceanic") && arch4Up.Any(s => research.Contains(s)))
-            {
-                return true;
-            }
-            else if ((planetType == "mountainous" || planetType == "desert") && research.Contains("Arch lvl 5"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private async void OnChatChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
         {
             string filePath = fileSysEvent.FullPath;
@@ -835,7 +856,7 @@ namespace DiscordBotUpdates.Modules
                 }
                 else if (lastLine.Contains("Fellow corporation member"))
                 {
-                    await OutprintAsync(lastLine, ChannelID.slaversID);
+                    await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsID);
                 }
 
                 if (kombat)
@@ -897,18 +918,18 @@ namespace DiscordBotUpdates.Modules
                             enemiesSlain++;
                             if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.alliedChatID);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.alliedChatID);
                             }
                             else
                             {
-                                await OutprintAsync(lastLine, ChannelID.slaversID);
+                                await OutprintAsync(lastLine, ChannelID.newsID);
                                 //await OutprintAsync(lastLine, ChannelID.alliedChatID);
                             }
 
@@ -919,18 +940,18 @@ namespace DiscordBotUpdates.Modules
                             enemiesSlain++;
                             if (secondToLastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatID);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatID);
                             }
                             else
                             {
-                                await OutprintAsync(secondToLastLine, ChannelID.slaversID);
+                                await OutprintAsync(secondToLastLine, ChannelID.newsID);
                                 //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
                             }
 
@@ -941,18 +962,18 @@ namespace DiscordBotUpdates.Modules
                             enemiesSlain++;
                             if (thirdToLastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + thirdToLastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + thirdToLastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatID);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + thirdToLastLine, ChannelID.slaversID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + thirdToLastLine, ChannelID.newsID);
                                 //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatID);
                             }
                             else
                             {
-                                await OutprintAsync(thirdToLastLine, ChannelID.slaversID);
+                                await OutprintAsync(thirdToLastLine, ChannelID.newsID);
                                 //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
                             }
 
@@ -961,7 +982,7 @@ namespace DiscordBotUpdates.Modules
                         else if (lastLine.Contains("shot down " + ally) && !ally.Equals(" "))
                         {
                             alliesSlain++;
-                            await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.slaversID);
+                            await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.newsID);
                             //await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.alliedChatID);
                             await SayAsync(ally + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
                         }
@@ -972,11 +993,15 @@ namespace DiscordBotUpdates.Modules
                     {
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.distressCallsID);
                         await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListID);
+                        string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
+                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
 
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/crying-meme-black-guy-cries-sad-man-thank-god-for-my-reefer-hood-news-gif-24902056 " + '\n' +
                                 "WE Lost Double Dome!", ChannelID.slaversID);
+                            await OutprintAsync("https://tenor.com/view/crying-meme-black-guy-cries-sad-man-thank-god-for-my-reefer-hood-news-gif-24902056 " + '\n' +
+                                "WE Lost Double Dome!", ChannelID.newsID);
                         }
                         await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
 
@@ -1001,14 +1026,24 @@ namespace DiscordBotUpdates.Modules
                                 planetsLost++;
                             }
                         }
+
+                        if (holdingsIndex != -1)
+                        {
+                            await OutprintAsync(
+                                "Metal Ore: " + holdingsList[holdingsIndex].ore + " | Solar: " + holdingsList[holdingsIndex].solarShots + " / " + holdingsList[holdingsIndex].solarFreq + '\n' +
+                                " | Nukes: " + holdingsList[holdingsIndex].nukes + " | Negotiators: " + holdingsList[holdingsIndex].negotiators + " | Compound Mines: " + holdingsList[holdingsIndex].compoundMines + " | Lasers: " + holdingsList[holdingsIndex].laserCannons + '\n' +
+                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, ChannelID.distressCallsID);
+                        }
                     }
                     else if (lastLine.Contains("captured the colony"))
                     {
-                        await OutprintAsync(lastLine, ChannelID.slaversID);
+                        await OutprintAsync(lastLine, ChannelID.newsID);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                               "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
                         }
                         //await OutprintAsync(lastLine, ChannelID.alliedChatID);
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
@@ -1016,36 +1051,47 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (lastLine.Contains("You claim ownership of the colony owned by"))
                     {
-                        await OutprintAsync(secondToLastLine, ChannelID.slaversID);
+                        await OutprintAsync(secondToLastLine, ChannelID.newsID);
                         //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
                                 "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
                         }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
                     }
                     else if (lastLine.Contains("It now belongs to"))
                     {
-                        await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.slaversID);
+                        await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.newsID);
                         //await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.alliedChatID);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
                                 "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
                         }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
                     }
                     else if (lastLine.Contains("For successful invasion"))
                     {
-                        await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.slaversID);
+                        await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.newsID);
                         //await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.alliedChatID);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
                                 "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                        }
+                        if (lastLine.Contains("DD"))
+                        {
+                            await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
                         }
                         await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
                         planetsKaptured++;
@@ -1124,7 +1170,7 @@ namespace DiscordBotUpdates.Modules
                         List<string> alliesList = Diplomacy.allies.ToList<string>();
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.slaversID);
+                        await OutprintAsync(lastLine, ChannelID.newsID);
                         await SayAsync(ally + " I see you!", ChannelID.voiceSlaversOnlyID);
                     }
                     else if (lastLine.Contains("Empress Allie says to Slavers"))
@@ -1133,7 +1179,8 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (lastLine.Contains("due to pollution"))
                     {
-                        await OutprintAsync(lastLine, ChannelID.slaversID);
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsID);
+                        await SayAsync(AtUser(lastLine) + " your colony had a disasta", ChannelID.voiceSlaversOnlyID);
                     }
                 }
 
@@ -1150,21 +1197,25 @@ namespace DiscordBotUpdates.Modules
 
                         await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingID);
                         colsAbandoned++;
-                        /*
-                        await Outprint(lastLine +
-                            '\n' + "Add redome time to Discord Calendar Unimplemented!" +
-                            '\n' + end.ToString(), ChannelID.redomeID);*/
                     }
                     //aa
                     else if (lastLine.Contains("Advanced Architecture lvl"))
                     {
-                        string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
-                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                        string planetName = Algorithms.StringManipulation.GetBetween(lastLine, " on ", "discovered");
+                        if (planetName.Contains("["))
+                        {
+                            planetName = Algorithms.StringManipulation.GetBetween(planetName, " on ", "[");
+                        }
+                        else
+                        {
+                            planetName = Algorithms.StringManipulation.GetBetween(planetName, " on ", "(");
+                        }
 
-                        if (holdingsIndex != -1)
+                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                        if (holdingsIndex != -1 && StarportHelperClasses.Helper.IsZoundsable(holdingsList[holdingsIndex].planetType, holdingsList[holdingsIndex].discoveries))
                         {
                             Holding planet = holdingsList[holdingsIndex];
-                            string message =
+                            string message = +'\n' +
                                 planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
                                  + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
                                  + "Resources: " + '\n' + "_______________________________________" + '\n'
@@ -1174,17 +1225,10 @@ namespace DiscordBotUpdates.Modules
 
                             await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingID);
                         }
-                        else
-                        {
-                            await OutprintAsync("Colony was not found in the spreadsheet!", ChannelID.buildingID);
-                        }
-
-                        //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to zounds!", ChannelID.voiceBuildingID);
                     }
                     else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
                     {
                         await OutprintAsync(AtUser(lastLine) + lastLine + " Decent Huge Metro col", ChannelID.buildingID);
-                        //await Say(Algorithms.StringManipulation.GetBetween(lastLine, "on", "discovered") + " is ready to build!", ChannelID.voiceBuildingID);
                     }
                     //if bio3
                     else if (lastLine.Contains("completed work on the Biodome Level 3."))

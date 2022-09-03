@@ -98,6 +98,12 @@ namespace DiscordBotUpdates.Modules
             await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
         }
 
+        [Command("run Build")]
+        public async Task BuildMacroCreator([Remainder] string text)
+        {
+            await init.UpdateAllieTxt(text);
+        }
+
         [Command("run ClearBotsEcho")]
         public async Task ClearBotsEcho()
         {
