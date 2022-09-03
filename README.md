@@ -11,7 +11,9 @@ I made this project mostly for our guild in a game we play called Starport Galac
 <h2>
   NuGetPackages: 
 </h2>
+<p>
 <a href="https://github.com/discord-net/Discord.Net">Discord.Net v3.8.0</a>
+  </p>
 <a href="https://github.com/googleapis/google-api-dotnet-client">Google.Apis.Auth v1.57.0</a>
 <a href="https://github.com/googleapis/google-api-dotnet-client">Google.Apis.Calendar.v3 v1.57.0.2759</a>
 
