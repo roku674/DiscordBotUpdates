@@ -14,7 +14,7 @@ Skills: C#/ Java/ Node JS / React Js / HTML
 - 🔭 I’m currently working on A lot... 
 - 🌱 I’m currently learning Via LinkedIn Learning 
 - 👯 I’m looking to collaborate on Anything just hit me up 
-- 🤔 I’m looking for help with Ad Astra (A space game I'm creating) 
+- 🤔 I’m looking for help with <a href ="https://sites.google.com/view/perilousgamesltd/games/ad-astra-periclum/gallery"> Ad Astra</a> (A space game I'm creating)
 - 💬 Ask me about <a href="www.perilousgames.com">Perilous Games, Ltd. </a>
 - 📫 How to reach me: roku674@gmail.com 
 - 😄 Pronouns: He/Him 
