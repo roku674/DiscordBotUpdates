@@ -106,6 +106,7 @@ namespace DiscordBotUpdates
             await Task.Run(() => commands.init.SetAllAsync(true));
 
             _ = new Modules.TaskInitator().LoadExcelHoldingsAsync();
+
             await Task.Delay(System.Threading.Timeout.Infinite);
         }
 

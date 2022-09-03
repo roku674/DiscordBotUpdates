@@ -40,14 +40,14 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        //var
-        private static readonly int _duration = 604800;
+        //one month
+        private static readonly uint _duration = 2419200;
 
         private static uint _dbuTaskNum;
         private static List<DBUTaskObj> _runningTasks = new List<DBUTaskObj>();
 
         //getters/setters
-        public static int duration => _duration;
+        public static uint duration => _duration;
 
         public static uint dbuTaskNum { get => _dbuTaskNum; set => _dbuTaskNum = value; }
         public static List<DBUTaskObj> runningTasks { get => _runningTasks; set => _runningTasks = value; }
@@ -191,7 +191,7 @@ namespace DiscordBotUpdates.Modules
             await channel.SendMessageAsync(message, isTTS: true);
         }
 
-        internal static string AtUser(string line)
+        public static string AtUser(string line)
         {
             if (line.Contains("Autism") || line.Contains("Anxiety") || line.Contains("Anxiety.jar") || line.Contains("Freeman") || line.Contains("139536795858632705"))
             {
@@ -205,7 +205,7 @@ namespace DiscordBotUpdates.Modules
             {
                 return "<@535618193251762176> ";
             }
-            else if (line.Contains("Dev") || line.Contains("DEV") || line.Contains("276593195767431168"))
+            else if (line.Contains("Dev") || line.Contains("DEV") || line.Contains("276593195767431168") || line.Contains("Devila") || line.Contains("devila"))
             {
                 return "<@276593195767431168> ";
             }

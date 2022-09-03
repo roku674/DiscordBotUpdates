@@ -73,7 +73,7 @@ namespace DiscordBotUpdates.Modules
                 int taskNum = runningTasks.FindIndex(task => task.id == id);
                 DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
-                for (int i = 0; i < duration; i++)
+                for (uint i = 0; i < duration; i++)
                 {
                     if (runningTasks[taskNum].isCancelled)
                     {
@@ -189,7 +189,7 @@ namespace DiscordBotUpdates.Modules
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
-            for (int i = 0; i < duration; i++)
+            for (uint i = 0; i < duration; i++)
             {
                 if (runningTasks[taskNum].isCancelled)
                 {
@@ -307,8 +307,9 @@ namespace DiscordBotUpdates.Modules
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
             System.Console.WriteLine("Sucessfully Initiated Text Listener!", ChannelID.botCommandsId);
-
-            for (int i = 0; i < duration; i++)
+            uint hourlyTracker = 0;
+            uint TwoMinuteTracker = 0;
+            for (uint i = 0; i < duration; i++)
             {
                 if (runningTasks[taskNum].isCancelled)
                 {
@@ -370,15 +371,19 @@ namespace DiscordBotUpdates.Modules
                     colsBuilt = 0;
                 }
 
-                if (i % 120 == 0)
+                if (TwoMinuteTracker == 120)
                 {
                     _ = Task.Run(() => RunThroughTextAsync());
+                    TwoMinuteTracker = 0;
                 }
-                if (i % 60000 == 0)
+                if (hourlyTracker == 3600)
                 {
                     _ = Task.Run(() => FindHourlyRedomesAsync());
+                    hourlyTracker = 0;
                 }
 
+                TwoMinuteTracker++;
+                hourlyTracker++;
                 task.ticker++;
             }
 
@@ -387,8 +392,39 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        private void FindHourlyRedomesAsync()
+        public async Task FindHourlyRedomesAsync()
         {
+            Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
+            request.TimeMin = DateTime.Now;
+            request.TimeMax = DateTime.Now.AddHours(1);
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 50;
+            request.OrderBy = Google.Apis.Calendar.v3.EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            Google.Apis.Calendar.v3.Data.Events calendarEvents = request.Execute();
+
+            if (calendarEvents.Items != null && calendarEvents.Items.Count > 0)
+            {
+                foreach (Google.Apis.Calendar.v3.Data.Event calendarEvent in calendarEvents.Items)
+                {
+                    string atUser = "";
+                    if (AtUser(calendarEvent.Summary) != "")
+                    {
+                        atUser = AtUser(calendarEvent.Summary);
+                    }
+                    else if (AtUser(calendarEvent.Description) != "")
+                    {
+                        atUser = AtUser(calendarEvent.Description);
+                    }
+
+                    await OutprintAsync(atUser + "Redome Time: " + calendarEvent.OriginalStartTime + '\n'
+                        + calendarEvent.Summary + '\n'
+                        + calendarEvent.Description,
+                        ChannelID.redomeId
+                        );
+                }
+            }
         }
 
         internal async Task FindEnemyColoniesAsync(string enemy, string folder)
@@ -1227,7 +1263,6 @@ namespace DiscordBotUpdates.Modules
                         await SayAsync(AtUser(lastLine) + " your colony had a disasta", ChannelID.voiceSlaversOnlyId);
                     }
                 }
-
                 if (building)
                 {
                     string[] str = { "]", ")", "_", "." };
@@ -1276,7 +1311,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else
                         {
-                            await OutprintAsync(planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.buildingId);
+                            await OutprintAsync(lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.buildingId);
                         }
                     }
                     else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
