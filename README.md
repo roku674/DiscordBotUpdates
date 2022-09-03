@@ -9,7 +9,7 @@
 
 I made this project mostly for our guild in a game we play called Starport Galactic Empires
 
-Skills: C#/ Java/ Node JS / React Js / HTML 
+Skills: C#/ Java/ Node JS / React Js / Python/ HTML 
 
 - 🔭 I’m currently working on A lot... 
 - 🌱 I’m currently learning Via LinkedIn Learning 
