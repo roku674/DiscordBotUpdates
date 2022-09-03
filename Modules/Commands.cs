@@ -34,7 +34,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     DBUTask.DBUTaskObj dbuTask = DBUTask.runningTasks[i];
 
-                    await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                    await ReplyAsync("TaskId: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                         + '\n'
                         + "Was ended at " + System.DateTime.Now);
 
@@ -62,7 +62,7 @@ namespace DiscordBotUpdates.Modules
 
                     if (dbuTask.owner.Equals(bot))
                     {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                        await ReplyAsync("TaskId: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                             + '\n'
                             + "Was ended at " + System.DateTime.Now);
 
@@ -71,7 +71,7 @@ namespace DiscordBotUpdates.Modules
                     }
                     else if (dbuTask.owner.Equals("Client"))
                     {
-                        await ReplyAsync("TaskID: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
+                        await ReplyAsync("TaskId: " + dbuTask.task.Id + " | " + "Task Purpose: " + dbuTask.purpose + " | Task Owner: " + dbuTask.owner + " | Initiated at " + dbuTask.timeStarted + " | Lifetime: " + SecondsToTime(dbuTask.ticker)
                             + '\n'
                             + "Was ended at " + System.DateTime.Now);
 
@@ -92,10 +92,10 @@ namespace DiscordBotUpdates.Modules
             await ReplyAsync("By Your Command! Listening for messages and pictures for " + DBUTask.duration + " seconds!");
 
             await MessageUpdater("Message Updater", "Client");
-            //await MessageUpdater(ChannelID.distressCallsID, "Distress Signal Updater", "Client", "distress");
-            //await MessageUpdater(ChannelID.slaversID, "Warped In & Out Updater", "Client", "warpedInOut");
+            //await MessageUpdater(ChannelID.distressCallsId, "Distress Signal Updater", "Client", "distress");
+            //await MessageUpdater(ChannelID.slaversId, "Warped In & Out Updater", "Client", "warpedInOut");
 
-            await PictureUpdater(ChannelID.botUpdatesID, "Picture Updater", "Client");
+            await PictureUpdater(ChannelID.botUpdatesId, "Picture Updater", "Client");
         }
 
         [Command("run Build")]
@@ -271,7 +271,7 @@ namespace DiscordBotUpdates.Modules
                         + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
                         + "landings: " + TaskInitator.landings + '\n'
                         + "Colonies Abanonded: " + TaskInitator.colsAbandoned + '\n'
-                        + "Colonies Built: " + TaskInitator.colsBuilt, ChannelID.botCommandsID);
+                        + "Colonies Built: " + TaskInitator.colsBuilt, ChannelID.botCommandsId);
         }
 
         [Command("run Info")]
@@ -331,20 +331,20 @@ namespace DiscordBotUpdates.Modules
 
             if (text.Equals("All"))
             {
-                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+                await ChatLogListener(ChannelID.botUpdatesId, "Chat Log Listener", "Client");
                 /*
                 foreach (string botName in cylons)
                 {
-                    await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", botName);
+                    await ChatLogListener(ChannelID.botUpdatesId, "Chat Log Listener", botName);
                 }*/
             }
             else if (cylons.Any(s => text.Contains(s)))
             {
-                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", text);
+                await ChatLogListener(ChannelID.botUpdatesId, "Chat Log Listener", text);
             }
             else if (text.Equals("Client"))
             {
-                await ChatLogListener(ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+                await ChatLogListener(ChannelID.botUpdatesId, "Chat Log Listener", "Client");
             }
         }
 
@@ -435,25 +435,25 @@ namespace DiscordBotUpdates.Modules
                     //System.Console.WriteLine(directoryInfo.Name);
                     if (directoryInfo.Name == "PlanetPictures")
                     {
-                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.planetPicturesID);
-                        await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesID);
+                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.planetPicturesId);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesId);
 
                         await ReplyAsync("File printed to planet pictures!");
                     }
                     else if (directoryInfo.Name == "Enemy Planets")
                     {
-                        await DBUTask.OutprintAsync("Enemy Planet Requested: ", ChannelID.slaversID);
-                        await DBUTask.OutprintFileAsync(file, ChannelID.slaversID);
+                        await DBUTask.OutprintAsync("Enemy Planet Requested: ", ChannelID.slaversId);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.slaversId);
                         if (File.Exists(directoryInfo.FullName + "/" + text + ".txt"))
                         {
-                            await DBUTask.OutprintFileAsync(directoryInfo.FullName + "/" + text + ".txt", ChannelID.slaversID);
+                            await DBUTask.OutprintFileAsync(directoryInfo.FullName + "/" + text + ".txt", ChannelID.slaversId);
                         }
                         await ReplyAsync("File printed to slavers!");
                     }
                     else if (directoryInfo.Name == "Undomed")
                     {
-                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.buildingID);
-                        await DBUTask.OutprintFileAsync(file, ChannelID.buildingID);
+                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.buildingId);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.buildingId);
                         await ReplyAsync("File printed to building!");
                     }
 
@@ -470,7 +470,7 @@ namespace DiscordBotUpdates.Modules
             text = text.Trim();
             TaskInitator.planetsKaptured = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.botCommandsID);
+            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.botCommandsId);
         }
 
         [Command("run planetsLost")]
@@ -479,7 +479,7 @@ namespace DiscordBotUpdates.Modules
             text = text.Trim();
             TaskInitator.planetsLost = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsID);
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, ChannelID.botCommandsId);
         }
 
         [Command("request planetTallies")]
@@ -487,7 +487,7 @@ namespace DiscordBotUpdates.Modules
         {
             await DBUTask.OutprintAsync(
                 "We Lauwst: " + TaskInitator.planetsLost + '\n'
-                + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversID);
+                + "We Kaptured: " + TaskInitator.planetsKaptured, ChannelID.slaversId);
         }
 
         [Command("request planetsQuote")]
@@ -531,7 +531,7 @@ namespace DiscordBotUpdates.Modules
             {
                 foreach (DBUTask.DBUTaskObj task in DBUTask.runningTasks)
                 {
-                    await ReplyAsync("TaskID: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted + " | Lifetime: " + SecondsToTime(task.ticker));
+                    await ReplyAsync("TaskId: " + task.task.Id + " | " + "Task Purpose: " + task.purpose + " | Task Owner: " + task.owner + " | Initiated at " + task.timeStarted + " | Lifetime: " + SecondsToTime(task.ticker));
                 }
             }
             else
@@ -540,10 +540,10 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        internal async Task ChatLogListener(ulong channelID, string purpose, string owner)
+        internal async Task ChatLogListener(ulong channelId, string purpose, string owner)
         {
             uint listenerNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.ChatLogListenerAsync(listenerNum, channelID, owner));
+            Task task = Task.Run(() => init.ChatLogListenerAsync(listenerNum, channelId, owner));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, listenerNum, null));
             await Task.Delay(500);
         }
@@ -556,7 +556,7 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(500);
         }
 
-        internal async Task PictureUpdater(ulong channelID, string purpose, string owner)
+        internal async Task PictureUpdater(ulong channelId, string purpose, string owner)
         {
             uint picturesNum = DBUTask.dbuTaskNum++;
             Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum));
