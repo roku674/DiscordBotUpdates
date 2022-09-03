@@ -181,16 +181,10 @@ namespace DiscordBotUpdates.Modules
             await Task.Run(() => init.FindListAsync(text));
         }
 
-        [Command("request defenses")]
-        public async Task DefensesGet()
+        [Command("request WF")]
+        public async Task WeaponsFactoryGet([Remainder] string text)
         {
-            await Task.Run(() => init.FindWeaponsNearMeAsync(false, true));
-        }
-
-        [Command("request nukes")]
-        public async Task NukesGet()
-        {
-            await Task.Run(() => init.FindWeaponsNearMeAsync(true, false));
+            await Task.Run(() => init.FindWeaponsNearMeAsync(text));
         }
 
         [Command("Help")]
@@ -204,8 +198,6 @@ namespace DiscordBotUpdates.Modules
                 '\n' + '\n' +
                 "  Gets: " +
                 '\n' +
-                "    request defenses" +
-                '\n' +
                 "    request enemyPlanets (ownerName/corporation)" +
                 '\n' +
                 "    request List (Type)" +
@@ -214,15 +206,15 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    request Listeners" +
                 '\n' +
-                "    request nukes" +
-                '\n' +
                 "    request planet (planetName)" +
                 '\n' +
                 "    request planetQuote" +
-                 '\n' +
+                '\n' +
                 "    request planetTallies" +
                 '\n' +
                 "    request RunningTasks" +
+                '\n' +
+                "    request WF (defenses/nukes/shields)" +
                 '\n' + '\n' +
                 "  Posts: " +
                 '\n' +

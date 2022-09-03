@@ -103,7 +103,7 @@ namespace DiscordBotUpdates.Modules
             }
             await OutprintAsync(AtUser(title) + message + '\n'
                 + title + '\n'
-                + "Redome Time: " + startTime.ToString() + " EST", Objects.ChannelID.redomeID);
+                + "Redome Time: " + startTime.ToString() + " EST", Objects.ChannelID.redomeId);
         }
 
         public static async Task CelebrateUser(string title, string message, ulong channelId)
@@ -131,7 +131,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine(message);
             if (message.Contains("shouts") || message.Contains("radios") || message.Contains("tells"))
             {
-                Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesID) as Discord.IMessageChannel;
+                Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesId) as Discord.IMessageChannel;
                 await channel.SendMessageAsync(message);
             }
             else
@@ -148,7 +148,7 @@ namespace DiscordBotUpdates.Modules
                 System.Console.WriteLine(messages[i]);
                 if (messages[i].Contains("shouts") || messages[i].Contains("radios") || messages[i].Contains("tells"))
                 {
-                    Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesID) as Discord.IMessageChannel;
+                    Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesId) as Discord.IMessageChannel;
                     await channel.SendMessageAsync(messages[i]);
                 }
                 else
@@ -166,7 +166,7 @@ namespace DiscordBotUpdates.Modules
                 System.Console.WriteLine(messages[i]);
                 if (messages[i].Contains("shouts") || messages[i].Contains("radios") || messages[i].Contains("tells"))
                 {
-                    Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesID) as Discord.IMessageChannel;
+                    Discord.IMessageChannel channel = Program.client.GetChannel(Objects.ChannelID.botUpdatesId) as Discord.IMessageChannel;
                     await channel.SendMessageAsync(messages[i]);
                 }
                 else

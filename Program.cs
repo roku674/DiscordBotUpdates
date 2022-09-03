@@ -101,8 +101,8 @@ namespace DiscordBotUpdates
             await Task.Delay(10000);
             Modules.Commands commands = new Modules.Commands();
             await commands.MessageUpdater("Message Updater", "Client");
-            await commands.PictureUpdater(Objects.ChannelID.botUpdatesID, "Picture Updater", "Client");
-            await commands.ChatLogListener(Objects.ChannelID.botUpdatesID, "Chat Log Listener", "Client");
+            await commands.PictureUpdater(Objects.ChannelID.botUpdatesId, "Picture Updater", "Client");
+            await commands.ChatLogListener(Objects.ChannelID.botUpdatesId, "Chat Log Listener", "Client");
             await Task.Run(() => commands.init.SetAllAsync(true));
 
             _ = new Modules.TaskInitator().LoadExcelHoldingsAsync();
@@ -131,14 +131,14 @@ namespace DiscordBotUpdates
 
             int argPos = 0;
 
-            if (message.HasStringPrefix("$", ref argPos) && message.Channel.Id == Objects.ChannelID.botCommandsID)
+            if (message.HasStringPrefix("$", ref argPos) && message.Channel.Id == Objects.ChannelID.botCommandsId)
             {
                 IResult result = await _commands.ExecuteAsync(context, argPos, _services);
 
                 if (!result.IsSuccess)
                 {
                     System.Console.WriteLine(result.ErrorReason + " | " + context.Message);
-                    await Modules.DBUTask.OutprintAsync(result.ErrorReason + " | " + context.Message, Objects.ChannelID.botCommandsID);
+                    await Modules.DBUTask.OutprintAsync(result.ErrorReason + " | " + context.Message, Objects.ChannelID.botCommandsId);
                 }
             }
         }

@@ -35,7 +35,7 @@ namespace DiscordBotUpdates.Modules
         /// Call this to start the Distress Calls Listener
         /// </summary>
         /// <returns></returns>
-        public async Task ChatLogListenerAsync(uint id, ulong channelID, string owner)
+        public async Task ChatLogListenerAsync(uint id, ulong channelId, string owner)
         {
             System.Console.WriteLine("ChatLog Listener Executed!");
 
@@ -64,7 +64,7 @@ namespace DiscordBotUpdates.Modules
 
                 watcher.EnableRaisingEvents = true;
 
-                Discord.IMessageChannel channel = Program.client.GetChannel(channelID) as Discord.IMessageChannel;
+                Discord.IMessageChannel channel = Program.client.GetChannel(channelId) as Discord.IMessageChannel;
                 //await channel.SendMessageAsync("Sucessfully ran ChatLog Listener!");
                 System.Console.WriteLine("Sucessfully ran ChatLog Listener!");
 
@@ -167,7 +167,7 @@ namespace DiscordBotUpdates.Modules
 
             await File.WriteAllLinesAsync(alliePath, lines);
 
-            await OutprintFileAsync(alliePath, ChannelID.botUpdatesID);
+            await OutprintFileAsync(alliePath, ChannelID.botUpdatesId);
         }
 
         /// <summary>
@@ -221,15 +221,15 @@ namespace DiscordBotUpdates.Modules
                                 switch (j)
                                 {
                                     case 0:
-                                        await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                        await OutprintFileAsync(picture, ChannelID.botUpdatesId);
                                         break;
 
                                     case 1:
-                                        await OutprintFileAsync(picture, ChannelID.buildingID);
+                                        await OutprintFileAsync(picture, ChannelID.buildingId);
                                         break;
 
                                     case 2:
-                                        await OutprintFileAsync(picture, ChannelID.distressCallsID);
+                                        await OutprintFileAsync(picture, ChannelID.distressCallsId);
                                         break;
 
                                     case 3:
@@ -243,32 +243,32 @@ namespace DiscordBotUpdates.Modules
                                             if (!File.Exists(planetPicturesDir + Path.GetFileName(picture)))
                                             {
                                                 File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
-                                                await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesID);
-                                                await OutprintFileAsync(picture, ChannelID.planetPicturesID);
+                                                await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesId);
                                             }
                                             else
                                             {
-                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesID);
-                                                //await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesId);
+                                                //await OutprintFileAsync(picture, ChannelID.botUpdatesId);
                                             }
                                         }
                                         else
                                         {
-                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesID);
+                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesId);
                                         }
 
                                         break;
 
                                     case 4:
-                                        await OutprintFileAsync(picture, ChannelID.scoutReportsID);
+                                        await OutprintFileAsync(picture, ChannelID.scoutReportsId);
                                         break;
 
                                     case 5:
-                                        await OutprintFileAsync(picture, ChannelID.targetsID);
+                                        await OutprintFileAsync(picture, ChannelID.targetsId);
                                         break;
 
                                     default:
-                                        await OutprintFileAsync(picture, ChannelID.botUpdatesID);
+                                        await OutprintFileAsync(picture, ChannelID.botUpdatesId);
                                         break;
                                 }
                             }
@@ -285,7 +285,7 @@ namespace DiscordBotUpdates.Modules
 
                 task.ticker++;
             }
-            await OutprintAsync("No Longer Listening for Pictures Updates!", ChannelID.botCommandsID);
+            await OutprintAsync("No Longer Listening for Pictures Updates!", ChannelID.botCommandsId);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
         }
@@ -296,7 +296,7 @@ namespace DiscordBotUpdates.Modules
         /// <returns></returns>
         public async Task TextUpdaterAsync(uint id)
         {
-            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsID);
+            //await Outprint("Sucessfully Initiated " + type + " Listener!", ChannelID.botCommandsId);
             await Task.Delay(500);
             int taskNum = runningTasks.FindIndex(task => task.id == id);
 
@@ -306,7 +306,7 @@ namespace DiscordBotUpdates.Modules
             }
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
-            System.Console.WriteLine("Sucessfully Initiated Text Listener!", ChannelID.botCommandsID);
+            System.Console.WriteLine("Sucessfully Initiated Text Listener!", ChannelID.botCommandsId);
 
             for (int i = 0; i < duration; i++)
             {
@@ -332,23 +332,23 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (planetsLost >= 15)
                     {
-                        await OutprintAsync("https://tenor.com/view/correr-despavoridos-enchufe-tv-huir-invasion-extraterrestre-corran-por-sus-vidas-gif-24995288", ChannelID.slaversID);
+                        await OutprintAsync("https://tenor.com/view/correr-despavoridos-enchufe-tv-huir-invasion-extraterrestre-corran-por-sus-vidas-gif-24995288", ChannelID.slaversId);
                     }
                     if (((int)planetsKaptured - (int)planetsLost) >= 15)
                     {
-                        await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversID);
+                        await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.slaversId);
                     }
                     if (colsBuilt >= 10)
                     {
-                        await OutprintAsync("https://tenor.com/view/construct-construction-nail-and-hammer-build-worker-gif-13899535", ChannelID.slaversID);
+                        await OutprintAsync("https://tenor.com/view/construct-construction-nail-and-hammer-build-worker-gif-13899535", ChannelID.slaversId);
                     }
                     if (enemiesSlain >= 10)
                     {
-                        await OutprintAsync("https://tenor.com/view/starwars-the-force-awakens-xwing-air-combat-gif-4813295", ChannelID.slaversID);
+                        await OutprintAsync("https://tenor.com/view/starwars-the-force-awakens-xwing-air-combat-gif-4813295", ChannelID.slaversId);
                     }
                     if (alliesSlain >= 10)
                     {
-                        await OutprintAsync("https://tenor.com/view/press-f-pay-respect-coffin-burial-gif-12855021", ChannelID.slaversID);
+                        await OutprintAsync("https://tenor.com/view/press-f-pay-respect-coffin-burial-gif-12855021", ChannelID.slaversId);
                     }
 
                     await OutprintAsync(
@@ -359,7 +359,7 @@ namespace DiscordBotUpdates.Modules
                         + "Enemies Slain: " + enemiesSlain + '\n'
                         + "Landings: " + landings + '\n'
                         + "Colonies Abanonded: " + colsAbandoned + " (They just went out for milk and cigarettes)" + '\n'
-                        + "Colonies Built: " + colsBuilt, ChannelID.slaversID);
+                        + "Colonies Built: " + colsBuilt, ChannelID.slaversId);
 
                     planetsKaptured = 0;
                     planetsLost = 0;
@@ -374,19 +374,27 @@ namespace DiscordBotUpdates.Modules
                 {
                     _ = Task.Run(() => RunThroughTextAsync());
                 }
+                if (i % 60000 == 0)
+                {
+                    _ = Task.Run(() => FindHourlyRedomesAsync());
+                }
 
                 task.ticker++;
             }
 
-            await OutprintAsync("No Longer Listening for Text Updates!", ChannelID.botCommandsID);
+            await OutprintAsync("No Longer Listening for Text Updates!", ChannelID.botCommandsId);
             runningTasks.RemoveAt(taskNum);
             dbuTaskNum--;
+        }
+
+        private void FindHourlyRedomesAsync()
+        {
         }
 
         internal async Task FindEnemyColoniesAsync(string enemy, string folder)
         {
             //System.Console.WriteLine("Finding " + enemy + " colonies!");
-            await OutprintAsync(enemy + "'s planets:", ChannelID.scoutReportsID);
+            await OutprintAsync(enemy + "'s planets:", ChannelID.scoutReportsId);
 
             await File.WriteAllTextAsync(folder + "/enemyCols.txt", " ");
             foreach (string fileName in Directory.EnumerateFiles(folder, "*.txt"))
@@ -398,13 +406,13 @@ namespace DiscordBotUpdates.Modules
                     await File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
                 }
             }
-            await OutprintFileAsync(folder + "/enemyCols.txt", ChannelID.scoutReportsID);
+            await OutprintFileAsync(folder + "/enemyCols.txt", ChannelID.scoutReportsId);
             File.Delete(folder + "/enemyCols.txt");
         }
 
         internal async Task FindListAsync(string type)
         {
-            ulong channel = ChannelID.botUpdatesID;
+            ulong channel = ChannelID.botUpdatesId;
             List<Holding> localHoldingsList = holdingsList;
             if (localHoldingsList == null)
             {
@@ -420,11 +428,11 @@ namespace DiscordBotUpdates.Modules
             await File.WriteAllTextAsync(tempPath, "");
             Holding origin = holdingsList.Find(planet => planet.location.Contains("Beta Doradus"));
             localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
-            int negativeGrowth = 0, negativeMorale = 0, polluting = 0;
+            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0;
 
             if (type == "Pollution")
             {
-                channel = ChannelID.pollutionFinderID;
+                channel = ChannelID.pollutionFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
                     polluting++;
@@ -437,7 +445,7 @@ namespace DiscordBotUpdates.Modules
             }
             else if (type == "Revolt")
             {
-                channel = ChannelID.revoltFinderID;
+                channel = ChannelID.revoltFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
                     if (planet.morale < 0 || planet.moraleChange < 0.00d)
@@ -450,7 +458,7 @@ namespace DiscordBotUpdates.Modules
             }
             else if (type == "Shrinking")
             {
-                channel = ChannelID.shrinkingFinderID;
+                channel = ChannelID.shrinkingFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
                     if (planet.popGrowth < -1d && planet.popGrowth > -2000)
@@ -463,7 +471,7 @@ namespace DiscordBotUpdates.Modules
             }
             else if (type == "Zoundsables")
             {
-                channel = ChannelID.buildingID;
+                channel = ChannelID.buildingId;
                 int zoundsableCounter = 0;
                 foreach (Holding planet in localHoldingsList)
                 {
@@ -486,9 +494,32 @@ namespace DiscordBotUpdates.Modules
                 }
                 await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
             }
+            else if (type == "DD")
+            {
+                channel = ChannelID.ddId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.name.Contains("DD"))
+                    {
+                        ddCount++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
+                            + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                            + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields
+                            + '\n'
+                             + "Resources: " + '\n'
+                             + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                             + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                             + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                             +'\n' + '\n'
+                             + " ___________________________________________________________________________"
+                             + '\n' + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
             else if (type == "All")
             {
-                channel = ChannelID.colonyManagementID;
+                channel = ChannelID.colonyManagementId;
 
                 foreach (Holding planet in localHoldingsList)
                 {
@@ -510,14 +541,31 @@ namespace DiscordBotUpdates.Modules
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
+                    if (planet.name.Contains("DD"))
+                    {
+                        ddCount++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
+                           + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                           + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields
+                           + '\n'
+                            + "Resources: " + '\n'
+                            + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                            + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                            + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                            +'\n' + '\n'
+                            + " ___________________________________________________________________________"
+                            + '\n' + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
                 }
             }
             else
             {
-                await OutprintAsync(type + " was not recognized!", ChannelID.botErrorsID);
+                await OutprintAsync(type + " was not recognized!", ChannelID.botErrorsId);
             }
 
             await OutprintAsync("Totals: " + '\n'
+                           + "DD's: " + ddCount + '\n'
                            + "Negative Growth: " + negativeGrowth + '\n'
                            + "Negative Morale: " + negativeMorale + '\n'
                            + "Polluting: " + polluting, channel);
@@ -546,7 +594,7 @@ namespace DiscordBotUpdates.Modules
             Directory.Delete(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir");
         }
 
-        internal async Task FindWeaponsNearMeAsync(bool nukes, bool defenses)
+        internal async Task FindWeaponsNearMeAsync(string text)
         {
             if (holdingsList == null)
             {
@@ -562,30 +610,26 @@ namespace DiscordBotUpdates.Modules
 
             holdingsList.OrderBy(hops => hops.hopsAway);
 
-            if (nukes)
+            foreach (Holding planet in holdingsList)
             {
-                foreach (Holding holdings in holdingsList)
+                if (text == "nukes" && (planet.nukes > 0 || planet.negotiators > 0) && planet.hopsAway <= 5)
                 {
-                    if ((holdings.nukes > 0 || holdings.negotiators > 0) && holdings.hopsAway <= 5)
-                    {
-                        string message = holdings.location + " | " + holdings.name + " : " + holdings.hopsAway + " | Nukes: " + holdings.nukes + " | Negotiators: " + holdings.negotiators + '\n';
-                        await File.AppendAllTextAsync(tempWeapons, message);
-                    }
+                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + '\n';
+                    await File.AppendAllTextAsync(tempWeapons, message);
                 }
-            }
-            else if (defenses)
-            {
-                foreach (Holding holdings in holdingsList)
+                if (text == "defenses" && (planet.laserCannons > 0 || planet.compoundMines > 0 || planet.flakCannons > 0) && planet.hopsAway <= 5)
                 {
-                    if ((holdings.laserCannons > 0 || holdings.compoundMines > 0 || holdings.flakCannons > 0) && holdings.hopsAway <= 5)
-                    {
-                        string message = holdings.location + " | " + holdings.name + " : " + holdings.hopsAway + " | Lasers: " + holdings.laserCannons + " | Compound Mines: " + holdings.compoundMines + " Flaks: " + holdings.flakCannons + '\n';
-                        await File.AppendAllTextAsync(tempWeapons, message);
-                    }
+                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Lasers: " + planet.laserCannons + " | Compound Mines: " + planet.compoundMines + " Flaks: " + planet.flakCannons + '\n';
+                    await File.AppendAllTextAsync(tempWeapons, message);
+                }
+                if (text == "shields" && planet.shields > 0)
+                {
+                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " Shields: " + planet.shields;
+                    await File.AppendAllTextAsync(tempWeapons, message);
                 }
             }
 
-            await OutprintFileAsync(tempWeapons, ChannelID.slaversID);
+            await OutprintFileAsync(tempWeapons, ChannelID.slaversId);
             File.Delete(tempWeapons);
 
             Directory.Delete(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
@@ -692,7 +736,7 @@ namespace DiscordBotUpdates.Modules
                 holdingsList.Add(holdings);
             }
             excelHoldings.Close();
-            await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", ChannelID.botUpdatesID);
+            await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", ChannelID.botUpdatesId);
         }
 
         internal async Task ReadPlanetPicturesAndInfoFoldersAsync()
@@ -765,7 +809,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-            await OutprintAsync("Read Folders Completed!", ChannelID.botUpdatesID);
+            await OutprintAsync("Read Folders Completed!", ChannelID.botUpdatesId);
         }
 
         internal async Task SetAlertsAsync(bool v)
@@ -815,7 +859,7 @@ namespace DiscordBotUpdates.Modules
             }
             catch (System.Exception ex)
             {
-                await OutprintAsync(ex.ToString(), ChannelID.botErrorsID);
+                await OutprintAsync(ex.ToString(), ChannelID.botErrorsId);
             }
 
             if (fileStrArr.Length > 0)
@@ -841,22 +885,22 @@ namespace DiscordBotUpdates.Modules
                 }
                 else if (lastLine.Contains("(automated) picked up"))
                 {
-                    await OutprintAsync(lastLine, ChannelID.botTakingResourcesID);
+                    await OutprintAsync(lastLine, ChannelID.botTakingResourcesId);
                 }
                 else if (lastLine.Contains("tons of unidentified compounds"))
                 {
                     if (lastLine.Contains("contains 0 tons of unidentified compounds") && !lastLine.Contains("System"))
                     {
-                        await OutprintAsync("Undomed: " + lastLine, ChannelID.buildingID);
+                        await OutprintAsync("Undomed: " + lastLine, ChannelID.buildingId);
                     }
                     else if (lastLine.Contains("contains") && !lastLine.Contains("System"))
                     {
-                        await OutprintAsync(lastLine, ChannelID.nuetrinoID);
+                        await OutprintAsync(lastLine, ChannelID.nuetrinoId);
                     }
                 }
                 else if (lastLine.Contains("Fellow corporation member"))
                 {
-                    await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsID);
+                    await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsId);
                 }
 
                 if (kombat)
@@ -867,32 +911,32 @@ namespace DiscordBotUpdates.Modules
                         List<string> enemiesList = Diplomacy.enemies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
-                        await SayAsync(enemy + " spotted! By " + chatLogOwner + " in " + lastSystem, ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync("@everyone " + chatLogOwner + ": " + lastLine + " in " + lastSystem, ChannelID.enemySightingsId);
+                        await SayAsync(enemy + " spotted! By " + chatLogOwner + " in " + lastSystem, ChannelID.voiceSlaversOnlyId);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("warped out"))
                     {
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync("@everyone " + lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
-                        await SayAsync(enemy + " ran away cause he's a bitch nigga", ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync("@everyone " + lastLine + " in " + lastSystem, ChannelID.enemySightingsId);
+                        await SayAsync(enemy + " ran away cause he's a bitch nigga", ChannelID.voiceSlaversOnlyId);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("landed on a planet"))
                     {
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
-                        await SayAsync(enemy + " landed!", ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsId);
+                        await SayAsync(enemy + " landed!", ChannelID.voiceSlaversOnlyId);
                     }
                     else if (Diplomacy.enemies.Any(s => lastLine.Contains(s)) && lastLine.Contains("docked"))
                     {
                         List<string> enemiesList = Diplomacy.allies.ToList<string>();
                         string enemy = enemiesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsID);
-                        await SayAsync(enemy + " Re-Shielded!", ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync(lastLine + " in " + lastSystem, ChannelID.enemySightingsId);
+                        await SayAsync(enemy + " Re-Shielded!", ChannelID.voiceSlaversOnlyId);
                     }
 
                     //shot downs
@@ -918,92 +962,92 @@ namespace DiscordBotUpdates.Modules
                             enemiesSlain++;
                             if (lastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + lastLine, ChannelID.alliedChatId);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + lastLine, ChannelID.alliedChatId);
                             }
                             else
                             {
-                                await OutprintAsync(lastLine, ChannelID.newsID);
-                                //await OutprintAsync(lastLine, ChannelID.alliedChatID);
+                                await OutprintAsync(lastLine, ChannelID.newsId);
+                                //await OutprintAsync(lastLine, ChannelID.alliedChatId);
                             }
 
-                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
+                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyId);
                         }
                         else if (lastLine.Contains("For blowing up"))
                         {
                             enemiesSlain++;
                             if (secondToLastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatId);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatId);
                             }
                             else
                             {
-                                await OutprintAsync(secondToLastLine, ChannelID.newsID);
-                                //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync(secondToLastLine, ChannelID.newsId);
+                                //await OutprintAsync(secondToLastLine, ChannelID.alliedChatId);
                             }
 
-                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
+                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyId);
                         }
                         else if (lastLine.Contains("You recover"))
                         {
                             enemiesSlain++;
                             if (thirdToLastLine.Contains("Defenses") && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + thirdToLastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + thirdToLastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + "'s defenses clapped " + enemy + " | " + secondToLastLine, ChannelID.alliedChatId);
                                 enemiesSlain++;
                             }
                             else if (!string.IsNullOrEmpty(ally) && !string.IsNullOrEmpty(ally) && !ally.Equals(" "))
                             {
-                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + thirdToLastLine, ChannelID.newsID);
-                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + thirdToLastLine, ChannelID.newsId);
+                                //await OutprintAsync("Nice Job! " + ally + " beat " + enemy + "'s fuckin ass" + " | " + secondToLastLine, ChannelID.alliedChatId);
                             }
                             else
                             {
-                                await OutprintAsync(thirdToLastLine, ChannelID.newsID);
-                                //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
+                                await OutprintAsync(thirdToLastLine, ChannelID.newsId);
+                                //await OutprintAsync(secondToLastLine, ChannelID.alliedChatId);
                             }
 
-                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
+                            await SayAsync(enemy + " Has Been Slain!", ChannelID.voiceSlaversOnlyId);
                         }
                         else if (lastLine.Contains("shot down " + ally) && !ally.Equals(" "))
                         {
                             alliesSlain++;
-                            await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.newsID);
-                            //await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.alliedChatID);
-                            await SayAsync(ally + " Has Been Slain!", ChannelID.voiceSlaversOnlyID);
+                            await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.newsId);
+                            //await OutprintAsync(lastLine + " Help " + ally + " Nigga. Damn!", ChannelID.alliedChatId);
+                            await SayAsync(ally + " Has Been Slain!", ChannelID.voiceSlaversOnlyId);
                         }
                     }
 
                     //invasions
                     if (lastLine.Contains("was invaded and taken"))
                     {
-                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.distressCallsID);
-                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListID);
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.distressCallsId);
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.recapListId);
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
                         int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
 
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/crying-meme-black-guy-cries-sad-man-thank-god-for-my-reefer-hood-news-gif-24902056 " + '\n' +
-                                "WE Lost Double Dome!", ChannelID.slaversID);
+                                "WE Lost Double Dome!", ChannelID.slaversId);
                             await OutprintAsync("https://tenor.com/view/crying-meme-black-guy-cries-sad-man-thank-god-for-my-reefer-hood-news-gif-24902056 " + '\n' +
-                                "WE Lost Double Dome!", ChannelID.newsID);
+                                "WE Lost Double Dome!", ChannelID.newsId);
                         }
-                        await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyID);
+                        await SayAsync("We've Lost a Command Post!", ChannelID.voiceSlaversOnlyId);
 
                         if (lastLine.Contains("experience"))
                         {
@@ -1018,7 +1062,7 @@ namespace DiscordBotUpdates.Modules
                             }
                             catch (System.Exception e)
                             {
-                                await OutprintAsync(experience + '\n' + e.ToString(), ChannelID.botUpdatesID);
+                                await OutprintAsync(experience + '\n' + e.ToString(), ChannelID.botUpdatesId);
                             }
 
                             if (exp > 50000)
@@ -1032,68 +1076,68 @@ namespace DiscordBotUpdates.Modules
                             await OutprintAsync(
                                 "Metal Ore: " + holdingsList[holdingsIndex].ore + " | Solar: " + holdingsList[holdingsIndex].solarShots + " / " + holdingsList[holdingsIndex].solarFreq + '\n' +
                                 " | Nukes: " + holdingsList[holdingsIndex].nukes + " | Negotiators: " + holdingsList[holdingsIndex].negotiators + " | Compound Mines: " + holdingsList[holdingsIndex].compoundMines + " | Lasers: " + holdingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, ChannelID.distressCallsID);
+                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, ChannelID.distressCallsId);
                         }
                     }
                     else if (lastLine.Contains("captured the colony"))
                     {
-                        await OutprintAsync(lastLine, ChannelID.newsID);
+                        await OutprintAsync(lastLine, ChannelID.newsId);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                               "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                               "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversId);
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                               "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                               "WE CAPTURED A DOUBLE DOME!", ChannelID.newsId);
                         }
-                        //await OutprintAsync(lastLine, ChannelID.alliedChatID);
-                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
+                        //await OutprintAsync(lastLine, ChannelID.alliedChatId);
+                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyId);
                         planetsKaptured++;
                     }
                     else if (lastLine.Contains("You claim ownership of the colony owned by"))
                     {
-                        await OutprintAsync(secondToLastLine, ChannelID.newsID);
-                        //await OutprintAsync(secondToLastLine, ChannelID.alliedChatID);
+                        await OutprintAsync(secondToLastLine, ChannelID.newsId);
+                        //await OutprintAsync(secondToLastLine, ChannelID.alliedChatId);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversId);
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsId);
                         }
-                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
+                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyId);
                         planetsKaptured++;
                     }
                     else if (lastLine.Contains("It now belongs to"))
                     {
-                        await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.newsID);
-                        //await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.alliedChatID);
+                        await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.newsId);
+                        //await OutprintAsync(fileStrArr[fileStrArr.Length - 3], ChannelID.alliedChatId);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversId);
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsId);
                         }
-                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
+                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyId);
                         planetsKaptured++;
                     }
                     else if (lastLine.Contains("For successful invasion"))
                     {
-                        await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.newsID);
-                        //await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.alliedChatID);
+                        await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.newsId);
+                        //await OutprintAsync(fileStrArr[fileStrArr.Length - 4], ChannelID.alliedChatId);
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.slaversId);
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsId);
                         }
                         if (lastLine.Contains("DD"))
                         {
                             await OutprintAsync("https://tenor.com/view/success-great-job-nice-great-success-great-gif-5586706 " + '\n' +
-                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsID);
+                                "WE CAPTURED A DOUBLE DOME!", ChannelID.newsId);
                         }
-                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyID);
+                        await SayAsync("We've Captured a Command Post!", ChannelID.voiceSlaversOnlyId);
                         planetsKaptured++;
                     }
                 }
@@ -1118,17 +1162,17 @@ namespace DiscordBotUpdates.Modules
 
                         if (File.Exists(colonyPath))
                         {
-                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
-                            await OutprintFileAsync(colonyPath, ChannelID.distressCallsID);
+                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsId);
+                            await OutprintFileAsync(colonyPath, ChannelID.distressCallsId);
                         }
                         else if (File.Exists(planetPath))
                         {
-                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
-                            await OutprintFileAsync(planetPath, ChannelID.distressCallsID);
+                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsId);
+                            await OutprintFileAsync(planetPath, ChannelID.distressCallsId);
                         }
                         else
                         {
-                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsID);
+                            await OutprintAsync("@everyone " + lastLine, ChannelID.distressCallsId);
                         }
 
                         if (holdingsList == null)
@@ -1141,17 +1185,17 @@ namespace DiscordBotUpdates.Modules
                             await OutprintAsync(
                                 "Metal Ore: " + holdingsList[holdingsIndex].ore + " | Solar: " + holdingsList[holdingsIndex].solarShots + " / " + holdingsList[holdingsIndex].solarFreq + '\n' +
                                 " | Nukes: " + holdingsList[holdingsIndex].nukes + " | Negotiators: " + holdingsList[holdingsIndex].negotiators + " | Compound Mines: " + holdingsList[holdingsIndex].compoundMines + " | Lasers: " + holdingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, ChannelID.distressCallsID);
+                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, ChannelID.distressCallsId);
                         }
                         else
                         {
-                            await OutprintAsync("Couldnt find " + planetName + " in the spreadsheet!", ChannelID.botErrorsID);
+                            await OutprintAsync("Couldnt find " + planetName + " in the spreadsheet!", ChannelID.botErrorsId);
                         }
                     }
                     else if (lastLine.Contains("***") && lastLine.Contains("landed"))
                     {
                         landings++;
-                        await OutprintAsync(lastLine, ChannelID.distressCallsID);
+                        await OutprintAsync(lastLine, ChannelID.distressCallsId);
                     }
                 }
                 if (alerts)
@@ -1160,27 +1204,27 @@ namespace DiscordBotUpdates.Modules
                     {
                         if (secondToLastLine.Contains("Server Alert!"))
                         {
-                            await OutprintAsync("@everyone " + secondToLastLine, ChannelID.slaversID);
+                            await OutprintAsync("@everyone " + secondToLastLine, ChannelID.slaversId);
                         }
-                        await OutprintAsync("@everyone " + lastLine, ChannelID.slaversID);
-                        //await OutprintAsync("@everyone " + lastLine, ChannelID.alliedChatID);
+                        await OutprintAsync("@everyone " + lastLine, ChannelID.slaversId);
+                        //await OutprintAsync("@everyone " + lastLine, ChannelID.alliedChatId);
                     }
                     else if (lastLine.Contains("U.N. Hotline"))
                     {
                         List<string> alliesList = Diplomacy.allies.ToList<string>();
                         string ally = alliesList.Find(s => lastLine.Contains(s));
 
-                        await OutprintAsync(lastLine, ChannelID.newsID);
-                        await SayAsync(ally + " I see you!", ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync(lastLine, ChannelID.newsId);
+                        await SayAsync(ally + " I see you!", ChannelID.voiceSlaversOnlyId);
                     }
                     else if (lastLine.Contains("Empress Allie says to Slavers"))
                     {
-                        await OutprintAsync(lastLine, ChannelID.botUpdatesID);
+                        await OutprintAsync(lastLine, ChannelID.botUpdatesId);
                     }
                     else if (lastLine.Contains("due to pollution"))
                     {
-                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsID);
-                        await SayAsync(AtUser(lastLine) + " your colony had a disasta", ChannelID.voiceSlaversOnlyID);
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsId);
+                        await SayAsync(AtUser(lastLine) + " your colony had a disasta", ChannelID.voiceSlaversOnlyId);
                     }
                 }
 
@@ -1195,13 +1239,15 @@ namespace DiscordBotUpdates.Modules
 
                         string title = Algorithms.StringManipulation.GetBetween(lastLine, "colony", "was");
 
-                        await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingID);
+                        await CreateCalendarEventAsync(days3, title, lastLine, ChannelID.buildingId);
                         colsAbandoned++;
                     }
                     //aa
                     else if (lastLine.Contains("Advanced Architecture lvl"))
                     {
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, " on ", "discovered");
+                        string discovery = Algorithms.StringManipulation.GetBetween(lastLine, "the secret of", ".");
+                        discovery = discovery.Replace("Advanced Architecture", "Arch");
                         if (planetName.Contains("["))
                         {
                             planetName = Algorithms.StringManipulation.GetBetween(planetName, " on ", "[");
@@ -1212,43 +1258,50 @@ namespace DiscordBotUpdates.Modules
                         }
 
                         int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
-                        if (holdingsIndex != -1 && StarportHelperClasses.Helper.IsZoundsable(holdingsList[holdingsIndex].planetType, holdingsList[holdingsIndex].discoveries))
+                        if (holdingsIndex != -1)
                         {
                             Holding planet = holdingsList[holdingsIndex];
-                            string message = +'\n' +
-                                planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
-                                 + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                                 + "Resources: " + '\n' + "_______________________________________" + '\n'
-                                 + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                                 + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                                 + "Equipment: " + planet.equ + " | Spice: " + planet.spi + '\n';
+                            if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
+                            {
+                                string message = '\n' +
+                                    planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
+                                     + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                                     + "Resources: " + '\n' + "_______________________________________" + '\n'
+                                     + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                                     + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                                     + "Equipment: " + planet.equ + " | Spice: " + planet.spi + '\n';
 
-                            await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingID);
+                                await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingId);
+                            }
+                        }
+                        else
+                        {
+                            await OutprintAsync(planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.buildingId);
                         }
                     }
                     else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
                     {
-                        await OutprintAsync(AtUser(lastLine) + lastLine + " Decent Huge Metro col", ChannelID.buildingID);
+                        await OutprintAsync(AtUser(lastLine) + lastLine + " Decent Huge Metro col", ChannelID.buildingId);
                     }
                     //if bio3
                     else if (lastLine.Contains("completed work on the Biodome Level 3."))
                     {
-                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.buildingID);
+                        await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.buildingId);
                         colsBuilt++;
                     }
 
                     //Domed new colony && dd
                     if (lastLine.Contains("founding"))
                     {
-                        await OutprintAsync(chatLogOwner + " colonized " + lastLand + "!", ChannelID.buildingID);
-                        await SayAsync(chatLogOwner + " colonized a new world!", ChannelID.voiceBuildingID);
+                        await OutprintAsync(chatLogOwner + " colonized " + lastLand + "!", ChannelID.buildingId);
+                        await SayAsync(chatLogOwner + " colonized a new world!", ChannelID.voiceBuildingId);
                     }
                     else if (lastLine.Contains("adding another dome"))
                     {
-                        await OutprintAsync(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.buildingID);
-                        await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingID);
-                        await SayAsync(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.voiceSlaversOnlyID);
-                        //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversID);
+                        await OutprintAsync(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.buildingId);
+                        await OutprintAsync("https://tenor.com/view/cat-shooting-mouth-open-gif-15017033", ChannelID.buildingId);
+                        await SayAsync(chatLogOwner + " Created a New Double Dome on " + lastLand + "!", ChannelID.voiceSlaversOnlyId);
+                        //await CelebrateUser("Slavers", "I'd like to see them try and take this!", ChannelID.slaversId);
                     }
                 }
             }
@@ -1272,34 +1325,34 @@ namespace DiscordBotUpdates.Modules
                             {
                                 if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
                                 {
-                                    await OutprintAsync(fileAsArr, ChannelID.botUpdatesID);
+                                    await OutprintAsync(fileAsArr, ChannelID.botUpdatesId);
 
                                     await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesId);
                                     System.Console.WriteLine(filePaths[i] + " cleared!");
                                 }
                                 else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
                                 {
-                                    await OutprintAsync(fileAsArr, ChannelID.buildingID);
+                                    await OutprintAsync(fileAsArr, ChannelID.buildingId);
 
                                     await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesId);
                                     System.Console.WriteLine(filePaths[i] + " cleared!");
                                 }
                                 else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
                                 {
-                                    await OutprintAsync(fileAsArr, ChannelID.distressCallsID);
+                                    await OutprintAsync(fileAsArr, ChannelID.distressCallsId);
 
                                     await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesId);
                                     System.Console.WriteLine(filePaths[i] + " cleared!");
                                 }
                                 else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
                                 {
-                                    await OutprintAsync(fileAsArr, ChannelID.scoutReportsID);
+                                    await OutprintAsync(fileAsArr, ChannelID.scoutReportsId);
 
                                     await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesID);
+                                    await OutprintAsync(filePaths[i] + " cleared!", ChannelID.botUpdatesId);
                                     System.Console.WriteLine(filePaths[i] + " cleared!");
                                 }
                             }
