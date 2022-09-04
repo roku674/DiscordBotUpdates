@@ -117,6 +117,26 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        [Command("run ConvertCSV")]
+        public async Task ConvertCSV()
+        {
+            string path = "";
+            if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.csv"))
+            {
+                path = "C:/Users/ZANDER/StarportGE/holdings.csv";
+            }
+            else if (File.Exists("C:/Users/ALEX/StarportGE/holdings.csv"))
+            {
+                path = "C:/Users/ALEX/StarportGE/holdings.csv";
+            }
+            ExcelCSharp.Excel excel = new ExcelCSharp.Excel(TaskInitator.excelPath, 1);
+            excel.ConvertFromCSVtoXLSX(path, TaskInitator.excelPath);
+
+            await ReplyAsync("Finished converting csv to xlsx!");
+
+            excel.Close();
+        }
+
         [Command("run Deactivate")]
         public async Task DeactivateProgramPost()
         {
@@ -223,6 +243,8 @@ namespace DiscordBotUpdates.Modules
                 "    run BotUpdater" +
                 '\n' +
                 "    run ClearBotsEcho" +
+                 '\n' +
+                "    run ConvertCSV" +
                 '\n' +
                 "    run Deactivate" +
                 '\n' +
@@ -424,6 +446,18 @@ namespace DiscordBotUpdates.Modules
             string[] allfiles = Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures", "*.*", SearchOption.AllDirectories);
             string textPNG = text + ".png";
 
+            int holdingIndex = TaskInitator.holdingsList.FindIndex(planet => planet.location == text);
+            if (holdingIndex != -1)
+            {
+                StarportObjects.Holding planet = TaskInitator.holdingsList[holdingIndex];
+                string message = init.AllPlanetInfo(planet);
+                await ReplyAsync(message);
+            }
+            else
+            {
+                await ReplyAsync(text + " was NOT found in spreadsheet!");
+            }
+
             foreach (string file in allfiles)
             {
                 if (textPNG.Equals(Path.GetFileName(file)))
@@ -460,8 +494,7 @@ namespace DiscordBotUpdates.Modules
                     return;
                 }
             }
-
-            await ReplyAsync("no planet was found in our folders!");
+            await ReplyAsync(text + " picture was NOT found in our folders!");
         }
 
         [Command("run planetsCaptured")]

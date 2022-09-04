@@ -376,10 +376,11 @@ namespace DiscordBotUpdates.Modules
                     _ = Task.Run(() => RunThroughTextAsync());
                     TwoMinuteTracker = 0;
                 }
-                if (hourlyTracker == 3600)
+                if (hourlyTracker == 3600 || hourlyTracker == 0)
                 {
                     _ = Task.Run(() => FindHourlyRedomesAsync());
-                    hourlyTracker = 0;
+                    _ = Task.Run(() => LoadExcelHoldingsAsync());
+                    hourlyTracker = 1;
                 }
 
                 TwoMinuteTracker++;
@@ -514,16 +515,7 @@ namespace DiscordBotUpdates.Modules
                     if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
                     {
                         zoundsableCounter++;
-                        string message =
-                           planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
-                           + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                           + "Resources: " + '\n'
-                           + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                           + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                           + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
-                           +'\n' + '\n'
-                           + " ___________________________________________________________________________"
-                           + '\n' + '\n';
+                        string message = AllPlanetInfo(planet);
 
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
@@ -535,20 +527,12 @@ namespace DiscordBotUpdates.Modules
                 channel = ChannelID.ddId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.name.Contains("DD"))
+                    if (planet.name.Contains("DD") ||
+                        ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
+                        )
                     {
                         ddCount++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
-                            + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                            + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields
-                            + '\n'
-                             + "Resources: " + '\n'
-                             + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                             + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                             + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
-                             +'\n' + '\n'
-                             + " ___________________________________________________________________________"
-                             + '\n' + '\n';
+                        string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
@@ -580,17 +564,7 @@ namespace DiscordBotUpdates.Modules
                     if (planet.name.Contains("DD"))
                     {
                         ddCount++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
-                           + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                           + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields
-                           + '\n'
-                            + "Resources: " + '\n'
-                            + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                            + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                            + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
-                            +'\n' + '\n'
-                            + " ___________________________________________________________________________"
-                            + '\n' + '\n';
+                        string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
@@ -677,6 +651,19 @@ namespace DiscordBotUpdates.Modules
             Excel.Kill();
 
             Excel excelHoldings = new Excel(excelPath, 1);
+
+            string csvPath = "";
+            if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.csv"))
+            {
+                csvPath = "C:/Users/ZANDER/StarportGE/holdings.csv";
+            }
+            else if (File.Exists("C:/Users/ALEX/StarportGE/holdings.csv"))
+            {
+                csvPath = "C:/Users/ALEX/StarportGE/holdings.csv";
+            }
+
+            await excelHoldings.ConvertFromCSVtoXLSX(csvPath, excelPath);
+
             object[,] excelMatrixObj = excelHoldings.ReadCellRange();
             string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
 
@@ -1298,15 +1285,9 @@ namespace DiscordBotUpdates.Modules
                             Holding planet = holdingsList[holdingsIndex];
                             if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
                             {
-                                string message = '\n' +
-                                    planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n'
-                                     + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                                     + "Resources: " + '\n' + "_______________________________________" + '\n'
-                                     + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                                     + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                                     + "Equipment: " + planet.equ + " | Spice: " + planet.spi + '\n';
+                                string message = AllPlanetInfo(planet);
 
-                                await OutprintAsync(AtUser(lastLine) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingId);
+                                await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingId);
                             }
                         }
                         else
@@ -1412,6 +1393,21 @@ namespace DiscordBotUpdates.Modules
 
                 await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
             }
+        }
+
+        internal string AllPlanetInfo(Holding planet)
+        {
+            return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
+                + " | Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
+                + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
+                + "Resources: " + '\n'
+                + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                +'\n' + '\n'
+                + " ___________________________________________________________________________"
+                + '\n' + '\n';
         }
     }
 }
