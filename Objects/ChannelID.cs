@@ -30,6 +30,7 @@
         private static readonly ulong _voiceInvadingId = 941396278271688734;
         private static readonly ulong _voiceKombatId = 941391368117440544;
         private static readonly ulong _voiceSlaversOnlyId = 941134782048395369;
+        private static readonly ulong _zoundsForHoundsId = 1016410048211198054;
 
         public static ulong alliedChatId => _alliedChatId;
         public static ulong botCommandsId => _botCommandsId;
@@ -59,5 +60,7 @@
         public static ulong voiceInvadingId => _voiceInvadingId;
         public static ulong voiceKombatId => _voiceKombatId;
         public static ulong voiceSlaversOnlyId => _voiceSlaversOnlyId;
+
+        public static ulong zoundsForHoundsId => _zoundsForHoundsId;
     }
 }

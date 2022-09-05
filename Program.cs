@@ -11,6 +11,7 @@ namespace DiscordBotUpdates
     {
         private static void Main(string[] args)
         {
+            System.Console.WriteLine(System.IO.File.GetLastWriteTime("Last Updated: " + System.Reflection.Assembly.GetEntryAssembly().Location));
             Google.Apis.Auth.OAuth2.UserCredential credential;
 
             using (System.IO.FileStream stream =

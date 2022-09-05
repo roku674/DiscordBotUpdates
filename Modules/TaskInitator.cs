@@ -428,31 +428,39 @@ namespace DiscordBotUpdates.Modules
         public async Task UpdateAllieTxt(string text)
         {
             string alliePath = Directory.GetCurrentDirectory() + "/Echo/Allie.txt";
-
-            if (holdingsList == null)
-            {
-                await LoadExcelHoldingsAsync();
-            }
             string[] lines = new string[9];
-            lines[0] = "  Command Build " + text;
-            Holding planetToBuild = holdingsList.Find(p => p.location == text);
 
-            for (int i = 0; i < holdingsList.Count - 1; i++)
+            if (text == "Stop")
             {
-                if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
+                lines[0] = "Stop";
+            }
+            else
+            {
+                if (holdingsList == null)
                 {
-                    string planetType = holdingsList[i].planetType.Replace(
-                               holdingsList[i].planetType[0].ToString(),
-                               holdingsList[i].planetType[0].ToString().ToUpper());
-                    for (int j = 0; j < lines.Length - 1; j++)
+                    await LoadExcelHoldingsAsync();
+                }
+
+                lines[0] = "  Command Build " + text;
+                Holding planetToBuild = holdingsList.Find(p => p.location == text);
+
+                for (int i = 0; i < holdingsList.Count - 1; i++)
+                {
+                    if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
                     {
-                        if (holdingsList[i].ore > holdingsList[i + 1].ore)
+                        string planetType = holdingsList[i].planetType.Replace(
+                                   holdingsList[i].planetType[0].ToString(),
+                                   holdingsList[i].planetType[0].ToString().ToUpper());
+                        for (int j = 0; j < lines.Length - 1; j++)
                         {
-                            lines[j + 1] = holdingsList[i].location + " Type" + j + " " + planetType;
-                        }
-                        else
-                        {
-                            lines[j + 1] = holdingsList[i + 1].location + " Type" + j + " " + planetType;
+                            if (holdingsList[i].ore > holdingsList[i + 1].ore)
+                            {
+                                lines[j + 1] = holdingsList[i].location + " Type" + j + " " + planetType;
+                            }
+                            else
+                            {
+                                lines[j + 1] = holdingsList[i + 1].location + " Type" + j + " " + planetType;
+                            }
                         }
                     }
                 }
@@ -460,7 +468,7 @@ namespace DiscordBotUpdates.Modules
 
             await File.WriteAllLinesAsync(alliePath, lines);
 
-            await OutprintFileAsync(alliePath, ChannelID.botUpdatesId);
+            await OutprintFileAsync(AtUser("Autism") + alliePath, ChannelID.botUpdatesId);
         }
 
         internal string AllPlanetInfo(Holding planet)
@@ -559,7 +567,7 @@ namespace DiscordBotUpdates.Modules
             }
             else if (type == "Zoundsables" || type == "All")
             {
-                channel = ChannelID.buildingId;
+                channel = ChannelID.zoundsForHoundsId;
                 int zoundsableCounter = 0;
                 foreach (Holding planet in localHoldingsList)
                 {
@@ -1343,12 +1351,12 @@ namespace DiscordBotUpdates.Modules
                             {
                                 string message = AllPlanetInfo(planet);
 
-                                await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.buildingId);
+                                await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.zoundsForHoundsId);
                             }
                         }
                         else
                         {
-                            await OutprintAsync(lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.buildingId);
+                            await OutprintAsync(AtUser("Autism") + lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.botUpdatesId);
                         }
                     }
                     else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
