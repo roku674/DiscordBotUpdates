@@ -533,13 +533,14 @@ namespace DiscordBotUpdates.Modules
         internal string AllPlanetInfo(Holding planet)
         {
             return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
-                + " | Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
-                + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
+                + "Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
+                + "  Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + " / day" + '\n'
+                + "  Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                + "Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
                 + "Resources: " + '\n'
-                + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                + "  Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                + "  Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                + "  Equipment: " + planet.equ + " | Spice: " + planet.spi +
                 +'\n' + '\n'
                 + " ___________________________________________________________________________"
                 + '\n' + '\n';
@@ -1049,6 +1050,8 @@ namespace DiscordBotUpdates.Modules
                         File.Copy(csv, csvPath); //Copy Local to internet
                     }
                     System.Console.WriteLine("Copied csv to internet...");
+                    //await OutprintAsync("Copied local csv to internet", ChannelID.botUpdatesId);
+
                     _ = LoadExcelHoldingsAsync();
                 }
 
