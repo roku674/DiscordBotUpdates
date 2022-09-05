@@ -427,7 +427,7 @@ namespace DiscordBotUpdates.Modules
 
         public async Task UpdateAllieTxt(string text)
         {
-            string alliePath = Directory.GetCurrentDirectory() + "/Echo/AllieTemp.txt";
+            string alliePath = Directory.GetCurrentDirectory() + "/Echo/Allie.txt";
 
             if (holdingsList == null)
             {
@@ -437,91 +437,24 @@ namespace DiscordBotUpdates.Modules
             lines[0] = "  Command Build " + text;
             Holding planetToBuild = holdingsList.Find(p => p.location == text);
 
-            foreach (Holding planet in holdingsList)
+            for (int i = 0; i < holdingsList.Count - 1; i++)
             {
-                if (planetToBuild.galaxyX == planet.galaxyX && planetToBuild.galaxyY == planet.galaxyY)
+                if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
                 {
-                    string planetType = planet.planetType.Replace(
-                               planet.planetType[0].ToString(),
-                               planet.planetType[0].ToString().ToUpper());
-                    if (planet.ore >= 20000 && lines[1] == " ")
+                    string planetType = holdingsList[i].planetType.Replace(
+                               holdingsList[i].planetType[0].ToString(),
+                               holdingsList[i].planetType[0].ToString().ToUpper());
+                    for (int j = 0; j < lines.Length - 1; j++)
                     {
-                        lines[1] = planet.location + " Type0 " + planetType;
+                        if (holdingsList[i].ore > holdingsList[i + 1].ore)
+                        {
+                            lines[j + 1] = holdingsList[i].location + " Type" + j + " " + planetType;
+                        }
+                        else
+                        {
+                            lines[j + 1] = holdingsList[i + 1].location + " Type" + j + " " + planetType;
+                        }
                     }
-                    else
-                    {
-                        lines[1] = " Type0 ";
-                    }
-
-                    if (planet.ana >= 10000)
-                    {
-                        lines[2] = planet.location + " Type1 " + planetType;
-                    }
-                    else
-                    {
-                        lines[2] = " Type1 ";
-                    }
-
-                    if (planet.med >= 10000)
-                    {
-                        lines[3] = planet.location + " Type2 " + planetType;
-                    }
-                    else
-                    {
-                        lines[3] = " Type2";
-                    }
-
-                    if (planet.org >= 10000)
-                    {
-                        lines[4] = planet.location + " Type3 " + planetType;
-                    }
-                    else
-                    {
-                        lines[4] = " Type3 ";
-                    }
-
-                    if (planet.oil >= 10000)
-                    {
-                        lines[5] = planet.location + " Type4 " + planetType;
-                    }
-                    else
-                    {
-                        lines[5] = " Type4 ";
-                    }
-
-                    if (planet.ura >= 10000)
-                    {
-                        lines[6] = planet.location + " Type5 " + planetType;
-                    }
-                    else
-                    {
-                        lines[6] = " Type5";
-                    }
-
-                    if (planet.equ >= 10000)
-                    {
-                        lines[7] = planet.location + " Type6 " + planetType;
-                    }
-                    else
-                    {
-                        lines[7] = " Type6 ";
-                    }
-
-                    if (planet.spi >= 10000)
-                    {
-                        lines[8] = planet.location + " Type7 " + planetType;
-                    }
-                    else
-                    {
-                        lines[8] = " Type7 ";
-                    }
-                }
-            }
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (string.IsNullOrEmpty(lines[i]))
-                {
                 }
             }
 
@@ -624,7 +557,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-            else if (type == "Zoundsables")
+            else if (type == "Zoundsables" || type == "All")
             {
                 channel = ChannelID.buildingId;
                 int zoundsableCounter = 0;
@@ -640,7 +573,7 @@ namespace DiscordBotUpdates.Modules
                 }
                 await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
             }
-            else if (type == "DD")
+            else if (type == "DD" || type == "All")
             {
                 channel = ChannelID.ddId;
                 foreach (Holding planet in localHoldingsList)
@@ -677,12 +610,6 @@ namespace DiscordBotUpdates.Modules
                     {
                         polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                    if (planet.name.Contains("DD"))
-                    {
-                        ddCount++;
-                        string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }

@@ -1,9 +1,9 @@
-  Command Build 60 Lacertae Ve
-60 Lacertae VIIIb Type0 Greenhouse
-60 Lacertae VIIIb Type1 Greenhouse
-60 Lacertae VIIIb Type2 Greenhouse
-
-60 Lacertae VIIIb Type4 Greenhouse
-60 Lacertae VIIIb Type5 Greenhouse
-
-
+  Command Build Nu Piscis Austrini IXc
+Nu Piscium IIIb Type0 Arctic
+Nu Piscium IIIb Type1 Arctic
+Nu Piscium IIIb Type2 Arctic
+Nu Piscium IIIb Type3 Arctic
+Nu Piscium IIIb Type4 Arctic
+Nu Piscium IIIb Type5 Arctic
+Nu Piscium IIIb Type6 Arctic
+Nu Piscium IIIb Type7 Arctic
