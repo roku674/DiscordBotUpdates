@@ -105,6 +105,8 @@ namespace DiscordBotUpdates
             await commands.ChatLogListener(Objects.ChannelID.botUpdatesId, "Chat Log Listener", "Client");
             await Task.Run(() => commands.init.SetAllAsync(true));
 
+            await Task.Run(() => commands.init.LoadExcelHoldingsAsync());
+
             await Task.Delay(System.Threading.Timeout.Infinite);
         }
 

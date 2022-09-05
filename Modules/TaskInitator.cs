@@ -13,8 +13,14 @@ namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitator : DBUTask
     {
+        public static readonly string csvPath = "G:/My Drive/Personal Stuff/Starport/holdings.csv";
         public static readonly string excelPath = "G:/My Drive/Personal Stuff/Starport/holdings.xlsx";
+
+        /// <summary>
+        /// trails with a backslash
+        /// </summary>
         public static readonly string planetPicturesDir = "G:/My Drive/Personal Stuff/Starport/PlanetPictures/";
+
         public static bool alerts { get; set; }
         public static uint alliesSlain { get; set; }
         public static bool building { get; set; }
@@ -104,70 +110,39 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        public async Task UpdateAllieTxt(string text)
+        public async Task FindHourlyRedomesAsync()
         {
-            string alliePath = Directory.GetCurrentDirectory() + "/Echo/AllieTemp.txt";
+            Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
+            request.TimeMin = DateTime.Now;
+            request.TimeMax = DateTime.Now.AddHours(1);
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 50;
+            request.OrderBy = Google.Apis.Calendar.v3.EventsResource.ListRequest.OrderByEnum.StartTime;
 
-            if (holdingsList == null)
-            {
-                await LoadExcelHoldingsAsync();
-            }
-            string[] lines = new string[9];
-            lines[0] = "  Command Build " + text;
-            Holding planetToBuild = holdingsList.Find(p => p.location == text);
+            Google.Apis.Calendar.v3.Data.Events calendarEvents = request.Execute();
 
-            foreach (Holding planet in holdingsList)
+            if (calendarEvents.Items != null && calendarEvents.Items.Count > 0)
             {
-                if (planetToBuild.galaxyX == planet.galaxyX && planetToBuild.galaxyY == planet.galaxyY)
+                foreach (Google.Apis.Calendar.v3.Data.Event calendarEvent in calendarEvents.Items)
                 {
-                    string planetType = planet.planetType.Replace(
-                               planet.planetType[0].ToString(),
-                               planet.planetType[0].ToString().ToUpper());
-                    if (planet.ore >= 20000)
+                    string atUser = "";
+                    if (AtUser(calendarEvent.Summary) != "")
                     {
-                        lines[1] = planet.location + " Type0 " + planetType;
+                        atUser = AtUser(calendarEvent.Summary);
                     }
-                    if (planet.ana >= 10000)
+                    else if (AtUser(calendarEvent.Description) != "")
                     {
-                        lines[2] = planet.location + " Type1 " + planetType;
+                        atUser = AtUser(calendarEvent.Description);
                     }
-                    if (planet.med >= 10000)
-                    {
-                        lines[3] = planet.location + " Type2 " + planetType;
-                    }
-                    if (planet.org >= 10000)
-                    {
-                        lines[4] = planet.location + " Type3 " + planetType;
-                    }
-                    if (planet.oil >= 10000)
-                    {
-                        lines[5] = planet.location + " Type4 " + planetType;
-                    }
-                    if (planet.ura >= 10000)
-                    {
-                        lines[6] = planet.location + " Type5 " + planetType;
-                    }
-                    if (planet.equ >= 10000)
-                    {
-                        lines[7] = planet.location + " Type6 " + planetType;
-                    }
-                    if (planet.spi >= 10000)
-                    {
-                        lines[8] = planet.location + " Type7 " + planetType;
-                    }
+
+                    await OutprintAsync(atUser + "Redome Time: " + calendarEvent.OriginalStartTime + '\n'
+                        + calendarEvent.Summary + '\n'
+                        + calendarEvent.Description,
+                        ChannelID.redomeId
+                        );
                 }
             }
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (string.IsNullOrEmpty(lines[i]))
-                {
-                }
-            }
-
-            await File.WriteAllLinesAsync(alliePath, lines);
-
-            await OutprintFileAsync(alliePath, ChannelID.botUpdatesId);
         }
 
         /// <summary>
@@ -203,7 +178,9 @@ namespace DiscordBotUpdates.Modules
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Building",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Distress",
-                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures-Enemy",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures-Friendly",
+                    "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Planet-Pictures-Undomed",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Scout-Reports",
                     "H:/My Drive/Shared/DiscordBotUpdates/DiscordBotUpdates/bin/Release/netcoreapp3.1/Pictures/Targets",
                 };
@@ -233,8 +210,7 @@ namespace DiscordBotUpdates.Modules
                                         break;
 
                                     case 3:
-
-                                        if (Directory.Exists("G:/My Drive/Personal Stuff/Starport/PlanetPictures"))
+                                        if (Directory.Exists(planetPicturesDir + "Enemy Planets/"))
                                         {
                                             if (picture.Contains("_"))
                                             {
@@ -243,27 +219,82 @@ namespace DiscordBotUpdates.Modules
                                             if (!File.Exists(planetPicturesDir + Path.GetFileName(picture)))
                                             {
                                                 File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
-                                                await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesId);
-                                                await OutprintFileAsync(picture, ChannelID.planetPicturesId);
+                                                await OutprintAsync("Enemy Planet Picture Downloaded!", ChannelID.planetPicturesEnemyId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesEnemyId);
                                             }
                                             else
                                             {
-                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.botUpdatesId);
+                                                File.Delete(planetPicturesDir + Path.GetFileName(picture));
+                                                File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
+                                                await OutprintAsync("Enemy Planet Picture Updated/Replaced!", ChannelID.planetPicturesEnemyId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesEnemyId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesEnemyId);
+                                        }
+                                        break;
+
+                                    case 4:
+
+                                        if (Directory.Exists(planetPicturesDir))
+                                        {
+                                            if (picture.Contains("_"))
+                                            {
+                                                picture.Replace("_", " ");
+                                            }
+                                            if (!File.Exists(planetPicturesDir + Path.GetFileName(picture)))
+                                            {
+                                                File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
+                                                await OutprintAsync("Colony Picture Downloaded!", ChannelID.planetPicturesFriendlyId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesFriendlyId);
+                                            }
+                                            else
+                                            {
+                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", ChannelID.planetPicturesFriendlyId);
                                                 //await OutprintFileAsync(picture, ChannelID.botUpdatesId);
                                             }
                                         }
                                         else
                                         {
-                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesId);
+                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesFriendlyId);
                                         }
 
                                         break;
 
-                                    case 4:
+                                    case 5:
+                                        if (Directory.Exists(planetPicturesDir + "Undomed/"))
+                                        {
+                                            if (picture.Contains("_"))
+                                            {
+                                                picture.Replace("_", " ");
+                                            }
+                                            if (!File.Exists(planetPicturesDir + Path.GetFileName(picture)))
+                                            {
+                                                File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
+                                                await OutprintAsync("Enemy Planet Picture Downloaded!", ChannelID.planetPicturesUndomedId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesUndomedId);
+                                            }
+                                            else
+                                            {
+                                                File.Delete(planetPicturesDir + Path.GetFileName(picture));
+                                                File.Copy(picture, planetPicturesDir + Path.GetFileName(picture));
+                                                await OutprintAsync("Enemy Planet Picture Updated/Replaced!", ChannelID.planetPicturesUndomedId);
+                                                await OutprintFileAsync(picture, ChannelID.planetPicturesUndomedId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            await OutprintAsync(picture + " : was not successfully downloaded!", ChannelID.planetPicturesUndomedId);
+                                        }
+                                        break;
+
+                                    case 6:
                                         await OutprintFileAsync(picture, ChannelID.scoutReportsId);
                                         break;
 
-                                    case 5:
+                                    case 7:
                                         await OutprintFileAsync(picture, ChannelID.targetsId);
                                         break;
 
@@ -369,6 +400,7 @@ namespace DiscordBotUpdates.Modules
                     landings = 0;
                     colsAbandoned = 0;
                     colsBuilt = 0;
+                    _ = FindListAsync("All");
                 }
 
                 if (TwoMinuteTracker == 120)
@@ -376,11 +408,11 @@ namespace DiscordBotUpdates.Modules
                     _ = Task.Run(() => RunThroughTextAsync());
                     TwoMinuteTracker = 0;
                 }
-                if (hourlyTracker == 3600 || hourlyTracker == 0)
+                if (hourlyTracker == 3600)
                 {
+                    System.Console.WriteLine("Running hourly Redomes!");
                     _ = Task.Run(() => FindHourlyRedomesAsync());
-                    _ = Task.Run(() => LoadExcelHoldingsAsync());
-                    hourlyTracker = 1;
+                    hourlyTracker = 0;
                 }
 
                 TwoMinuteTracker++;
@@ -393,39 +425,124 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        public async Task FindHourlyRedomesAsync()
+        public async Task UpdateAllieTxt(string text)
         {
-            Google.Apis.Calendar.v3.EventsResource.ListRequest request = Program.service.Events.List("primary");
-            request.TimeMin = DateTime.Now;
-            request.TimeMax = DateTime.Now.AddHours(1);
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            request.MaxResults = 50;
-            request.OrderBy = Google.Apis.Calendar.v3.EventsResource.ListRequest.OrderByEnum.StartTime;
+            string alliePath = Directory.GetCurrentDirectory() + "/Echo/AllieTemp.txt";
 
-            Google.Apis.Calendar.v3.Data.Events calendarEvents = request.Execute();
-
-            if (calendarEvents.Items != null && calendarEvents.Items.Count > 0)
+            if (holdingsList == null)
             {
-                foreach (Google.Apis.Calendar.v3.Data.Event calendarEvent in calendarEvents.Items)
+                await LoadExcelHoldingsAsync();
+            }
+            string[] lines = new string[9];
+            lines[0] = "  Command Build " + text;
+            Holding planetToBuild = holdingsList.Find(p => p.location == text);
+
+            foreach (Holding planet in holdingsList)
+            {
+                if (planetToBuild.galaxyX == planet.galaxyX && planetToBuild.galaxyY == planet.galaxyY)
                 {
-                    string atUser = "";
-                    if (AtUser(calendarEvent.Summary) != "")
+                    string planetType = planet.planetType.Replace(
+                               planet.planetType[0].ToString(),
+                               planet.planetType[0].ToString().ToUpper());
+                    if (planet.ore >= 20000 && lines[1] == " ")
                     {
-                        atUser = AtUser(calendarEvent.Summary);
+                        lines[1] = planet.location + " Type0 " + planetType;
                     }
-                    else if (AtUser(calendarEvent.Description) != "")
+                    else
                     {
-                        atUser = AtUser(calendarEvent.Description);
+                        lines[1] = " Type0 ";
                     }
 
-                    await OutprintAsync(atUser + "Redome Time: " + calendarEvent.OriginalStartTime + '\n'
-                        + calendarEvent.Summary + '\n'
-                        + calendarEvent.Description,
-                        ChannelID.redomeId
-                        );
+                    if (planet.ana >= 10000)
+                    {
+                        lines[2] = planet.location + " Type1 " + planetType;
+                    }
+                    else
+                    {
+                        lines[2] = " Type1 ";
+                    }
+
+                    if (planet.med >= 10000)
+                    {
+                        lines[3] = planet.location + " Type2 " + planetType;
+                    }
+                    else
+                    {
+                        lines[3] = " Type2";
+                    }
+
+                    if (planet.org >= 10000)
+                    {
+                        lines[4] = planet.location + " Type3 " + planetType;
+                    }
+                    else
+                    {
+                        lines[4] = " Type3 ";
+                    }
+
+                    if (planet.oil >= 10000)
+                    {
+                        lines[5] = planet.location + " Type4 " + planetType;
+                    }
+                    else
+                    {
+                        lines[5] = " Type4 ";
+                    }
+
+                    if (planet.ura >= 10000)
+                    {
+                        lines[6] = planet.location + " Type5 " + planetType;
+                    }
+                    else
+                    {
+                        lines[6] = " Type5";
+                    }
+
+                    if (planet.equ >= 10000)
+                    {
+                        lines[7] = planet.location + " Type6 " + planetType;
+                    }
+                    else
+                    {
+                        lines[7] = " Type6 ";
+                    }
+
+                    if (planet.spi >= 10000)
+                    {
+                        lines[8] = planet.location + " Type7 " + planetType;
+                    }
+                    else
+                    {
+                        lines[8] = " Type7 ";
+                    }
                 }
             }
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                {
+                }
+            }
+
+            await File.WriteAllLinesAsync(alliePath, lines);
+
+            await OutprintFileAsync(alliePath, ChannelID.botUpdatesId);
+        }
+
+        internal string AllPlanetInfo(Holding planet)
+        {
+            return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
+                + " | Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
+                + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
+                + "Resources: " + '\n'
+                + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
+                + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
+                + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                +'\n' + '\n'
+                + " ___________________________________________________________________________"
+                + '\n' + '\n';
         }
 
         internal async Task FindEnemyColoniesAsync(string enemy, string folder)
@@ -648,22 +765,13 @@ namespace DiscordBotUpdates.Modules
         internal async Task LoadExcelHoldingsAsync()
         {
             holdingsList = new List<Holding>();
+
+            await Task.Delay(3000);
             Excel.Kill();
 
+            await Excel.ConvertFromCSVtoXLSXAsync(csvPath, excelPath);
+
             Excel excelHoldings = new Excel(excelPath, 1);
-
-            string csvPath = "";
-            if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.csv"))
-            {
-                csvPath = "C:/Users/ZANDER/StarportGE/holdings.csv";
-            }
-            else if (File.Exists("C:/Users/ALEX/StarportGE/holdings.csv"))
-            {
-                csvPath = "C:/Users/ALEX/StarportGE/holdings.csv";
-            }
-
-            await excelHoldings.ConvertFromCSVtoXLSX(csvPath, excelPath);
-
             object[,] excelMatrixObj = excelHoldings.ReadCellRange();
             string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
 
@@ -924,6 +1032,24 @@ namespace DiscordBotUpdates.Modules
                 else if (lastLine.Contains("Fellow corporation member"))
                 {
                     await OutprintAsync(AtUser(lastLine) + lastLine, ChannelID.newsId);
+                }
+                else if (lastLine.Contains("Exporting holdings.csv has finished."))
+                {
+                    string csv = "";
+                    if (File.Exists("C:/Users/ZANDER/StarportGE/holdings.csv"))
+                    {
+                        csv = "C:/Users/ZANDER/StarportGE/holdings.csv";
+                        Algorithms.FileManipulation.FileDeleteIfExists(csvPath);
+                        File.Copy(csv, csvPath); //Copy local to internet
+                    }
+                    else if (File.Exists("C:/Users/ALEX/StarportGE/holdings.csv"))
+                    {
+                        csv = "C:/Users/ALEX/StarportGE/holdings.csv";
+                        Algorithms.FileManipulation.FileDeleteIfExists(csvPath);
+                        File.Copy(csv, csvPath); //Copy Local to internet
+                    }
+                    System.Console.WriteLine("Copied csv to internet...");
+                    _ = LoadExcelHoldingsAsync();
                 }
 
                 if (kombat)
@@ -1393,21 +1519,6 @@ namespace DiscordBotUpdates.Modules
 
                 await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
             }
-        }
-
-        internal string AllPlanetInfo(Holding planet)
-        {
-            return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
-                + " | Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
-                + "Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
-                + "Resources: " + '\n'
-                + "Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                + "Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                + "Equipment: " + planet.equ + " | Spice: " + planet.spi +
-                +'\n' + '\n'
-                + " ___________________________________________________________________________"
-                + '\n' + '\n';
         }
     }
 }

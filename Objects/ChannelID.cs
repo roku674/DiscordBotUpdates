@@ -15,7 +15,9 @@
         private static readonly ulong _enemySightingsId = 999454210116563126;
         private static readonly ulong _newsId = 1015564608481808425;
         private static readonly ulong _nuetrinoId = 943753103042289675;
-        private static readonly ulong _planetPicturesId = 1003920734114029578;
+        private static readonly ulong _planetPicturesEnemyId = 1016034403350220882;
+        private static readonly ulong _planetPicturesFriendlyId = 1003920734114029578;
+        private static readonly ulong _planetPicturesUndomedId = 1016034437680607292;
         private static readonly ulong _pollutionFinderId = 1014287210041839658;
         private static readonly ulong _recapListId = 941389866137169920;
         private static readonly ulong _redomeId = 989310361666740244;
@@ -42,7 +44,9 @@
         public static ulong enemySightingsId => _enemySightingsId;
         public static ulong newsId => _newsId;
         public static ulong nuetrinoId => _nuetrinoId;
-        public static ulong planetPicturesId => _planetPicturesId;
+        public static ulong planetPicturesEnemyId => _planetPicturesEnemyId;
+        public static ulong planetPicturesFriendlyId => _planetPicturesFriendlyId;
+        public static ulong planetPicturesUndomedId => _planetPicturesUndomedId;
         public static ulong pollutionFinderId => _pollutionFinderId;
         public static ulong recapListId => _recapListId;
         public static ulong redomeId => _redomeId;
