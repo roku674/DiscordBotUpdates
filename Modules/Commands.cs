@@ -129,12 +129,9 @@ namespace DiscordBotUpdates.Modules
             {
                 path = "C:/Users/ALEX/StarportGE/holdings.csv";
             }
-            ExcelCSharp.Excel excel = new ExcelCSharp.Excel(TaskInitator.excelPath, 1);
-            excel.ConvertFromCSVtoXLSX(path, TaskInitator.excelPath);
+            await ExcelCSharp.Excel.ConvertFromCSVtoXLSXAsync(path, TaskInitator.excelPath);
 
             await ReplyAsync("Finished converting csv to xlsx!");
-
-            excel.Close();
         }
 
         [Command("run Deactivate")]
@@ -469,8 +466,8 @@ namespace DiscordBotUpdates.Modules
                     //System.Console.WriteLine(directoryInfo.Name);
                     if (directoryInfo.Name == "PlanetPictures")
                     {
-                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.planetPicturesId);
-                        await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesId);
+                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.planetPicturesFriendlyId);
+                        await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesFriendlyId);
 
                         await ReplyAsync("File printed to planet pictures!");
                     }
