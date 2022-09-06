@@ -11,6 +11,8 @@ namespace DiscordBotUpdates
     {
         private static void Main(string[] args)
         {
+            System.Console.WriteLine("Last Update: " + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly().Location));
+
             Google.Apis.Auth.OAuth2.UserCredential credential;
 
             using (System.IO.FileStream stream =
@@ -79,6 +81,7 @@ namespace DiscordBotUpdates
 
         public async Task RunBotAsync()
         {
+            System.Console.WriteLine("The time is now: " + _dateTime);
             _client = new DiscordSocketClient();
             _commands = new CommandService();
 
@@ -96,7 +99,6 @@ namespace DiscordBotUpdates
             await _client.StartAsync();
 
             _dateTime = System.DateTime.Now;
-            System.Console.WriteLine("The time is now: " + _dateTime);
 
             await Task.Delay(10000);
             Modules.Commands commands = new Modules.Commands();

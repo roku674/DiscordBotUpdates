@@ -19,6 +19,7 @@
         private static readonly ulong _planetPicturesFriendlyId = 1003920734114029578;
         private static readonly ulong _planetPicturesUndomedId = 1016034437680607292;
         private static readonly ulong _pollutionFinderId = 1014287210041839658;
+        private static readonly ulong _pollutionCritId = 1016420164285235300;
         private static readonly ulong _recapListId = 941389866137169920;
         private static readonly ulong _redomeId = 989310361666740244;
         private static readonly ulong _revoltFinderId = 1014995811282722866;
@@ -30,6 +31,7 @@
         private static readonly ulong _voiceInvadingId = 941396278271688734;
         private static readonly ulong _voiceKombatId = 941391368117440544;
         private static readonly ulong _voiceSlaversOnlyId = 941134782048395369;
+        private static readonly ulong _zoundsForHoundsId = 1016410048211198054;
 
         public static ulong alliedChatId => _alliedChatId;
         public static ulong botCommandsId => _botCommandsId;
@@ -59,5 +61,9 @@
         public static ulong voiceInvadingId => _voiceInvadingId;
         public static ulong voiceKombatId => _voiceKombatId;
         public static ulong voiceSlaversOnlyId => _voiceSlaversOnlyId;
+
+        public static ulong zoundsForHoundsId => _zoundsForHoundsId;
+
+        public static ulong pollutionCritId => _pollutionCritId;
     }
 }
