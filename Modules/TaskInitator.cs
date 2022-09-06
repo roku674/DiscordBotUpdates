@@ -446,20 +446,31 @@ namespace DiscordBotUpdates.Modules
 
                 for (int i = 0; i < holdingsList.Count - 1; i++)
                 {
+                    Holding lastPlanet = null;
                     if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
                     {
-                        string planetType = holdingsList[i].planetType.Replace(
-                                   holdingsList[i].planetType[0].ToString(),
-                                   holdingsList[i].planetType[0].ToString().ToUpper());
+                        Holding planetInSystem = holdingsList[i];
+
+                        //Capitalize first letter
+                        string planetType = planetInSystem.planetType.Replace(
+                                   planetInSystem.planetType[0].ToString(),
+                                   planetInSystem.planetType[0].ToString().ToUpper());
+
                         for (int j = 0; j < lines.Length - 1; j++)
                         {
-                            if (holdingsList[i].ore > holdingsList[i + 1].ore)
+                            if (lastPlanet == null)
                             {
-                                lines[j + 1] = holdingsList[i].location + " Type" + j + " " + planetType;
+                                lines[j + 1] = planetInSystem.location + " Type" + j + " " + planetType;
+                                lastPlanet = planetInSystem;
+                            }
+                            if (planetInSystem.ore > lastPlanet.ore)
+                            {
+                                lines[j + 1] = planetInSystem.location + " Type" + j + " " + planetType;
+                                lastPlanet = planetInSystem;
                             }
                             else
                             {
-                                lines[j + 1] = holdingsList[i + 1].location + " Type" + j + " " + planetType;
+                                lines[j + 1] = lastPlanet.location + " Type" + j + " " + planetType;
                             }
                         }
                     }
@@ -467,8 +478,8 @@ namespace DiscordBotUpdates.Modules
             }
 
             await File.WriteAllLinesAsync(alliePath, lines);
-
-            await OutprintFileAsync(AtUser("Autism") + alliePath, ChannelID.botUpdatesId);
+            await OutprintAsync(AtUser("Autism"), ChannelID.botUpdatesId);
+            await OutprintFileAsync(alliePath, ChannelID.botUpdatesId);
         }
 
         internal string AllPlanetInfo(Holding planet)
@@ -476,7 +487,7 @@ namespace DiscordBotUpdates.Modules
             return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
                 + "Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
                 + "  Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + " / day" + '\n'
-                + "  Discoveries: " + planet.discoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                + "  Discoveries: " + planet.discoveries + "/ " + planet.numDiscoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
                 + "Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
                 + "Resources: " + '\n'
                 + "  Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
@@ -524,17 +535,61 @@ namespace DiscordBotUpdates.Modules
             await File.WriteAllTextAsync(tempPath, "");
             Holding origin = holdingsList.Find(planet => planet.location.Contains("Beta Doradus"));
             localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
-            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0;
+            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0;
 
             if (type == "Pollution")
             {
                 channel = ChannelID.pollutionFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    polluting++;
                     if (planet.pollution > 0 || planet.pollutionRate > 0)
                     {
+                        polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            if (type == "Pollution" || type == "PollutionCrit" || type == "All")
+            {
+                channel = ChannelID.pollutionCritId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.pollution > 40 && planet.pollutionRate > 0)
+                    {
+                        pollutingCrit++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            if (type == "Zoundsables" || type == "All")
+            {
+                channel = ChannelID.zoundsForHoundsId;
+                int zoundsableCounter = 0;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
+                    {
+                        zoundsableCounter++;
+                        string message = AllPlanetInfo(planet);
+
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
+            }
+            if (type == "DD" || type == "All")
+            {
+                channel = ChannelID.ddId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.name.Contains("DD") ||
+                        ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
+                        )
+                    {
+                        ddCount++;
+                        string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
@@ -561,37 +616,6 @@ namespace DiscordBotUpdates.Modules
                     {
                         negativeGrowth++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Zoundsables" || type == "All")
-            {
-                channel = ChannelID.zoundsForHoundsId;
-                int zoundsableCounter = 0;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
-                    {
-                        zoundsableCounter++;
-                        string message = AllPlanetInfo(planet);
-
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
-            }
-            else if (type == "DD" || type == "All")
-            {
-                channel = ChannelID.ddId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.name.Contains("DD") ||
-                        ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
-                        )
-                    {
-                        ddCount++;
-                        string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
                 }
@@ -631,7 +655,10 @@ namespace DiscordBotUpdates.Modules
                            + "DD's: " + ddCount + '\n'
                            + "Negative Growth: " + negativeGrowth + '\n'
                            + "Negative Morale: " + negativeMorale + '\n'
-                           + "Polluting: " + polluting, channel);
+                           + "Polluting: " + polluting + '\n'
+                           + "  Critial : " + pollutingCrit
+                           ,
+                           channel);
 
             foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir"))
             {
@@ -987,7 +1014,8 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine("Copied csv to internet...");
                     //await OutprintAsync("Copied local csv to internet", ChannelID.botUpdatesId);
 
-                    _ = LoadExcelHoldingsAsync();
+                    await Task.Delay(30000);
+                    _ = Task.Run(() => LoadExcelHoldingsAsync());
                 }
 
                 if (kombat)
@@ -1356,7 +1384,25 @@ namespace DiscordBotUpdates.Modules
                         }
                         else
                         {
-                            await OutprintAsync(AtUser("Autism") + lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.botUpdatesId);
+                            if (holdingsList == null)
+                            {
+                                await LoadExcelHoldingsAsync();
+                            }
+                            holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                            if (holdingsIndex != -1)
+                            {
+                                Holding planet = holdingsList[holdingsIndex];
+                                if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
+                                {
+                                    string message = AllPlanetInfo(planet);
+
+                                    await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, ChannelID.zoundsForHoundsId);
+                                }
+                            }
+                            else
+                            {
+                                await OutprintAsync(AtUser("Autism") + lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", ChannelID.botUpdatesId);
+                            }
                         }
                     }
                     else if (lastLine.Contains("Military Tradition lvl 3") || lastLine.Contains("Military Tradition lvl 4") || lastLine.Contains("Military Tradition lvl 5"))
