@@ -1,9 +1,9 @@
-  Command Build Omega Horologii Ia
-Omega Horologii II Type0 Rocky
-Omega Horologii II Type1 Rocky
-Omega Horologii Ic Type2 Arctic
+  Command Build 60 Lacertae Ve
 
-Omega Horologii Ic Type4 Arctic
-Omega Horologii II Type5 Rocky
-Omega Horologii II Type6 Rocky
-Omega Horologii Ic Type7 Arctic
+
+
+
+
+
+
+

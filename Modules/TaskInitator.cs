@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Text.RegularExpressions;
 
 namespace DiscordBotUpdates.Modules
 {
@@ -400,7 +401,14 @@ namespace DiscordBotUpdates.Modules
                     landings = 0;
                     colsAbandoned = 0;
                     colsBuilt = 0;
-                    _ = FindListAsync("All");
+
+                    await FindListAsync("All");
+                    await FindListAsync("Military");
+                    await FindListAsync("PollutionCrit");
+                    await FindListAsync("Solar Off");
+                    await FindListAsync("Zoundsables");
+
+                    //await FindListAsync("DD");
                 }
 
                 if (TwoMinuteTracker == 120)
@@ -443,10 +451,9 @@ namespace DiscordBotUpdates.Modules
 
                 lines[0] = "  Command Build " + text;
                 Holding planetToBuild = holdingsList.Find(p => p.location == text);
-
+                Holding[] lastPlanet = new Holding[8];
                 for (int i = 0; i < holdingsList.Count - 1; i++)
                 {
-                    Holding lastPlanet = null;
                     if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
                     {
                         Holding planetInSystem = holdingsList[i];
@@ -456,22 +463,60 @@ namespace DiscordBotUpdates.Modules
                                    planetInSystem.planetType[0].ToString(),
                                    planetInSystem.planetType[0].ToString().ToUpper());
 
-                        for (int j = 0; j < lines.Length - 1; j++)
+                        if (lastPlanet[0] == null)
                         {
-                            if (lastPlanet == null)
+                            for (int j = 0; j < lastPlanet.Length; j++)
                             {
-                                lines[j + 1] = planetInSystem.location + " Type" + j + " " + planetType;
-                                lastPlanet = planetInSystem;
+                                lastPlanet[j] = planetInSystem;
                             }
-                            if (planetInSystem.ore > lastPlanet.ore)
-                            {
-                                lines[j + 1] = planetInSystem.location + " Type" + j + " " + planetType;
-                                lastPlanet = planetInSystem;
-                            }
-                            else
-                            {
-                                lines[j + 1] = lastPlanet.location + " Type" + j + " " + planetType;
-                            }
+                        }
+
+                        if (planetInSystem.ore > lastPlanet[0].ore)
+                        {
+                            lines[1] = planetInSystem.location + " Type0 " + planetType;
+                            lastPlanet[0] = planetInSystem;
+                        }
+
+                        if (planetInSystem.ana > lastPlanet[1].ana)
+                        {
+                            lines[2] = planetInSystem.location + " Type1 " + planetType;
+                            lastPlanet[1] = planetInSystem;
+                        }
+
+                        if (planetInSystem.med > lastPlanet[2].med)
+                        {
+                            lines[3] = planetInSystem.location + " Type2 " + planetType;
+                            lastPlanet[2] = planetInSystem;
+                        }
+
+                        if (planetInSystem.org > lastPlanet[3].org)
+                        {
+                            lines[4] = planetInSystem.location + " Type3 " + planetType;
+                            lastPlanet[3] = planetInSystem;
+                        }
+
+                        if (planetInSystem.oil > lastPlanet[4].oil)
+                        {
+                            lines[5] = planetInSystem.location + " Type4 " + planetType;
+                            lastPlanet[4] = planetInSystem;
+                        }
+
+                        if (planetInSystem.ura > lastPlanet[5].ura)
+                        {
+                            lines[6] = planetInSystem.location + " Type5 " + planetType;
+                            lastPlanet[5] = planetInSystem;
+                        }
+
+                        if (planetInSystem.equ > lastPlanet[6].equ)
+                        {
+                            lines[7] = planetInSystem.location + " Type6 " + planetType;
+                            lastPlanet[6] = planetInSystem;
+                        }
+
+                        if (planetInSystem.spi > lastPlanet[7].spi)
+                        {
+                            lines[8] = planetInSystem.location + " Type7 " + planetType;
+                            lastPlanet[7] = planetInSystem;
                         }
                     }
                 }
@@ -527,22 +572,22 @@ namespace DiscordBotUpdates.Modules
                 localHoldingsList = holdingsList;
             }
             string tempPath = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + type + "Corporate.txt";
-
-            if (!Directory.Exists(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir"))
+            string tempDir = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir";
+            if (!Directory.Exists(tempDir))
             {
-                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir");
+                Directory.CreateDirectory(tempDir);
             }
             await File.WriteAllTextAsync(tempPath, "");
             Holding origin = holdingsList.Find(planet => planet.location.Contains("Beta Doradus"));
             localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
-            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0;
+            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0, solarOff = 0, solarWeak = 0, militaryWeak = 0;
 
             if (type == "Pollution")
             {
                 channel = ChannelID.pollutionFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.pollution > 0 || planet.pollutionRate > 0)
+                    if (planet.pollution > 0 && planet.pollutionRate > 1)
                     {
                         polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
@@ -550,7 +595,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-            if (type == "Pollution" || type == "PollutionCrit" || type == "All")
+            else if (type == "PollutionCrit")
             {
                 channel = ChannelID.pollutionCritId;
                 foreach (Holding planet in localHoldingsList)
@@ -563,7 +608,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-            if (type == "Zoundsables" || type == "All")
+            else if (type == "Zoundsables")
             {
                 channel = ChannelID.zoundsForHoundsId;
                 int zoundsableCounter = 0;
@@ -579,16 +624,55 @@ namespace DiscordBotUpdates.Modules
                 }
                 await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
             }
-            if (type == "DD" || type == "All")
+            else if (type == "DD")
             {
                 channel = ChannelID.ddId;
                 foreach (Holding planet in localHoldingsList)
                 {
                     if (planet.name.Contains("DD") ||
-                        ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
-                        )
+                       ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
+                       )
                     {
                         ddCount++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Solar Off")
+            {
+                channel = ChannelID.solarOffId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.solarShots == 0 && planet.population > 1000 || (planet.solarShots > 0 && planet.population > 10000 && planet.ore <= 5000))
+                    {
+                        solarOff++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Solar Weak")
+            {
+                channel = ChannelID.solarWeakId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.solarShots < 25 && planet.population > 5000)
+                    {
+                        solarWeak++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Military")
+            {
+                channel = ChannelID.militaryLowId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if ((planet.percMilitary / 100) * planet.population < 4000)
+                    {
+                        militaryWeak++;
                         string message = AllPlanetInfo(planet);
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
@@ -638,7 +722,7 @@ namespace DiscordBotUpdates.Modules
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
                         await UpdateCompanionFiles(planet, tempPath, message, type);
                     }
-                    if (planet.pollution > 0 || planet.pollutionRate > 0)
+                    if (planet.pollution > 0 || planet.pollutionRate > 1)
                     {
                         polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
@@ -656,11 +740,17 @@ namespace DiscordBotUpdates.Modules
                            + "Negative Growth: " + negativeGrowth + '\n'
                            + "Negative Morale: " + negativeMorale + '\n'
                            + "Polluting: " + polluting + '\n'
-                           + "  Critial : " + pollutingCrit
+                           + "  Critial : " + pollutingCrit + '\n'
+                           + "Solars:" + '\n'
+                           + "  Disabled/Off: " + solarOff + '\n'
+                           + "  Weak: " + solarWeak + '\n'
+                           + "Military: " + '\n'
+                           + "  Weak: " + militaryWeak
                            ,
                            channel);
 
-            foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir"))
+            //print out the files
+            foreach (string file in Directory.GetFiles(tempDir))
             {
                 if (AtUser(file) != "")
                 {
@@ -681,7 +771,13 @@ namespace DiscordBotUpdates.Modules
             await OutprintFileAsync(tempPath, channel);
             File.Delete(tempPath);
 
-            Directory.Delete(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir");
+            //clean up remaining files
+            string[] remainingFiles = Directory.GetFiles(tempDir);
+            foreach (string file in remainingFiles)
+            {
+                File.Delete(file);
+            }
+            Directory.Delete(tempDir);
         }
 
         internal async Task FindWeaponsNearMeAsync(string text)
@@ -702,17 +798,17 @@ namespace DiscordBotUpdates.Modules
 
             foreach (Holding planet in holdingsList)
             {
-                if (text == "nukes" && (planet.nukes > 0 || planet.negotiators > 0) && planet.hopsAway <= 5)
+                if (text == "Nukes" && (planet.nukes > 0 || planet.negotiators > 0) && planet.hopsAway <= 5)
                 {
                     string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + '\n';
                     await File.AppendAllTextAsync(tempWeapons, message);
                 }
-                if (text == "defenses" && (planet.laserCannons > 0 || planet.compoundMines > 0 || planet.flakCannons > 0) && planet.hopsAway <= 5)
+                if (text == "Defenses" && (planet.laserCannons > 0 || planet.compoundMines > 0 || planet.flakCannons > 0) && planet.hopsAway <= 5)
                 {
                     string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Lasers: " + planet.laserCannons + " | Compound Mines: " + planet.compoundMines + " Flaks: " + planet.flakCannons + '\n';
                     await File.AppendAllTextAsync(tempWeapons, message);
                 }
-                if (text == "shields" && planet.shields > 0)
+                if (text == "Shields" && planet.shields > 0)
                 {
                     string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " Shields: " + planet.shields;
                     await File.AppendAllTextAsync(tempWeapons, message);
@@ -1015,7 +1111,12 @@ namespace DiscordBotUpdates.Modules
                     //await OutprintAsync("Copied local csv to internet", ChannelID.botUpdatesId);
 
                     await Task.Delay(30000);
-                    _ = Task.Run(() => LoadExcelHoldingsAsync());
+                    await Task.Run(() => LoadExcelHoldingsAsync());
+                }
+                else if (lastLine.Contains("Connection to server lost due to"))
+                {
+                    await OutprintAsync(AtUser("Autism") + "I lost connection!", ChannelID.newsId);
+                    await OutprintAsync(AtUser("Autism") + "I lost connection!", ChannelID.botUpdatesId);
                 }
 
                 if (kombat)

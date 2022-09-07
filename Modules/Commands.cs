@@ -195,7 +195,20 @@ namespace DiscordBotUpdates.Modules
         [Command("request List")]
         public async Task RevoltGet([Remainder] string text)
         {
-            await Task.Run(() => init.FindListAsync(text));
+            if (text == "All")
+            {
+                await init.FindListAsync(text);
+                await init.FindListAsync("DD");
+                await init.FindListAsync("Military");
+                await init.FindListAsync("PollutionCrit");
+                await init.FindListAsync("Solar Off");
+                await init.FindListAsync("Solar Weak");
+                await init.FindListAsync("Zoundsables");
+            }
+            else
+            {
+                await Task.Run(() => init.FindListAsync(text));
+            }
         }
 
         [Command("request WF")]
@@ -438,12 +451,11 @@ namespace DiscordBotUpdates.Modules
         }
 
         [Command("request planet")]
-        public async Task PlanetPictureGet([Remainder] string text)
+        public async Task PlanetPictureGet([Remainder] string planetName)
         {
             string[] allfiles = Directory.GetFiles("G:/My Drive/Personal Stuff/Starport/PlanetPictures", "*.*", SearchOption.AllDirectories);
-            string textPNG = text + ".png";
 
-            int holdingIndex = TaskInitator.holdingsList.FindIndex(planet => planet.location == text);
+            int holdingIndex = TaskInitator.holdingsList.FindIndex(planet => planet.location == planetName);
             if (holdingIndex != -1)
             {
                 StarportObjects.Holding planet = TaskInitator.holdingsList[holdingIndex];
@@ -452,14 +464,14 @@ namespace DiscordBotUpdates.Modules
             }
             else
             {
-                await ReplyAsync(text + " was NOT found in spreadsheet!");
+                await ReplyAsync(planetName + " was NOT found in spreadsheet!");
             }
 
             foreach (string file in allfiles)
             {
-                if (textPNG.Equals(Path.GetFileName(file)))
+                if (planetName.Equals(Path.GetFileNameWithoutExtension(file)))
                 {
-                    System.Console.WriteLine(textPNG
+                    System.Console.WriteLine(planetName
                        + '\n' + file);
 
                     DirectoryInfo directoryInfo = Directory.GetParent(file);
@@ -470,28 +482,31 @@ namespace DiscordBotUpdates.Modules
                         await DBUTask.OutprintFileAsync(file, ChannelID.planetPicturesFriendlyId);
 
                         await ReplyAsync("File printed to planet pictures!");
+                        return;
                     }
                     else if (directoryInfo.Name == "Enemy Planets")
                     {
                         await DBUTask.OutprintAsync("Enemy Planet Requested: ", ChannelID.slaversId);
                         await DBUTask.OutprintFileAsync(file, ChannelID.slaversId);
+                        /*
                         if (File.Exists(directoryInfo.FullName + "/" + text + ".txt"))
                         {
                             await DBUTask.OutprintFileAsync(directoryInfo.FullName + "/" + text + ".txt", ChannelID.slaversId);
                         }
+                        */
                         await ReplyAsync("File printed to slavers!");
+                        return;
                     }
                     else if (directoryInfo.Name == "Undomed")
                     {
                         await DBUTask.OutprintAsync("Friendly Planet Requested: ", ChannelID.buildingId);
                         await DBUTask.OutprintFileAsync(file, ChannelID.buildingId);
                         await ReplyAsync("File printed to building!");
+                        return;
                     }
-
-                    return;
                 }
             }
-            await ReplyAsync(text + " picture was NOT found in our folders!");
+            await ReplyAsync(planetName + " picture was NOT found in our folders!");
         }
 
         [Command("run planetsCaptured")]
