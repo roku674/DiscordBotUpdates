@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
-using System.Text.RegularExpressions;
 
 namespace DiscordBotUpdates.Modules
 {
@@ -137,7 +136,7 @@ namespace DiscordBotUpdates.Modules
                         atUser = AtUser(calendarEvent.Description);
                     }
 
-                    await OutprintAsync(atUser + "Redome Time: " + calendarEvent.OriginalStartTime + '\n'
+                    await OutprintAsync(atUser + "Upcoming Redome Time: " + calendarEvent.OriginalStartTime.DateTime + "EST" + '\n'
                         + calendarEvent.Summary + '\n'
                         + calendarEvent.Description,
                         ChannelID.redomeId
@@ -476,11 +475,19 @@ namespace DiscordBotUpdates.Modules
                             lines[1] = planetInSystem.location + " Type0 " + planetType;
                             lastPlanet[0] = planetInSystem;
                         }
+                        else if (planetToBuild.ore > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
+                        }
 
                         if (planetInSystem.ana > lastPlanet[1].ana)
                         {
                             lines[2] = planetInSystem.location + " Type1 " + planetType;
                             lastPlanet[1] = planetInSystem;
+                        }
+                        else if (planetToBuild.ana > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
                         }
 
                         if (planetInSystem.med > lastPlanet[2].med)
@@ -488,11 +495,19 @@ namespace DiscordBotUpdates.Modules
                             lines[3] = planetInSystem.location + " Type2 " + planetType;
                             lastPlanet[2] = planetInSystem;
                         }
+                        else if (planetToBuild.med > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
+                        }
 
                         if (planetInSystem.org > lastPlanet[3].org)
                         {
                             lines[4] = planetInSystem.location + " Type3 " + planetType;
                             lastPlanet[3] = planetInSystem;
+                        }
+                        else if (planetToBuild.org > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
                         }
 
                         if (planetInSystem.oil > lastPlanet[4].oil)
@@ -500,11 +515,19 @@ namespace DiscordBotUpdates.Modules
                             lines[5] = planetInSystem.location + " Type4 " + planetType;
                             lastPlanet[4] = planetInSystem;
                         }
+                        else if (planetToBuild.oil > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
+                        }
 
                         if (planetInSystem.ura > lastPlanet[5].ura)
                         {
                             lines[6] = planetInSystem.location + " Type5 " + planetType;
                             lastPlanet[5] = planetInSystem;
+                        }
+                        else if (planetToBuild.ura > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
                         }
 
                         if (planetInSystem.equ > lastPlanet[6].equ)
@@ -512,11 +535,19 @@ namespace DiscordBotUpdates.Modules
                             lines[7] = planetInSystem.location + " Type6 " + planetType;
                             lastPlanet[6] = planetInSystem;
                         }
+                        else if (planetToBuild.equ > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
+                        }
 
                         if (planetInSystem.spi > lastPlanet[7].spi)
                         {
                             lines[8] = planetInSystem.location + " Type7 " + planetType;
                             lastPlanet[7] = planetInSystem;
+                        }
+                        else if (planetToBuild.spi > 3000)
+                        {
+                            lines[1] = lines[1].Replace(planetType, "");
                         }
                     }
                 }
@@ -532,8 +563,9 @@ namespace DiscordBotUpdates.Modules
             return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
                 + "Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
                 + "  Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + " / day" + '\n'
-                + "  Discoveries: " + planet.discoveries + "/ " + planet.numDiscoveries + " | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
+                + "  Discoveries: " + planet.discoveries + "/ " + planet.numDiscoveries + " Total Discoveries | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
                 + "Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
+                + "/setworkforces " + planet.percConstruct + " " + planet.percResearch + " " + planet.percMilitary + " " + planet.percHarvest + '\n'
                 + "Resources: " + '\n'
                 + "  Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
                 + "  Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
@@ -665,12 +697,35 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
             }
-            else if (type == "Military")
+            else if (type == "MilitaryTest")
             {
-                channel = ChannelID.militaryLowId;
+                uint military = 10000;
+
+                channel = ChannelID.botTestingId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if ((planet.percMilitary / 100) * planet.population < 4000)
+                    if (planet.discoveries.Contains("MT lvl 1"))
+                    {
+                        military = 7150;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 2"))
+                    {
+                        military = 5600;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 3"))
+                    {
+                        military = 4550;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 4"))
+                    {
+                        military = 3850;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 5"))
+                    {
+                        military = 3350;
+                    }
+
+                    if ((planet.percMilitary / 100) * planet.population < ((military * 0.4f) / military))
                     {
                         militaryWeak++;
                         string message = AllPlanetInfo(planet);
@@ -821,7 +876,7 @@ namespace DiscordBotUpdates.Modules
             Directory.Delete(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
         }
 
-        internal async Task LoadExcelHoldingsAsync()
+        internal static async Task LoadExcelHoldingsAsync()
         {
             holdingsList = new List<Holding>();
 
@@ -1110,7 +1165,7 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine("Copied csv to internet...");
                     //await OutprintAsync("Copied local csv to internet", ChannelID.botUpdatesId);
 
-                    await Task.Delay(30000);
+                    await Task.Delay(15000);
                     await Task.Run(() => LoadExcelHoldingsAsync());
                 }
                 else if (lastLine.Contains("Connection to server lost due to"))

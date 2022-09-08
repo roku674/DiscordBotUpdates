@@ -192,6 +192,13 @@ namespace DiscordBotUpdates.Modules
             await Task.Run(() => init.FindEnemyColoniesAsync(text, "G:/My Drive/Personal Stuff/Starport/PlanetPictures/Enemy Planets"));
         }
 
+        [Command("request hourlyRedomes")]
+        public async Task HourlyRedomeGet()
+        {
+            _ = Task.Run(() => init.FindHourlyRedomesAsync());
+            await Task.Delay(33);
+        }
+
         [Command("request List")]
         public async Task RevoltGet([Remainder] string text)
         {
@@ -238,7 +245,7 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    request planet (planetName)" +
                 '\n' +
-                "    request planetQuote" +
+                "    request planetsQuote" +
                 '\n' +
                 "    request planetTallies" +
                 '\n' +
@@ -538,28 +545,124 @@ namespace DiscordBotUpdates.Modules
         [Command("request planetsQuote")]
         public async Task QuoteGet()
         {
-            string quote = "";
-            /*
-            string quote = "Arc " + arcticsZ + "/" + arctics +
-                "|~{yellow}~Des " + desertsZ + "/" + deserts +
-                "|~{green}~Earth " + earthsZ + "/" + earthlikes +
-                "|~{orange}~Green " + greenhousesZ + "/" + greenhouses +
-                "|~{purple}~Mount " + mountainsZ + "/" + mountains +
-                "|~{blue}~Oce " + oceansZ + "/" + oceans +
-                "|~{pink}~IGPs ~{link}1:" + paradises + "~" +
-                "|~{gray}~Roc " + rockiesZ + "/" + rockies +
-                "|~{red}~Volc " + volcanicsZ + "/" + volcanics +
-                "|~{link}25:Caps:~ " + invasions +
-                "|~{green}~Traded: " + traded +
-                "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";*/
+            uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
 
-            await ReplyAsync(quote);
+            uint totals = arctics + deserts + earths + greenhouses + mountains + oceans + paradises + rockies + volcanics;
+            uint totalsZ = arcticsZ + desertsZ + earthsZ + greenhousesZ + mountainsZ + oceansZ + paradisesZ + rockies + volcanics;
+
+            if (TaskInitator.holdingsList != null)
+            {
+                foreach (StarportObjects.Holding planet in TaskInitator.holdingsList)
+                {
+                    if (planet.owner.Equals("Anxiety.jar"))
+                    {
+                        if (planet.name.EndsWith(".I") || planet.name.EndsWith(".ZI") || planet.name.EndsWith(".ZDI"))
+                        {
+                            invasions++;
+                        }
+                        if (planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD"))
+                        {
+                            dd++;
+                        }
+                        if (planet.planetType.Equals("arctic"))
+                        {
+                            arctics++;
+                            if (planet.population >= 90000)
+                            {
+                                arcticsZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("desert"))
+                        {
+                            deserts++;
+                            if (planet.population >= 90000)
+                            {
+                                desertsZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("earthlike"))
+                        {
+                            earths++;
+                            if (planet.population >= 90000)
+                            {
+                                earthsZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("greenhouse"))
+                        {
+                            greenhouses++;
+                            if (planet.population >= 90000)
+                            {
+                                greenhousesZ++;
+                            }
+                        }
+                        if (planet.planetType.Equals("mountainous"))
+                        {
+                            mountains++;
+                            if (planet.population >= 90000)
+                            {
+                                mountainsZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("oceanic"))
+                        {
+                            oceans++;
+                            if (planet.population >= 90000)
+                            {
+                                oceansZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("Intergalactic paradise"))
+                        {
+                            paradises++;
+                            if (planet.population >= 90000)
+                            {
+                                paradisesZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("rocky"))
+                        {
+                            rockies++;
+                            if (planet.population >= 90000)
+                            {
+                                rockiesZ++;
+                            }
+                        }
+                        else if (planet.planetType.Equals("volcanic"))
+                        {
+                            volcanics++;
+                            if (planet.population >= 90000)
+                            {
+                                volcanicsZ++;
+                            }
+                        }
+                    }
+                }
+
+                string quote = "Arc " + arcticsZ + "/" + arctics +
+                    "|~{yellow}~Des " + desertsZ + "/" + deserts +
+                    "|~{green}~Earth " + earthsZ + "/" + earths +
+                    "|~{orange}~Green " + greenhousesZ + "/" + greenhouses +
+                    "|~{purple}~Mount " + mountainsZ + "/" + mountains +
+                    "|~{blue}~Oce " + oceansZ + "/" + oceans +
+                    "|~{pink}~IGPs ~{link}1:" + paradises + "~" +
+                    "|~{gray}~Roc " + rockiesZ + "/" + rockies +
+                    "|~{red}~Volc " + volcanicsZ + "/" + volcanics +
+                    "|~{link}25:Caps:~ " + invasions +
+                    "|~{green}~DDs: " + dd +
+                    "|~{cyan}~" + totalsZ + " Zounds/" + totals + "~{link}21: Cols~";
+                await ReplyAsync(quote);
+            }
+            else
+            {
+                await ReplyAsync("Holdings list was null!");
+            }
         }
 
         [Command("run readExcel")]
         public async Task ReadExcelDocument()
         {
-            await Task.Run(() => init.LoadExcelHoldingsAsync());
+            await Task.Run(() => TaskInitator.LoadExcelHoldingsAsync());
         }
 
         [Command("run readFolders")]

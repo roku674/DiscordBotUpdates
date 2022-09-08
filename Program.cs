@@ -1,5 +1,6 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -107,7 +108,7 @@ namespace DiscordBotUpdates
             await commands.ChatLogListener(Objects.ChannelID.botUpdatesId, "Chat Log Listener", "Client");
             await Task.Run(() => commands.init.SetAllAsync(true));
 
-            await Task.Run(() => commands.init.LoadExcelHoldingsAsync());
+            await Task.Run(() => Modules.TaskInitator.LoadExcelHoldingsAsync());
 
             await Task.Delay(System.Threading.Timeout.Infinite);
         }
