@@ -1097,6 +1097,112 @@ namespace DiscordBotUpdates.Modules
                 await OutprintAsync(ex.ToString(), Program.channelId.botErrorsId);
             }
 
+            _ = ChatLogsReader(fileStrArr, chatLogOwner);
+        }
+
+        private async Task RunThroughTextAsync()
+        {
+            if (Directory.Exists(Directory.GetCurrentDirectory() + "/Channel"))
+            {
+                string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Channel");
+
+                for (int i = 0; i < filePaths.Length; i++)
+                {
+                    if (File.Exists(filePaths[i]))
+                    {
+                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
+
+                        if (fileAsArr != null)
+                        {
+                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
+                            {
+                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.botUpdatesId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.buildingId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.distressCallsId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.scoutReportsId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task UpdateCompanionFiles(Holding planet, string path, string message, string type)
+        {
+            await File.AppendAllTextAsync(path, message);
+
+            string fileName = AtUser(planet.owner);
+            if (AtUser(planet.owner) != "")
+            {
+                string[] remove = { ">", "<", "@" };
+                foreach (string str in remove)
+                {
+                    fileName = fileName.Replace(str, "");
+                }
+
+                await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
+            }
+        }
+
+        public void FindRemainingLogs()
+        {
+            string remainingLogs = Program.filePaths.chatLogsDir + "/RemainingLogs.txt";
+            if (File.Exists(remainingLogs))
+            {
+                string[] remainderLogsArr = File.ReadAllLines(remainingLogs);
+
+                for (int i = 0; i < remainderLogsArr.Length; i++)
+                {
+                    ChatLogsReader(remainderLogsArr, "Remainder").Wait();
+
+                    remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
+                }
+
+                File.WriteAllLines(remainingLogs, remainderLogsArr);
+
+                System.Console.WriteLine("Lines remaining in file: " + remainderLogsArr.Length);
+
+                if (remainderLogsArr.Length <= 1)
+                {
+                    File.Delete(remainingLogs);
+                }
+                else
+                {
+                    FindRemainingLogs();
+                }
+            }
+        }
+
+        private async Task ChatLogsReader(string[] fileStrArr, string chatLogOwner)
+        {
             if (fileStrArr.Length > 0)
             {
                 string lastLine = fileStrArr[fileStrArr.Length - 1];
@@ -1571,78 +1677,6 @@ namespace DiscordBotUpdates.Modules
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", Program.channelId.slaversId);
                     }
                 }
-            }
-        }
-
-        private async Task RunThroughTextAsync()
-        {
-            if (Directory.Exists(Directory.GetCurrentDirectory() + "/Channel"))
-            {
-                string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Channel");
-
-                for (int i = 0; i < filePaths.Length; i++)
-                {
-                    if (File.Exists(filePaths[i]))
-                    {
-                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
-
-                        if (fileAsArr != null)
-                        {
-                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
-                            {
-                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.botUpdatesId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.buildingId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.distressCallsId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.scoutReportsId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private async Task UpdateCompanionFiles(Holding planet, string path, string message, string type)
-        {
-            await File.AppendAllTextAsync(path, message);
-
-            string fileName = AtUser(planet.owner);
-            if (AtUser(planet.owner) != "")
-            {
-                string[] remove = { ">", "<", "@" };
-                foreach (string str in remove)
-                {
-                    fileName = fileName.Replace(str, "");
-                }
-
-                await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
             }
         }
     }

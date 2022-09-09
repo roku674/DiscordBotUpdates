@@ -256,6 +256,8 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run Echo (BotName) (Command/Chat) (line)" +
                 '\n' +
+                "    run FindRemainingLogs" +
+                '\n' +
                 "    run/request Info" +
                 '\n' +
                 "    run ListenerChatLog (Client/Bot Name)" +
@@ -319,6 +321,13 @@ namespace DiscordBotUpdates.Modules
             TaskInitator.colsBuilt = uint.Parse(temp[6]);
 
             await InfoGet();
+        }
+
+        [Command("run FindRemainingLogs")]
+        public async Task FindRemainingLogs()
+        {
+            init.FindRemainingLogs();
+            await ReplyAsync("Remaining Logs Loaded");
         }
 
         [Command("request Lifetime")]
