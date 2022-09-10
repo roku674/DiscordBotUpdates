@@ -586,12 +586,10 @@ namespace DiscordBotUpdates.Modules
         internal async Task FindListAsync(string type)
         {
             ulong channel = Program.channelId.botUpdatesId;
+
+            await LoadExcelHoldingsAsync();
             List<Holding> localHoldingsList = holdingsList;
-            if (localHoldingsList == null)
-            {
-                await LoadExcelHoldingsAsync();
-                localHoldingsList = holdingsList;
-            }
+
             string tempPath = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + type + "Corporate.txt";
             string tempDir = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir";
             if (!Directory.Exists(tempDir))
@@ -1172,31 +1170,32 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        public void FindRemainingLogs()
+        public async Task FindRemainingLogs()
         {
             string remainingLogs = Program.filePaths.chatLogsDir + "/RemainingLogs.txt";
+
             if (File.Exists(remainingLogs))
             {
                 string[] remainderLogsArr = File.ReadAllLines(remainingLogs);
-
-                for (int i = 0; i < remainderLogsArr.Length; i++)
+                while (remainderLogsArr.Length > 1)
                 {
-                    ChatLogsReader(remainderLogsArr, "Remainder").Wait();
+                    for (int i = 0; i < remainderLogsArr.Length; i++)
+                    {
+                        ChatLogsReader(remainderLogsArr, "Remainder").Wait();
 
-                    remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
-                }
+                        remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
+                    }
 
-                File.WriteAllLines(remainingLogs, remainderLogsArr);
+                    await File.WriteAllLinesAsync(remainingLogs, remainderLogsArr);
 
-                System.Console.WriteLine("Lines remaining in file: " + remainderLogsArr.Length);
+                    System.Console.WriteLine("Lines remaining in file: " + remainderLogsArr.Length);
 
-                if (remainderLogsArr.Length <= 1)
-                {
-                    File.Delete(remainingLogs);
-                }
-                else
-                {
-                    FindRemainingLogs();
+                    if (remainderLogsArr.Length < 1)
+                    {
+                        System.Console.WriteLine("Remainder file deleted");
+                        await OutprintAsync(AtUser("Autism") + remainingLogs + "Deleted!", Program.channelId.botUpdatesId);
+                        File.Delete(remainingLogs);
+                    }
                 }
             }
         }
@@ -1249,7 +1248,7 @@ namespace DiscordBotUpdates.Modules
                     if (File.Exists(Program.filePaths.csvLocal))
                     {
                         csv = Program.filePaths.csvLocal;
-                        Algorithms.FileManipulation.FileDeleteIfExists(Program.filePaths.csvPath);
+                        Algorithms.FileManipulation.DeleteFile(Program.filePaths.csvPath);
                         File.Copy(csv, Program.filePaths.csvPath); //Copy local to internet
                     }
 
