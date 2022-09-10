@@ -213,7 +213,7 @@ namespace DiscordBotUpdates.Modules
                                             }
                                             else
                                             {
-                                                File.Delete(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
+                                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
                                                 File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
                                                 await OutprintAsync("Enemy Planet Picture Updated/Replaced!", Program.channelId.planetPicturesEnemyId);
                                                 await OutprintFileAsync(picture, Program.channelId.planetPicturesEnemyId);
@@ -267,7 +267,7 @@ namespace DiscordBotUpdates.Modules
                                             }
                                             else
                                             {
-                                                File.Delete(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
+                                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
                                                 File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
                                                 await OutprintAsync("Enemy Planet Picture Updated/Replaced!", Program.channelId.planetPicturesUndomedId);
                                                 await OutprintFileAsync(picture, Program.channelId.planetPicturesUndomedId);
@@ -293,7 +293,7 @@ namespace DiscordBotUpdates.Modules
                                 }
                             }
 
-                            File.Delete(picture);
+                            Algorithms.FileManipulation.DeleteFile(picture);
                         }
                     }
                 }
@@ -580,7 +580,7 @@ namespace DiscordBotUpdates.Modules
                 }
             }
             await OutprintFileAsync(folder + "/enemyCols.txt", Program.channelId.scoutReportsId);
-            File.Delete(folder + "/enemyCols.txt");
+            Algorithms.FileManipulation.DeleteFile(folder + "/enemyCols.txt");
         }
 
         internal async Task FindListAsync(string type)
@@ -798,7 +798,7 @@ namespace DiscordBotUpdates.Modules
             {
                 if (AtUser(file) != "")
                 {
-                    await OutprintAsync(AtUser(file), channel);
+                    await OutprintAsync(AtUser(file) + DateTime.Now.ToString(), channel);
 
                     if (!string.IsNullOrEmpty(File.ReadAllText(file)))
                     {
@@ -806,22 +806,23 @@ namespace DiscordBotUpdates.Modules
                     }
                     else
                     {
-                        await OutprintAsync("No" + type + " was found!", channel);
+                        await OutprintAsync("No " + type + " was found!", channel);
                     }
 
-                    File.Delete(file);
+                    Algorithms.FileManipulation.DeleteFile(file);
                 }
             }
             await OutprintFileAsync(tempPath, channel);
-            File.Delete(tempPath);
+            Algorithms.FileManipulation.DeleteFile(tempPath);
 
             //clean up remaining files
             string[] remainingFiles = Directory.GetFiles(tempDir);
             foreach (string file in remainingFiles)
             {
-                File.Delete(file);
+                Algorithms.FileManipulation.DeleteFile(file);
             }
-            Directory.Delete(tempDir);
+            Algorithms.FileManipulation.DeleteDirectory(tempDir);
+            System.Console.WriteLine("DELETED! " + tempDir);
         }
 
         internal async Task FindWeaponsNearMeAsync(string text)
@@ -860,9 +861,10 @@ namespace DiscordBotUpdates.Modules
             }
 
             await OutprintFileAsync(tempWeapons, Program.channelId.slaversId);
-            File.Delete(tempWeapons);
+            Algorithms.FileManipulation.DeleteFile(tempWeapons);
 
-            Directory.Delete(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
+            Algorithms.FileManipulation.DeleteDirectory(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
+            Console.WriteLine("DELETED!" + Directory.GetCurrentDirectory() + "/TempWeaponsDir");
         }
 
         internal static async Task LoadExcelHoldingsAsync()
@@ -1016,7 +1018,7 @@ namespace DiscordBotUpdates.Modules
                             }
                             else
                             {
-                                File.Delete(Program.filePaths.enemyPlanetsDir + "/" + newName);
+                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.enemyPlanetsDir + "/" + newName);
                                 File.Copy(picture, Program.filePaths.enemyPlanetsDir + "/" + newName);
                             }
                         }
@@ -1037,7 +1039,7 @@ namespace DiscordBotUpdates.Modules
                             }
                             else
                             {
-                                File.Delete(Program.filePaths.undomedDir + "/" + newName);
+                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.undomedDir + "/" + newName);
                                 File.Copy(picture, Program.filePaths.undomedDir + "/" + newName);
                             }
                         }
@@ -1192,7 +1194,7 @@ namespace DiscordBotUpdates.Modules
 
                 if (remainderLogsArr.Length <= 1)
                 {
-                    File.Delete(remainingLogs);
+                    Algorithms.FileManipulation.DeleteFile(remainingLogs);
                 }
                 else
                 {
@@ -1249,7 +1251,7 @@ namespace DiscordBotUpdates.Modules
                     if (File.Exists(Program.filePaths.csvLocal))
                     {
                         csv = Program.filePaths.csvLocal;
-                        Algorithms.FileManipulation.FileDeleteIfExists(Program.filePaths.csvPath);
+                        Algorithms.FileManipulation.DeleteFile(Program.filePaths.csvPath);
                         File.Copy(csv, Program.filePaths.csvPath); //Copy local to internet
                     }
 
