@@ -326,7 +326,7 @@ namespace DiscordBotUpdates.Modules
         [Command("run FindRemainingLogs")]
         public async Task FindRemainingLogs()
         {
-            init.FindRemainingLogs();
+            _ = Task.Run(() => init.FindRemainingLogs());
             await ReplyAsync("Remaining Logs Loaded");
         }
 

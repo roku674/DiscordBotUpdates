@@ -9,6 +9,7 @@ namespace DiscordBotUpdates
 {
     internal class Program
     {
+        private static string directory;
         //objects
 
         public static Objects.Bots bots;
@@ -35,24 +36,35 @@ namespace DiscordBotUpdates
 
         private static void Main(string[] args)
         {
+            directory = System.IO.Directory.GetCurrentDirectory();
             System.Console.WriteLine("Last Update: " + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly().Location));
             Google.Apis.Auth.OAuth2.UserCredential credential;
 
-            if (!System.IO.Directory.Exists(System.IO.Directory.GetCurrentDirectory() + "/JSON"))
+            if (!System.IO.Directory.Exists(directory + "/JSON"))
             {
-                System.IO.Directory.CreateDirectory(System.IO.Directory.GetCurrentDirectory() + "/JSON");
+                System.IO.Directory.CreateDirectory(directory + "/JSON");
             }
+            //Update diplomacy lists from internet
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/Allies.json", directory + "/JSON/Allies.json");
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/Enemies.json", directory + "/JSON/Enemies.json");
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/NAP.json", directory + "/JSON/NAP.json");
 
-            filePaths = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.FilePaths>(System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "/JSON/filepaths.json"));
-            channelId = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.ChannelId>(System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "/JSON/channelid.json"));
-            bots = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.Bots>(System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "/JSON/bots.json"));
+            //store them in diplomacy
+            StarportObjects.Diplomacy.allies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/Allies.json"));
+            StarportObjects.Diplomacy.enemies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/Enemies.json"));
+            StarportObjects.Diplomacy.nap = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/NAP.json"));
+
+            //store filepaths/challenids and bots
+            filePaths = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.FilePaths>(System.IO.File.ReadAllText(directory + "/JSON/filepaths.json"));
+            channelId = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.ChannelId>(System.IO.File.ReadAllText(directory + "/JSON/channelid.json"));
+            bots = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.Bots>(System.IO.File.ReadAllText(directory + "/JSON/bots.json"));
 
             using (System.IO.FileStream stream =
-                new System.IO.FileStream(System.IO.Directory.GetCurrentDirectory() + "/JSON/client_secret.json", System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                new System.IO.FileStream(directory + "/JSON/client_secret.json", System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 // The file token.json stores the user's access and refresh tokens, and is created
                 // automatically when the authorization flow completes for the first time.
-                string credPath = System.IO.Directory.GetCurrentDirectory() + "/JSON";
+                string credPath = directory + "/JSON";
 
                 credential = Google.Apis.Auth.OAuth2.GoogleWebAuthorizationBroker.AuthorizeAsync(
                     Google.Apis.Auth.OAuth2.GoogleClientSecrets.FromStream(stream).Secrets,
@@ -83,7 +95,7 @@ namespace DiscordBotUpdates
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
 
-            string jsonPath = System.IO.Directory.GetCurrentDirectory() + "/JSON/tokendiscord.json";
+            string jsonPath = directory + "/JSON/tokendiscord.json";
             string jsonFileContents = System.IO.File.ReadAllText(jsonPath);
             string token = System.Text.Json.JsonSerializer.Deserialize<string>(jsonFileContents);
 
