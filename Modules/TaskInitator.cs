@@ -27,6 +27,114 @@ namespace DiscordBotUpdates.Modules
         public static uint planetsKaptured { get; set; }
         public static uint planetsLost { get; set; }
 
+        public static async Task LoadExcelHoldingsAsync()
+        {
+            holdingsList = new List<Holding>();
+
+            await Task.Delay(3000);
+            Excel.Kill();
+
+            await Excel.ConvertFromCSVtoXLSXAsync(Program.filePaths.csvPath, Program.filePaths.excelPath);
+
+            Excel excelHoldings = new Excel(Program.filePaths.excelPath, 1);
+            object[,] excelMatrixObj = excelHoldings.ReadCellRange();
+            string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
+
+            //im starting this at two becuase column is the title
+            for (int i = 2; i < excelHoldings.rowCount + 1; i++)
+            {
+                for (int j = 1; j <= excelHoldings.colCount; j++)
+                {
+                    if (excelMatrixObj[i, j] == null)
+                    {
+                        excelMatrixObj[i, j] = "";
+                    }
+                    excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
+
+                    int tempInt = 0;
+                    double tempDouble = 0;
+                    if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
+                    {
+                        excelMatrixObj[i, j] = tempInt;
+                    }
+                    else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
+                    {
+                        excelMatrixObj[i, j] = tempDouble;
+                    }
+                    else
+                    {
+                        excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
+                    }
+
+                    //System.Console.WriteLine("[" + i + "," + j + "]" + rowArr[i, j].GetType());
+                }
+                excelMatrixObj[i, 9] = DateTime.MaxValue;
+                //System.Console.WriteLine("[" + i + "," + 9 + "]" + rowArr[i, 9].GetType());
+                if ((int)excelMatrixObj[i, 46] == 1)
+                {
+                    excelMatrixObj[i, 46] = true;
+                }
+                else
+                {
+                    excelMatrixObj[i, 46] = false;
+                }
+                //System.Console.WriteLine("[" + i + "," + 46 + "]" + rowArr[i, 46].GetType());
+
+                Holding holdings = new Holding(
+                    excelMatrix[i, 1],
+                    int.Parse(excelMatrix[i, 2]),
+                    excelMatrix[i, 3],
+                    excelMatrix[i, 4],
+                    int.Parse(excelMatrix[i, 5]),
+                    int.Parse(excelMatrix[i, 6]),
+                    excelMatrix[i, 7],
+                    excelMatrix[i, 8],
+                    (DateTime)excelMatrixObj[i, 9],
+                    int.Parse(excelMatrix[i, 10]),
+                    double.Parse(excelMatrix[i, 11]),
+                    double.Parse(excelMatrix[i, 12]),
+                    double.Parse(excelMatrix[i, 13]),
+                    excelMatrix[i, 14],
+                    int.Parse(excelMatrix[i, 15]),
+                    double.Parse(excelMatrix[i, 16]),
+                    int.Parse(excelMatrix[i, 17]),
+                    double.Parse(excelMatrix[i, 18]),
+                    int.Parse(excelMatrix[i, 19]),
+                    double.Parse(excelMatrix[i, 20]),
+                    int.Parse(excelMatrix[i, 21]),
+                    int.Parse(excelMatrix[i, 22]),
+                    int.Parse(excelMatrix[i, 23]),
+                    int.Parse(excelMatrix[i, 24]),
+                    excelMatrix[i, 25],
+                    int.Parse(excelMatrix[i, 26]),
+                    int.Parse(excelMatrix[i, 27]),
+                    int.Parse(excelMatrix[i, 28]),
+                    int.Parse(excelMatrix[i, 29]),
+                    int.Parse(excelMatrix[i, 40]),
+                    int.Parse(excelMatrix[i, 31]),
+                    int.Parse(excelMatrix[i, 32]),
+                    int.Parse(excelMatrix[i, 33]),
+                    int.Parse(excelMatrix[i, 34]),
+                    int.Parse(excelMatrix[i, 35]),
+                    int.Parse(excelMatrix[i, 36]),
+                    int.Parse(excelMatrix[i, 37]),
+                    int.Parse(excelMatrix[i, 38]),
+                    int.Parse(excelMatrix[i, 39]),
+                    int.Parse(excelMatrix[i, 40]),
+                    int.Parse(excelMatrix[i, 41]),
+                    int.Parse(excelMatrix[i, 42]),
+                    int.Parse(excelMatrix[i, 43]),
+                    int.Parse(excelMatrix[i, 44]),
+                    excelMatrix[i, 45],
+                    (bool)excelMatrixObj[i, 46]
+                    );
+
+                holdingsList.Add(holdings);
+            }
+            excelHoldings.Close();
+            await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
+        }
+
         /// </summary>
         /// <summary>
         /// Call this to start the Distress Calls Listener
@@ -97,6 +205,25 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
+        public async Task FindEnemyColoniesAsync(string enemy, string folder)
+        {
+            //System.Console.WriteLine("Finding " + enemy + " colonies!");
+            await OutprintAsync(enemy + "'s planets:", Program.channelId.scoutReportsId);
+
+            await File.WriteAllTextAsync(folder + "/enemyCols.txt", " ");
+            foreach (string fileName in Directory.EnumerateFiles(folder, "*.txt"))
+            {
+                //System.Console.WriteLine(fileName);
+                string fileContents = File.ReadAllText(fileName);
+                if (fileContents.Contains(enemy))
+                {
+                    await File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
+                }
+            }
+            await OutprintFileAsync(folder + "/enemyCols.txt", Program.channelId.scoutReportsId);
+            Algorithms.FileManipulation.DeleteFile(folder + "/enemyCols.txt");
+        }
+
         public async Task FindHourlyRedomesAsync()
         {
             System.Console.WriteLine("Finding Hourly Redomes...");
@@ -129,6 +256,276 @@ namespace DiscordBotUpdates.Modules
                         + calendarEvent.Description,
                         Program.channelId.redomeId
                         );
+                }
+            }
+        }
+
+        public async Task FindListAsync(string type)
+        {
+            ulong channel = Program.channelId.botUpdatesId;
+
+            await LoadExcelHoldingsAsync();
+            List<Holding> localHoldingsList = holdingsList;
+
+            string tempPath = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + type + "Corporate.txt";
+            string tempDir = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir";
+            if (!Directory.Exists(tempDir))
+            {
+                Directory.CreateDirectory(tempDir);
+            }
+            await File.WriteAllTextAsync(tempPath, "");
+            Holding origin = holdingsList.Find(planet => planet.location.Contains("Sol"));
+            localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
+            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0, solarOff = 0, solarWeak = 0, militaryWeak = 0;
+
+            if (type == "Pollution")
+            {
+                channel = Program.channelId.pollutionFinderId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.pollution > 0 && planet.pollutionRate > 1)
+                    {
+                        polluting++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "PollutionCrit")
+            {
+                channel = Program.channelId.pollutionCritId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.pollution > 40 && planet.pollutionRate > 0)
+                    {
+                        pollutingCrit++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Zoundsables")
+            {
+                channel = Program.channelId.zoundsForHoundsId;
+                int zoundsableCounter = 0;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
+                    {
+                        zoundsableCounter++;
+                        string message = AllPlanetInfo(planet);
+
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
+            }
+            else if (type == "DD")
+            {
+                channel = Program.channelId.ddId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.name.Contains("DD") ||
+                       ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
+                       )
+                    {
+                        ddCount++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Solar Off")
+            {
+                channel = Program.channelId.solarOffId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.solarShots == 0 && planet.population > 1000 || (planet.solarShots > 0 && planet.population > 10000 && planet.ore <= 5000))
+                    {
+                        solarOff++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Solar Weak")
+            {
+                channel = Program.channelId.solarWeakId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.solarShots < 25 && planet.population > 5000)
+                    {
+                        solarWeak++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "MilitaryTest")
+            {
+                uint military = 10000;
+
+                channel = Program.channelId.botTestingId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.discoveries.Contains("MT lvl 1"))
+                    {
+                        military = 7150;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 2"))
+                    {
+                        military = 5600;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 3"))
+                    {
+                        military = 4550;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 4"))
+                    {
+                        military = 3850;
+                    }
+                    else if (planet.discoveries.Contains("MT lvl 5"))
+                    {
+                        military = 3350;
+                    }
+
+                    if ((planet.percMilitary / 100) * planet.population < ((military * 0.4f) / military))
+                    {
+                        militaryWeak++;
+                        string message = AllPlanetInfo(planet);
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Revolt")
+            {
+                channel = Program.channelId.revoltFinderId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
+                    {
+                        negativeMorale++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "Shrinking")
+            {
+                channel = Program.channelId.shrinkingFinderId;
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
+                    {
+                        negativeGrowth++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else if (type == "All")
+            {
+                channel = Program.channelId.colonyManagementId;
+
+                foreach (Holding planet in localHoldingsList)
+                {
+                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
+                    {
+                        negativeGrowth++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
+                    {
+                        negativeMorale++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                    if (planet.pollution > 0 || planet.pollutionRate > 1)
+                    {
+                        polluting++;
+                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                    }
+                }
+            }
+            else
+            {
+                await OutprintAsync(type + " was not recognized!", Program.channelId.botErrorsId);
+            }
+
+            await OutprintAsync("Totals: " + '\n'
+                           + "DD's: " + ddCount + '\n'
+                           + "Negative Growth: " + negativeGrowth + '\n'
+                           + "Negative Morale: " + negativeMorale + '\n'
+                           + "Polluting: " + polluting + '\n'
+                           + "  Critial : " + pollutingCrit + '\n'
+                           + "Solars:" + '\n'
+                           + "  Disabled/Off: " + solarOff + '\n'
+                           + "  Weak: " + solarWeak + '\n'
+                           + "Military: " + '\n'
+                           + "  Weak: " + militaryWeak
+                           ,
+                           channel);
+
+            //print out the files
+            foreach (string file in Directory.GetFiles(tempDir))
+            {
+                if (AtUser(file) != "")
+                {
+                    await OutprintAsync(AtUser(file) + DateTime.Now.ToString(), channel);
+
+                    if (!string.IsNullOrEmpty(File.ReadAllText(file)))
+                    {
+                        await OutprintFileAsync(file, channel);
+                    }
+                    else
+                    {
+                        await OutprintAsync("No " + type + " was found!", channel);
+                    }
+
+                    Algorithms.FileManipulation.DeleteFile(file);
+                }
+            }
+            await OutprintFileAsync(tempPath, channel);
+            Algorithms.FileManipulation.DeleteFile(tempPath);
+
+            //clean up remaining files
+            string[] remainingFiles = Directory.GetFiles(tempDir);
+            foreach (string file in remainingFiles)
+            {
+                Algorithms.FileManipulation.DeleteFile(file);
+            }
+            Algorithms.FileManipulation.DeleteDirectory(tempDir);
+            System.Console.WriteLine("DELETED! " + tempDir);
+        }
+
+        public async Task FindRemainingLogs()
+        {
+            string remainingLogs = Program.filePaths.chatLogsDir + "/RemainingLogs.txt";
+
+            if (File.Exists(remainingLogs))
+            {
+                string[] remainderLogsArr = File.ReadAllLines(remainingLogs);
+                while (remainderLogsArr.Length > 1)
+                {
+                    for (int i = 0; i < remainderLogsArr.Length; i++)
+                    {
+                        ChatLogsReader(remainderLogsArr, "Remainder").Wait();
+
+                        remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
+                    }
+
+                    await File.WriteAllLinesAsync(remainingLogs, remainderLogsArr);
+
+                    System.Console.WriteLine("Lines remaining in file: " + remainderLogsArr.Length);
+
+                    if (remainderLogsArr.Length < 1)
+                    {
+                        System.Console.WriteLine("Remainder file deleted");
+                        await OutprintAsync(AtUser("Autism") + remainingLogs + "Deleted!", Program.channelId.botUpdatesId);
+                        Algorithms.FileManipulation.DeleteFile(remainingLogs);
+                    }
                 }
             }
         }
@@ -564,265 +961,6 @@ namespace DiscordBotUpdates.Modules
                 + '\n' + '\n';
         }
 
-        internal async Task FindEnemyColoniesAsync(string enemy, string folder)
-        {
-            //System.Console.WriteLine("Finding " + enemy + " colonies!");
-            await OutprintAsync(enemy + "'s planets:", Program.channelId.scoutReportsId);
-
-            await File.WriteAllTextAsync(folder + "/enemyCols.txt", " ");
-            foreach (string fileName in Directory.EnumerateFiles(folder, "*.txt"))
-            {
-                //System.Console.WriteLine(fileName);
-                string fileContents = File.ReadAllText(fileName);
-                if (fileContents.Contains(enemy))
-                {
-                    await File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
-                }
-            }
-            await OutprintFileAsync(folder + "/enemyCols.txt", Program.channelId.scoutReportsId);
-            Algorithms.FileManipulation.DeleteFile(folder + "/enemyCols.txt");
-        }
-
-        internal async Task FindListAsync(string type)
-        {
-            ulong channel = Program.channelId.botUpdatesId;
-
-            await LoadExcelHoldingsAsync();
-            List<Holding> localHoldingsList = holdingsList;
-
-            string tempPath = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + type + "Corporate.txt";
-            string tempDir = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir";
-            if (!Directory.Exists(tempDir))
-            {
-                Directory.CreateDirectory(tempDir);
-            }
-            await File.WriteAllTextAsync(tempPath, "");
-            Holding origin = holdingsList.Find(planet => planet.location.Contains("Beta Doradus"));
-            localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
-            int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0, solarOff = 0, solarWeak = 0, militaryWeak = 0;
-
-            if (type == "Pollution")
-            {
-                channel = Program.channelId.pollutionFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.pollution > 0 && planet.pollutionRate > 1)
-                    {
-                        polluting++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "PollutionCrit")
-            {
-                channel = Program.channelId.pollutionCritId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.pollution > 40 && planet.pollutionRate > 0)
-                    {
-                        pollutingCrit++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Zoundsables")
-            {
-                channel = Program.channelId.zoundsForHoundsId;
-                int zoundsableCounter = 0;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
-                    {
-                        zoundsableCounter++;
-                        string message = AllPlanetInfo(planet);
-
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
-            }
-            else if (type == "DD")
-            {
-                channel = Program.channelId.ddId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.name.Contains("DD") ||
-                       ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
-                       )
-                    {
-                        ddCount++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Solar Off")
-            {
-                channel = Program.channelId.solarOffId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.solarShots == 0 && planet.population > 1000 || (planet.solarShots > 0 && planet.population > 10000 && planet.ore <= 5000))
-                    {
-                        solarOff++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Solar Weak")
-            {
-                channel = Program.channelId.solarWeakId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.solarShots < 25 && planet.population > 5000)
-                    {
-                        solarWeak++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "MilitaryTest")
-            {
-                uint military = 10000;
-
-                channel = Program.channelId.botTestingId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.discoveries.Contains("MT lvl 1"))
-                    {
-                        military = 7150;
-                    }
-                    else if (planet.discoveries.Contains("MT lvl 2"))
-                    {
-                        military = 5600;
-                    }
-                    else if (planet.discoveries.Contains("MT lvl 3"))
-                    {
-                        military = 4550;
-                    }
-                    else if (planet.discoveries.Contains("MT lvl 4"))
-                    {
-                        military = 3850;
-                    }
-                    else if (planet.discoveries.Contains("MT lvl 5"))
-                    {
-                        military = 3350;
-                    }
-
-                    if ((planet.percMilitary / 100) * planet.population < ((military * 0.4f) / military))
-                    {
-                        militaryWeak++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Revolt")
-            {
-                channel = Program.channelId.revoltFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
-                    {
-                        negativeMorale++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "Shrinking")
-            {
-                channel = Program.channelId.shrinkingFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
-                    {
-                        negativeGrowth++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else if (type == "All")
-            {
-                channel = Program.channelId.colonyManagementId;
-
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
-                    {
-                        negativeGrowth++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
-                    {
-                        negativeMorale++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                    if (planet.pollution > 0 || planet.pollutionRate > 1)
-                    {
-                        polluting++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
-                    }
-                }
-            }
-            else
-            {
-                await OutprintAsync(type + " was not recognized!", Program.channelId.botErrorsId);
-            }
-
-            await OutprintAsync("Totals: " + '\n'
-                           + "DD's: " + ddCount + '\n'
-                           + "Negative Growth: " + negativeGrowth + '\n'
-                           + "Negative Morale: " + negativeMorale + '\n'
-                           + "Polluting: " + polluting + '\n'
-                           + "  Critial : " + pollutingCrit + '\n'
-                           + "Solars:" + '\n'
-                           + "  Disabled/Off: " + solarOff + '\n'
-                           + "  Weak: " + solarWeak + '\n'
-                           + "Military: " + '\n'
-                           + "  Weak: " + militaryWeak
-                           ,
-                           channel);
-
-            //print out the files
-            foreach (string file in Directory.GetFiles(tempDir))
-            {
-                if (AtUser(file) != "")
-                {
-                    await OutprintAsync(AtUser(file) + DateTime.Now.ToString(), channel);
-
-                    if (!string.IsNullOrEmpty(File.ReadAllText(file)))
-                    {
-                        await OutprintFileAsync(file, channel);
-                    }
-                    else
-                    {
-                        await OutprintAsync("No " + type + " was found!", channel);
-                    }
-
-                    Algorithms.FileManipulation.DeleteFile(file);
-                }
-            }
-            await OutprintFileAsync(tempPath, channel);
-            Algorithms.FileManipulation.DeleteFile(tempPath);
-
-            //clean up remaining files
-            string[] remainingFiles = Directory.GetFiles(tempDir);
-            foreach (string file in remainingFiles)
-            {
-                Algorithms.FileManipulation.DeleteFile(file);
-            }
-            Algorithms.FileManipulation.DeleteDirectory(tempDir);
-            System.Console.WriteLine("DELETED! " + tempDir);
-        }
-
         internal async Task FindWeaponsNearMeAsync(string text)
         {
             if (holdingsList == null)
@@ -863,114 +1001,6 @@ namespace DiscordBotUpdates.Modules
 
             Algorithms.FileManipulation.DeleteDirectory(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
             Console.WriteLine("DELETED!" + Directory.GetCurrentDirectory() + "/TempWeaponsDir");
-        }
-
-        internal static async Task LoadExcelHoldingsAsync()
-        {
-            holdingsList = new List<Holding>();
-
-            await Task.Delay(3000);
-            Excel.Kill();
-
-            await Excel.ConvertFromCSVtoXLSXAsync(Program.filePaths.csvPath, Program.filePaths.excelPath);
-
-            Excel excelHoldings = new Excel(Program.filePaths.excelPath, 1);
-            object[,] excelMatrixObj = excelHoldings.ReadCellRange();
-            string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
-
-            //im starting this at two becuase column is the title
-            for (int i = 2; i < excelHoldings.rowCount + 1; i++)
-            {
-                for (int j = 1; j <= excelHoldings.colCount; j++)
-                {
-                    if (excelMatrixObj[i, j] == null)
-                    {
-                        excelMatrixObj[i, j] = "";
-                    }
-                    excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
-
-                    int tempInt = 0;
-                    double tempDouble = 0;
-                    if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
-                    {
-                        excelMatrixObj[i, j] = tempInt;
-                    }
-                    else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
-                    {
-                        excelMatrixObj[i, j] = tempDouble;
-                    }
-                    else
-                    {
-                        excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
-                    }
-
-                    //System.Console.WriteLine("[" + i + "," + j + "]" + rowArr[i, j].GetType());
-                }
-                excelMatrixObj[i, 9] = DateTime.MaxValue;
-                //System.Console.WriteLine("[" + i + "," + 9 + "]" + rowArr[i, 9].GetType());
-                if ((int)excelMatrixObj[i, 46] == 1)
-                {
-                    excelMatrixObj[i, 46] = true;
-                }
-                else
-                {
-                    excelMatrixObj[i, 46] = false;
-                }
-                //System.Console.WriteLine("[" + i + "," + 46 + "]" + rowArr[i, 46].GetType());
-
-                Holding holdings = new Holding(
-                    excelMatrix[i, 1],
-                    int.Parse(excelMatrix[i, 2]),
-                    excelMatrix[i, 3],
-                    excelMatrix[i, 4],
-                    int.Parse(excelMatrix[i, 5]),
-                    int.Parse(excelMatrix[i, 6]),
-                    excelMatrix[i, 7],
-                    excelMatrix[i, 8],
-                    (DateTime)excelMatrixObj[i, 9],
-                    int.Parse(excelMatrix[i, 10]),
-                    double.Parse(excelMatrix[i, 11]),
-                    double.Parse(excelMatrix[i, 12]),
-                    double.Parse(excelMatrix[i, 13]),
-                    excelMatrix[i, 14],
-                    int.Parse(excelMatrix[i, 15]),
-                    double.Parse(excelMatrix[i, 16]),
-                    int.Parse(excelMatrix[i, 17]),
-                    double.Parse(excelMatrix[i, 18]),
-                    int.Parse(excelMatrix[i, 19]),
-                    double.Parse(excelMatrix[i, 20]),
-                    int.Parse(excelMatrix[i, 21]),
-                    int.Parse(excelMatrix[i, 22]),
-                    int.Parse(excelMatrix[i, 23]),
-                    int.Parse(excelMatrix[i, 24]),
-                    excelMatrix[i, 25],
-                    int.Parse(excelMatrix[i, 26]),
-                    int.Parse(excelMatrix[i, 27]),
-                    int.Parse(excelMatrix[i, 28]),
-                    int.Parse(excelMatrix[i, 29]),
-                    int.Parse(excelMatrix[i, 40]),
-                    int.Parse(excelMatrix[i, 31]),
-                    int.Parse(excelMatrix[i, 32]),
-                    int.Parse(excelMatrix[i, 33]),
-                    int.Parse(excelMatrix[i, 34]),
-                    int.Parse(excelMatrix[i, 35]),
-                    int.Parse(excelMatrix[i, 36]),
-                    int.Parse(excelMatrix[i, 37]),
-                    int.Parse(excelMatrix[i, 38]),
-                    int.Parse(excelMatrix[i, 39]),
-                    int.Parse(excelMatrix[i, 40]),
-                    int.Parse(excelMatrix[i, 41]),
-                    int.Parse(excelMatrix[i, 42]),
-                    int.Parse(excelMatrix[i, 43]),
-                    int.Parse(excelMatrix[i, 44]),
-                    excelMatrix[i, 45],
-                    (bool)excelMatrixObj[i, 46]
-                    );
-
-                holdingsList.Add(holdings);
-            }
-            excelHoldings.Close();
-            await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
         }
 
         internal async Task ReadPlanetPicturesAndInfoFoldersAsync()
@@ -1078,128 +1108,6 @@ namespace DiscordBotUpdates.Modules
         {
             kombat = v;
             await Task.Delay(0);
-        }
-
-        private async void OnChatChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
-        {
-            string filePath = fileSysEvent.FullPath;
-            string[] fileStrArr = new string[0];
-
-            string[] split = Path.GetFileName(filePath).Split(" ");
-            string chatLogOwner = split[0];
-
-            try
-            {
-                fileStrArr = await File.ReadAllLinesAsync(filePath);
-            }
-            catch (System.Exception ex)
-            {
-                await OutprintAsync(ex.ToString(), Program.channelId.botErrorsId);
-            }
-
-            _ = ChatLogsReader(fileStrArr, chatLogOwner);
-        }
-
-        private async Task RunThroughTextAsync()
-        {
-            if (Directory.Exists(Directory.GetCurrentDirectory() + "/Channel"))
-            {
-                string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Channel");
-
-                for (int i = 0; i < filePaths.Length; i++)
-                {
-                    if (File.Exists(filePaths[i]))
-                    {
-                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
-
-                        if (fileAsArr != null)
-                        {
-                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
-                            {
-                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.botUpdatesId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.buildingId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.distressCallsId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
-                                {
-                                    await OutprintAsync(fileAsArr, Program.channelId.scoutReportsId);
-
-                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
-                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
-                                    System.Console.WriteLine(filePaths[i] + " cleared!");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private async Task UpdateCompanionFiles(Holding planet, string path, string message, string type)
-        {
-            await File.AppendAllTextAsync(path, message);
-
-            string fileName = AtUser(planet.owner);
-            if (AtUser(planet.owner) != "")
-            {
-                string[] remove = { ">", "<", "@" };
-                foreach (string str in remove)
-                {
-                    fileName = fileName.Replace(str, "");
-                }
-
-                await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
-            }
-        }
-
-        public async Task FindRemainingLogs()
-        {
-            string remainingLogs = Program.filePaths.chatLogsDir + "/RemainingLogs.txt";
-
-            if (File.Exists(remainingLogs))
-            {
-                string[] remainderLogsArr = File.ReadAllLines(remainingLogs);
-                while (remainderLogsArr.Length > 1)
-                {
-                    for (int i = 0; i < remainderLogsArr.Length; i++)
-                    {
-                        ChatLogsReader(remainderLogsArr, "Remainder").Wait();
-
-                        remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
-                    }
-
-                    await File.WriteAllLinesAsync(remainingLogs, remainderLogsArr);
-
-                    System.Console.WriteLine("Lines remaining in file: " + remainderLogsArr.Length);
-
-                    if (remainderLogsArr.Length < 1)
-                    {
-                        System.Console.WriteLine("Remainder file deleted");
-                        await OutprintAsync(AtUser("Autism") + remainingLogs + "Deleted!", Program.channelId.botUpdatesId);
-                        Algorithms.FileManipulation.DeleteFile(remainingLogs);
-                    }
-                }
-            }
         }
 
         private async Task ChatLogsReader(string[] fileStrArr, string chatLogOwner)
@@ -1678,6 +1586,98 @@ namespace DiscordBotUpdates.Modules
                         //await CelebrateUser("Slavers", "I'd like to see them try and take this!", Program.channelId.slaversId);
                     }
                 }
+            }
+        }
+
+        private async void OnChatChangedAsync(object sender, FileSystemEventArgs fileSysEvent)
+        {
+            string filePath = fileSysEvent.FullPath;
+            string[] fileStrArr = new string[0];
+
+            string[] split = Path.GetFileName(filePath).Split(" ");
+            string chatLogOwner = split[0];
+
+            try
+            {
+                fileStrArr = await File.ReadAllLinesAsync(filePath);
+            }
+            catch (System.Exception ex)
+            {
+                await OutprintAsync(ex.ToString(), Program.channelId.botErrorsId);
+            }
+
+            _ = ChatLogsReader(fileStrArr, chatLogOwner);
+        }
+
+        private async Task RunThroughTextAsync()
+        {
+            if (Directory.Exists(Directory.GetCurrentDirectory() + "/Channel"))
+            {
+                string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Channel");
+
+                for (int i = 0; i < filePaths.Length; i++)
+                {
+                    if (File.Exists(filePaths[i]))
+                    {
+                        string[] fileAsArr = await File.ReadAllLinesAsync(filePaths[i], default);
+
+                        if (fileAsArr != null)
+                        {
+                            if (fileAsArr.Length >= 1 && fileAsArr[i] != " " && fileAsArr[i] != "")
+                            {
+                                if (Path.GetFileName(filePaths[i]).Equals("botUpdates.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.botUpdatesId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("building.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.buildingId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("distress.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.distressCallsId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                                else if (Path.GetFileName(filePaths[i]).Equals("scoutReports.txt"))
+                                {
+                                    await OutprintAsync(fileAsArr, Program.channelId.scoutReportsId);
+
+                                    await File.WriteAllTextAsync(filePaths[i], " "); //now clear it out
+                                    await OutprintAsync(filePaths[i] + " cleared!", Program.channelId.botUpdatesId);
+                                    System.Console.WriteLine(filePaths[i] + " cleared!");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task UpdateCompanionFiles(Holding planet, string path, string message, string type)
+        {
+            await File.AppendAllTextAsync(path, message);
+
+            string fileName = AtUser(planet.owner);
+            if (AtUser(planet.owner) != "")
+            {
+                string[] remove = { ">", "<", "@" };
+                foreach (string str in remove)
+                {
+                    fileName = fileName.Replace(str, "");
+                }
+
+                await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + fileName + ".txt", message);
             }
         }
     }
