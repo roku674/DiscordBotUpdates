@@ -22,6 +22,7 @@ namespace DiscordBotUpdates.Modules
         public static List<Holding> holdingsList { get; set; }
         public static bool kombat { get; set; }
         public static uint landings { get; set; }
+        public static bool loadingExcel { get; set; }
         public static string lastLand { get; set; }
         public static string lastSystem { get; set; }
         public static uint planetsKaptured { get; set; }
@@ -29,110 +30,113 @@ namespace DiscordBotUpdates.Modules
 
         public static async Task LoadExcelHoldingsAsync()
         {
-            holdingsList = new List<Holding>();
-
-            await Task.Delay(3000);
-            Excel.Kill();
-
-            await Excel.ConvertFromCSVtoXLSXAsync(Program.filePaths.csvPath, Program.filePaths.excelPath);
-
-            Excel excelHoldings = new Excel(Program.filePaths.excelPath, 1);
-            object[,] excelMatrixObj = excelHoldings.ReadCellRange();
-            string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
-
-            //im starting this at two becuase column is the title
-            for (int i = 2; i < excelHoldings.rowCount + 1; i++)
+            if (!loadingExcel)
             {
-                for (int j = 1; j <= excelHoldings.colCount; j++)
-                {
-                    if (excelMatrixObj[i, j] == null)
-                    {
-                        excelMatrixObj[i, j] = "";
-                    }
-                    excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
+                loadingExcel = true;
+                holdingsList = new List<Holding>();
 
-                    int tempInt = 0;
-                    double tempDouble = 0;
-                    if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
+                await Task.Delay(3000);
+                Excel.Kill();
+
+                await Excel.ConvertFromCSVtoXLSXAsync(Program.filePaths.csvPath, Program.filePaths.excelPath);
+
+                Excel excelHoldings = new Excel(Program.filePaths.excelPath, 1);
+                object[,] excelMatrixObj = excelHoldings.ReadCellRange();
+                string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
+
+                //im starting this at two becuase column is the title
+                for (int i = 2; i < excelHoldings.rowCount + 1; i++)
+                {
+                    for (int j = 1; j <= excelHoldings.colCount; j++)
                     {
-                        excelMatrixObj[i, j] = tempInt;
+                        if (excelMatrixObj[i, j] == null)
+                        {
+                            excelMatrixObj[i, j] = "";
+                        }
+                        excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
+
+                        int tempInt = 0;
+                        double tempDouble = 0;
+                        if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
+                        {
+                            excelMatrixObj[i, j] = tempInt;
+                        }
+                        else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
+                        {
+                            excelMatrixObj[i, j] = tempDouble;
+                        }
+                        else
+                        {
+                            excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
+                        }
                     }
-                    else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
+
+                    excelMatrixObj[i, 9] = DateTime.MaxValue;
+
+                    if ((int)excelMatrixObj[i, 46] == 1)
                     {
-                        excelMatrixObj[i, j] = tempDouble;
+                        excelMatrixObj[i, 46] = true;
                     }
                     else
                     {
-                        excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
+                        excelMatrixObj[i, 46] = false;
                     }
 
-                    //System.Console.WriteLine("[" + i + "," + j + "]" + rowArr[i, j].GetType());
-                }
-                excelMatrixObj[i, 9] = DateTime.MaxValue;
-                //System.Console.WriteLine("[" + i + "," + 9 + "]" + rowArr[i, 9].GetType());
-                if ((int)excelMatrixObj[i, 46] == 1)
-                {
-                    excelMatrixObj[i, 46] = true;
-                }
-                else
-                {
-                    excelMatrixObj[i, 46] = false;
-                }
-                //System.Console.WriteLine("[" + i + "," + 46 + "]" + rowArr[i, 46].GetType());
+                    Holding holdings = new Holding(
+                        excelMatrix[i, 1],
+                        int.Parse(excelMatrix[i, 2]),
+                        excelMatrix[i, 3],
+                        excelMatrix[i, 4],
+                        int.Parse(excelMatrix[i, 5]),
+                        int.Parse(excelMatrix[i, 6]),
+                        excelMatrix[i, 7],
+                        excelMatrix[i, 8],
+                        (DateTime)excelMatrixObj[i, 9],
+                        int.Parse(excelMatrix[i, 10]),
+                        double.Parse(excelMatrix[i, 11]),
+                        double.Parse(excelMatrix[i, 12]),
+                        double.Parse(excelMatrix[i, 13]),
+                        excelMatrix[i, 14],
+                        int.Parse(excelMatrix[i, 15]),
+                        double.Parse(excelMatrix[i, 16]),
+                        int.Parse(excelMatrix[i, 17]),
+                        double.Parse(excelMatrix[i, 18]),
+                        int.Parse(excelMatrix[i, 19]),
+                        double.Parse(excelMatrix[i, 20]),
+                        int.Parse(excelMatrix[i, 21]),
+                        int.Parse(excelMatrix[i, 22]),
+                        int.Parse(excelMatrix[i, 23]),
+                        int.Parse(excelMatrix[i, 24]),
+                        excelMatrix[i, 25],
+                        int.Parse(excelMatrix[i, 26]),
+                        int.Parse(excelMatrix[i, 27]),
+                        int.Parse(excelMatrix[i, 28]),
+                        int.Parse(excelMatrix[i, 29]),
+                        int.Parse(excelMatrix[i, 40]),
+                        int.Parse(excelMatrix[i, 31]),
+                        int.Parse(excelMatrix[i, 32]),
+                        int.Parse(excelMatrix[i, 33]),
+                        int.Parse(excelMatrix[i, 34]),
+                        int.Parse(excelMatrix[i, 35]),
+                        int.Parse(excelMatrix[i, 36]),
+                        int.Parse(excelMatrix[i, 37]),
+                        int.Parse(excelMatrix[i, 38]),
+                        int.Parse(excelMatrix[i, 39]),
+                        int.Parse(excelMatrix[i, 40]),
+                        int.Parse(excelMatrix[i, 41]),
+                        int.Parse(excelMatrix[i, 42]),
+                        int.Parse(excelMatrix[i, 43]),
+                        int.Parse(excelMatrix[i, 44]),
+                        excelMatrix[i, 45],
+                        (bool)excelMatrixObj[i, 46]
+                        );
 
-                Holding holdings = new Holding(
-                    excelMatrix[i, 1],
-                    int.Parse(excelMatrix[i, 2]),
-                    excelMatrix[i, 3],
-                    excelMatrix[i, 4],
-                    int.Parse(excelMatrix[i, 5]),
-                    int.Parse(excelMatrix[i, 6]),
-                    excelMatrix[i, 7],
-                    excelMatrix[i, 8],
-                    (DateTime)excelMatrixObj[i, 9],
-                    int.Parse(excelMatrix[i, 10]),
-                    double.Parse(excelMatrix[i, 11]),
-                    double.Parse(excelMatrix[i, 12]),
-                    double.Parse(excelMatrix[i, 13]),
-                    excelMatrix[i, 14],
-                    int.Parse(excelMatrix[i, 15]),
-                    double.Parse(excelMatrix[i, 16]),
-                    int.Parse(excelMatrix[i, 17]),
-                    double.Parse(excelMatrix[i, 18]),
-                    int.Parse(excelMatrix[i, 19]),
-                    double.Parse(excelMatrix[i, 20]),
-                    int.Parse(excelMatrix[i, 21]),
-                    int.Parse(excelMatrix[i, 22]),
-                    int.Parse(excelMatrix[i, 23]),
-                    int.Parse(excelMatrix[i, 24]),
-                    excelMatrix[i, 25],
-                    int.Parse(excelMatrix[i, 26]),
-                    int.Parse(excelMatrix[i, 27]),
-                    int.Parse(excelMatrix[i, 28]),
-                    int.Parse(excelMatrix[i, 29]),
-                    int.Parse(excelMatrix[i, 40]),
-                    int.Parse(excelMatrix[i, 31]),
-                    int.Parse(excelMatrix[i, 32]),
-                    int.Parse(excelMatrix[i, 33]),
-                    int.Parse(excelMatrix[i, 34]),
-                    int.Parse(excelMatrix[i, 35]),
-                    int.Parse(excelMatrix[i, 36]),
-                    int.Parse(excelMatrix[i, 37]),
-                    int.Parse(excelMatrix[i, 38]),
-                    int.Parse(excelMatrix[i, 39]),
-                    int.Parse(excelMatrix[i, 40]),
-                    int.Parse(excelMatrix[i, 41]),
-                    int.Parse(excelMatrix[i, 42]),
-                    int.Parse(excelMatrix[i, 43]),
-                    int.Parse(excelMatrix[i, 44]),
-                    excelMatrix[i, 45],
-                    (bool)excelMatrixObj[i, 46]
-                    );
-
-                holdingsList.Add(holdings);
+                    holdingsList.Add(holdings);
+                }
+                excelHoldings.Close();
+                await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
+                loadingExcel = false;
             }
-            excelHoldings.Close();
-            await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
         }
 
         /// </summary>
