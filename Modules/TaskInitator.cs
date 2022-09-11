@@ -292,7 +292,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -305,7 +305,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         pollutingCrit++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -320,7 +320,7 @@ namespace DiscordBotUpdates.Modules
                         zoundsableCounter++;
                         string message = AllPlanetInfo(planet);
 
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
                 await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
@@ -336,7 +336,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         ddCount++;
                         string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -349,7 +349,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         solarOff++;
                         string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -362,7 +362,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         solarWeak++;
                         string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -398,7 +398,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         militaryWeak++;
                         string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -411,7 +411,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         negativeMorale++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -424,7 +424,7 @@ namespace DiscordBotUpdates.Modules
                     {
                         negativeGrowth++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -438,19 +438,19 @@ namespace DiscordBotUpdates.Modules
                     {
                         negativeGrowth++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                     if (planet.morale < 0 || planet.moraleChange < 0.00d)
                     {
                         negativeMorale++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                     if (planet.pollution > 0 || planet.pollutionRate > 1)
                     {
                         polluting++;
                         string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
-                        await UpdateCompanionFiles(planet, tempPath, message, type);
+                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
             }
@@ -516,7 +516,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     for (int i = 0; i < remainderLogsArr.Length; i++)
                     {
-                        ChatLogsReader(remainderLogsArr, "Remainder").Wait();
+                        ChatLogsReaderAsync(remainderLogsArr, "Remainder").Wait();
 
                         remainderLogsArr = remainderLogsArr.Take(remainderLogsArr.Length - 1).ToArray();
                     }
@@ -1115,7 +1115,7 @@ namespace DiscordBotUpdates.Modules
             await Task.Delay(0);
         }
 
-        private async Task ChatLogsReader(string[] fileStrArr, string chatLogOwner)
+        private async Task ChatLogsReaderAsync(string[] fileStrArr, string chatLogOwner)
         {
             if (fileStrArr.Length > 0)
             {
@@ -1611,7 +1611,7 @@ namespace DiscordBotUpdates.Modules
                 await OutprintAsync(ex.ToString(), Program.channelId.botErrorsId);
             }
 
-            _ = ChatLogsReader(fileStrArr, chatLogOwner);
+            _ = ChatLogsReaderAsync(fileStrArr, chatLogOwner);
         }
 
         private async Task RunThroughTextAsync()
@@ -1669,7 +1669,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        private async Task UpdateCompanionFiles(Holding planet, string path, string message, string type)
+        private async Task UpdateCompanionFilesAsync(Holding planet, string path, string message, string type)
         {
             await File.AppendAllTextAsync(path, message);
 
