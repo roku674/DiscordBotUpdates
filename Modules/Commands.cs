@@ -189,7 +189,7 @@ namespace DiscordBotUpdates.Modules
         }
 
         [Command("request List")]
-        public async Task RevoltGet([Remainder] string text)
+        public async Task ListGet([Remainder] string text)
         {
             if (text == "All")
             {

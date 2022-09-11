@@ -273,12 +273,13 @@ namespace DiscordBotUpdates.Modules
 
             string tempPath = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir/" + type + "Corporate.txt";
             string tempDir = Directory.GetCurrentDirectory() + "/Temp" + type + "Dir";
-            if (!Directory.Exists(tempDir))
-            {
-                Directory.CreateDirectory(tempDir);
-            }
+
+            Algorithms.FileManipulation.CreateDirectory(tempDir);
+
             await File.WriteAllTextAsync(tempPath, "");
-            Holding origin = holdingsList.Find(planet => planet.location.Contains("Sol"));
+
+            Holding origin = holdingsList[0];
+
             localHoldingsList = StarportHelperClasses.HoldingsSorter.SortByDistance(localHoldingsList, origin);
             int ddCount = 0, negativeGrowth = 0, negativeMorale = 0, polluting = 0, pollutingCrit = 0, solarOff = 0, solarWeak = 0, militaryWeak = 0;
 
