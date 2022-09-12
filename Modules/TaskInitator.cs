@@ -228,6 +228,44 @@ namespace DiscordBotUpdates.Modules
             Algorithms.FileManipulation.DeleteFile(folder + "/enemyCols.txt");
         }
 
+        public async Task FindEverySystemWithColonies()
+        {
+            await LoadExcelHoldingsAsync();
+
+            List<System.Numerics.Vector2> planetarySystemCoords = new List<System.Numerics.Vector2>();
+            List<Holding> localHoldingsList = holdingsList;
+
+            foreach (Holding planet in localHoldingsList)
+            {
+                int pscIndex = planetarySystemCoords.FindIndex(v2 =>
+                v2.X == (float)planet.galaxyX &&
+                v2.Y == (float)planet.galaxyY
+                );
+
+                if (pscIndex == -1)
+                {
+                    planetarySystemCoords.Add(new System.Numerics.Vector2(planet.galaxyX, planet.galaxyY));
+                }
+            }
+
+            planetarySystemCoords = Algorithms.Mathematics.SortByDistanceVector2(planetarySystemCoords);
+            List<string> planetarySystemCoordsAsStr = new List<string>();
+
+            foreach (System.Numerics.Vector2 vector2 in planetarySystemCoords)
+            {
+                planetarySystemCoordsAsStr.Add("(" + vector2.X + "," + vector2.Y + ")");
+            }
+            string json = Directory.GetCurrentDirectory() + "/planetarySystemCoords.json";
+
+            Algorithms.FileManipulation.DeleteFile(json);
+            File.Create(json).Close();
+            await File.WriteAllTextAsync(json, Newtonsoft.Json.JsonConvert.SerializeObject(planetarySystemCoordsAsStr));
+
+            await OutprintFileAsync(Directory.GetCurrentDirectory() + "/planetarySystemCoords.json", Program.channelId.botUpdatesId);
+
+            Algorithms.FileManipulation.DeleteFile(json);
+        }
+
         public async Task FindHourlyRedomesAsync()
         {
             System.Console.WriteLine("Finding Hourly Redomes...");
@@ -808,6 +846,8 @@ namespace DiscordBotUpdates.Modules
                 }
                 if (hourlyTracker == 3600)
                 {
+                    _ = OutprintAsync("$run info " + planetsLost + " " + planetsKaptured + " " + alliesSlain + " " + enemiesSlain + " " + landings + " " + colsAbandoned + " " + colsBuilt,
+                        Program.channelId.botUpdatesId);
                     System.Console.WriteLine("Running hourly Redomes!");
                     _ = Task.Run(() => FindHourlyRedomesAsync());
                     hourlyTracker = 0;
