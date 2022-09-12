@@ -185,7 +185,7 @@ namespace DiscordBotUpdates.Modules
         public async Task HourlyRedomeGet()
         {
             _ = Task.Run(() => init.FindHourlyRedomesAsync());
-            await Task.Delay(33);
+            await ReplyAsync("Hourly redomes posted to redome channel!");
         }
 
         [Command("request List")]
@@ -225,6 +225,8 @@ namespace DiscordBotUpdates.Modules
                 "  Gets: " +
                 '\n' +
                 "    request enemyPlanets (ownerName/corporation)" +
+                '\n' +
+                "    request hourlyRedomes" +
                 '\n' +
                 "    request List (Type)" +
                 '\n' +
