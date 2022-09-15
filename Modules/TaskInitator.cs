@@ -1157,6 +1157,13 @@ namespace DiscordBotUpdates.Modules
 
         private async Task ChatLogsReaderAsync(string[] fileStrArr, string chatLogOwner)
         {
+            List<Holding> tempHoldingsList;
+            if (holdingsList == null)
+            {
+                await LoadExcelHoldingsAsync();
+            }
+            tempHoldingsList = holdingsList;
+
             if (fileStrArr.Length > 0)
             {
                 string lastLine = fileStrArr[fileStrArr.Length - 1];
@@ -1354,7 +1361,7 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(AtUser(lastLine) + lastLine, Program.channelId.distressCallsId);
                         await OutprintAsync(AtUser(lastLine) + lastLine, Program.channelId.recapListId);
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
-                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
 
                         if (lastLine.Contains("DD"))
                         {
@@ -1390,9 +1397,9 @@ namespace DiscordBotUpdates.Modules
                         if (holdingsIndex != -1)
                         {
                             await OutprintAsync(
-                                "Metal Ore: " + holdingsList[holdingsIndex].ore + " | Solar: " + holdingsList[holdingsIndex].solarShots + " / " + holdingsList[holdingsIndex].solarFreq + '\n' +
-                                " | Nukes: " + holdingsList[holdingsIndex].nukes + " | Negotiators: " + holdingsList[holdingsIndex].negotiators + " | Compound Mines: " + holdingsList[holdingsIndex].compoundMines + " | Lasers: " + holdingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
+                                "Metal Ore: " + tempHoldingsList[holdingsIndex].ore + " | Solar: " + tempHoldingsList[holdingsIndex].solarShots + " / " + tempHoldingsList[holdingsIndex].solarFreq + '\n' +
+                                " | Nukes: " + tempHoldingsList[holdingsIndex].nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].compoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].laserCannons + '\n' +
+                                " | Population: " + tempHoldingsList[holdingsIndex].population + " | Discoveries: " + tempHoldingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
                         }
                     }
                     else if (lastLine.Contains("captured the colony"))
@@ -1465,7 +1472,7 @@ namespace DiscordBotUpdates.Modules
                         landings++;
                         string colonyName = Algorithms.StringManipulation.GetBetween(lastLine, "from", "on");
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
-                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
 
                         if (colonyName.Contains("(") && colonyName.Contains("."))
                         {
@@ -1491,7 +1498,7 @@ namespace DiscordBotUpdates.Modules
                             await OutprintAsync("@everyone " + lastLine, Program.channelId.distressCallsId);
                         }
 
-                        if (holdingsList == null)
+                        if (tempHoldingsList == null)
                         {
                             await LoadExcelHoldingsAsync();
                         }
@@ -1499,9 +1506,9 @@ namespace DiscordBotUpdates.Modules
                         if (holdingsIndex != -1)
                         {
                             await OutprintAsync(
-                                "Metal Ore: " + holdingsList[holdingsIndex].ore + " | Solar: " + holdingsList[holdingsIndex].solarShots + " / " + holdingsList[holdingsIndex].solarFreq + '\n' +
-                                " | Nukes: " + holdingsList[holdingsIndex].nukes + " | Negotiators: " + holdingsList[holdingsIndex].negotiators + " | Compound Mines: " + holdingsList[holdingsIndex].compoundMines + " | Lasers: " + holdingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + holdingsList[holdingsIndex].population + " | Discoveries: " + holdingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
+                                "Metal Ore: " + tempHoldingsList[holdingsIndex].ore + " | Solar: " + tempHoldingsList[holdingsIndex].solarShots + " / " + tempHoldingsList[holdingsIndex].solarFreq + '\n' +
+                                " | Nukes: " + tempHoldingsList[holdingsIndex].nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].compoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].laserCannons + '\n' +
+                                " | Population: " + tempHoldingsList[holdingsIndex].population + " | Discoveries: " + tempHoldingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
                         }
                         else
                         {
@@ -1572,10 +1579,10 @@ namespace DiscordBotUpdates.Modules
                             planetName = Algorithms.StringManipulation.GetBetween(planetName, " on ", "(");
                         }
 
-                        int holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
                         if (holdingsIndex != -1)
                         {
-                            Holding planet = holdingsList[holdingsIndex];
+                            Holding planet = tempHoldingsList[holdingsIndex];
                             if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
                             {
                                 string message = AllPlanetInfo(planet);
@@ -1585,14 +1592,10 @@ namespace DiscordBotUpdates.Modules
                         }
                         else
                         {
-                            if (holdingsList == null)
-                            {
-                                await LoadExcelHoldingsAsync();
-                            }
-                            holdingsIndex = holdingsList.FindIndex(planet => planet.location == planetName);
+                            holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
                             if (holdingsIndex != -1)
                             {
-                                Holding planet = holdingsList[holdingsIndex];
+                                Holding planet = tempHoldingsList[holdingsIndex];
                                 if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
                                 {
                                     string message = AllPlanetInfo(planet);

@@ -541,7 +541,7 @@ namespace DiscordBotUpdates.Modules
         }
 
         [Command("request planetsQuote")]
-        public async Task QuoteGet()
+        public async Task QuoteGet([Remainder] string owner)
         {
             uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
 
@@ -552,7 +552,7 @@ namespace DiscordBotUpdates.Modules
             {
                 foreach (StarportObjects.Holding planet in TaskInitator.holdingsList)
                 {
-                    if (planet.owner.Equals("Anxiety.jar"))
+                    if (planet.owner.Equals(owner))
                     {
                         if (planet.name.EndsWith(".I") || planet.name.EndsWith(".ZI") || planet.name.EndsWith(".ZDI"))
                         {
