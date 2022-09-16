@@ -228,11 +228,15 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    request hourlyRedomes" +
                 '\n' +
+                "    request Info" +
+                '\n' +
                 "    request List (Type)" +
                 '\n' +
                 "    request Lifetime" +
                 '\n' +
                 "    request Listeners" +
+                '\n' +
+                "    request OwnedSystems" +
                 '\n' +
                 "    request planet (planetName)" +
                 '\n' +
@@ -260,7 +264,7 @@ namespace DiscordBotUpdates.Modules
                 '\n' +
                 "    run FindRemainingLogs" +
                 '\n' +
-                "    run/request Info" +
+                "    run Info" +
                 '\n' +
                 "    run ListenerChatLog (Client/Bot Name)" +
                 '\n' +
@@ -330,6 +334,13 @@ namespace DiscordBotUpdates.Modules
         {
             _ = Task.Run(() => init.FindRemainingLogs());
             await ReplyAsync("Remaining Logs Loaded");
+        }
+
+        [Command("request OwnedSystems")]
+        public async Task OwnedSystemsGet()
+        {
+            await ReplyAsync("Finding every system...");
+            _ = Task.Run(() => init.FindEverySystemWithColonies());
         }
 
         [Command("request Lifetime")]
@@ -545,9 +556,6 @@ namespace DiscordBotUpdates.Modules
         {
             uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
 
-            uint totals = arctics + deserts + earths + greenhouses + mountains + oceans + paradises + rockies + volcanics;
-            uint totalsZ = arcticsZ + desertsZ + earthsZ + greenhousesZ + mountainsZ + oceansZ + paradisesZ + rockies + volcanics;
-
             if (TaskInitator.holdingsList != null)
             {
                 foreach (StarportObjects.Holding planet in TaskInitator.holdingsList)
@@ -636,6 +644,9 @@ namespace DiscordBotUpdates.Modules
                         }
                     }
                 }
+
+                uint totals = arctics + deserts + earths + greenhouses + mountains + oceans + paradises + rockies + volcanics;
+                uint totalsZ = arcticsZ + desertsZ + earthsZ + greenhousesZ + mountainsZ + oceansZ + paradisesZ + rockies + volcanics;
 
                 string quote = "Arc " + arcticsZ + "/" + arctics +
                     "|~{yellow}~Des " + desertsZ + "/" + deserts +

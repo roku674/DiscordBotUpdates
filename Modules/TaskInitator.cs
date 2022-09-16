@@ -228,6 +228,10 @@ namespace DiscordBotUpdates.Modules
             Algorithms.FileManipulation.DeleteFile(folder + "/enemyCols.txt");
         }
 
+        /// <summary>
+        /// Finds every system with colonies and outputs a json to botupdates
+        /// </summary>
+        /// <returns></returns>
         public async Task FindEverySystemWithColonies()
         {
             await LoadExcelHoldingsAsync();
