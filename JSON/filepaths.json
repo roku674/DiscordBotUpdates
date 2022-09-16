@@ -1,1 +1,12 @@
-{"chatLogsDir":null,"csvLocal":null,"csvPath":null,"enemyPlanetsDir":null,"excelPath":null,"planetPicturesDir":null,"starportDir":null,"undomedDir":null,"picturesAndInfo":null}
+{
+  "chatLogsDir": null,
+  "csvLocal": null,
+  "csvPath": null,
+  "enemyPlanetsDir": null,
+  "excelPath": null,
+  "networkPathDir": null,
+  "picturesAndInfo": null,
+  "planetPicturesDir": null,
+  "starportDir": null,
+  "undomedDir": null
+}

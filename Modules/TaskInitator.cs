@@ -872,6 +872,11 @@ namespace DiscordBotUpdates.Modules
             string alliePath = Program.filePaths.networkPathDir + "/Echo/Allie.txt";
             string[] lines = new string[9];
 
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = " ";
+            }
+
             if (text == "Stop")
             {
                 lines[0] = "Stop";
@@ -910,9 +915,9 @@ namespace DiscordBotUpdates.Modules
                             lines[1] = planetInSystem.location + " Type0 " + planetType;
                             lastPlanet[0] = planetInSystem;
                         }
-                        else if (planetToBuild.ore > 3000)
+                        else if (planetToBuild.ore > 5000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[1] = lines[1].Replace(lines[1], " ");
                         }
 
                         if (planetInSystem.ana > lastPlanet[1].ana)
@@ -922,7 +927,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.ana > 3000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[2] = lines[2].Replace(lines[2], " ");
                         }
 
                         if (planetInSystem.med > lastPlanet[2].med)
@@ -930,9 +935,9 @@ namespace DiscordBotUpdates.Modules
                             lines[3] = planetInSystem.location + " Type2 " + planetType;
                             lastPlanet[2] = planetInSystem;
                         }
-                        else if (planetToBuild.med > 3000)
+                        else if (planetToBuild.med > 1500)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[3] = lines[3].Replace(lines[3], " ");
                         }
 
                         if (planetInSystem.org > lastPlanet[3].org)
@@ -942,7 +947,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.org > 3000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[4] = lines[4].Replace(lines[4], " ");
                         }
 
                         if (planetInSystem.oil > lastPlanet[4].oil)
@@ -952,7 +957,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.oil > 3000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[5] = lines[5].Replace(lines[5], " ");
                         }
 
                         if (planetInSystem.ura > lastPlanet[5].ura)
@@ -962,7 +967,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.ura > 3000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[6] = lines[6].Replace(lines[6], " ");
                         }
 
                         if (planetInSystem.equ > lastPlanet[6].equ)
@@ -972,7 +977,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.equ > 3000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[7] = lines[7].Replace(lines[7], " ");
                         }
 
                         if (planetInSystem.spi > lastPlanet[7].spi)
@@ -980,9 +985,9 @@ namespace DiscordBotUpdates.Modules
                             lines[8] = planetInSystem.location + " Type7 " + planetType;
                             lastPlanet[7] = planetInSystem;
                         }
-                        else if (planetToBuild.spi > 3000)
+                        else if (planetToBuild.spi > 2000)
                         {
-                            lines[1] = lines[1].Replace(planetType, "");
+                            lines[8] = lines[8].Replace(lines[8], " ");
                         }
                     }
                 }
