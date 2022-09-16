@@ -106,7 +106,7 @@ namespace DiscordBotUpdates.Modules
         [Command("run ClearProgram.botsEcho")]
         public async Task ClearBotsEcho()
         {
-            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Echo", "*.txt");
+            string[] files = Directory.GetFiles(Program.filePaths.networkPathDir + "/Echo", "*.txt");
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -161,13 +161,13 @@ namespace DiscordBotUpdates.Modules
                 string botEcho = text.Replace(bot + " ", "");
                 botEcho.TrimStart();
 
-                if (File.Exists(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt"))
+                if (File.Exists(Program.filePaths.networkPathDir + "/Echo/" + bot + ".txt"))
                 {
-                    await File.AppendAllTextAsync(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt", botEcho);
+                    await File.AppendAllTextAsync(Program.filePaths.networkPathDir + "/Echo/" + bot + ".txt", botEcho);
                 }
                 else
                 {
-                    File.Create(Directory.GetCurrentDirectory() + "/Echo/" + bot + ".txt").Close();
+                    File.Create(Program.filePaths.networkPathDir + "/Echo/" + bot + ".txt").Close();
                     await ReplyAsync("Created" + bot + ".txt ! Recommend ReRunning!");
                 }
 

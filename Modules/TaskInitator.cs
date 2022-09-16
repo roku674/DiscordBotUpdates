@@ -605,7 +605,7 @@ namespace DiscordBotUpdates.Modules
                 }
 
                 await Task.Delay(1000);
-                string picturesDir = Directory.GetCurrentDirectory() + "/Pictures";
+                string picturesDir = Program.filePaths.networkPathDir + "/Pictures";
                 string[] paths =
                 {
                    picturesDir,
@@ -869,7 +869,7 @@ namespace DiscordBotUpdates.Modules
 
         public async Task UpdateAllieTxt(string text)
         {
-            string alliePath = Directory.GetCurrentDirectory() + "/Echo/Allie.txt";
+            string alliePath = Program.filePaths.networkPathDir + "/Echo/Allie.txt";
             string[] lines = new string[9];
 
             if (text == "Stop")
@@ -1054,7 +1054,7 @@ namespace DiscordBotUpdates.Modules
 
         internal async Task ReadPlanetPicturesAndInfoFoldersAsync()
         {
-            string picturesDir = Directory.GetCurrentDirectory() + "/Pictures";
+            string picturesDir = Program.filePaths.networkPathDir + "/Pictures";
             if (Directory.Exists(Program.filePaths.picturesAndInfo))
             {
                 string[] dirs = Directory.GetDirectories(Program.filePaths.picturesAndInfo, "*", SearchOption.AllDirectories);
@@ -1663,9 +1663,9 @@ namespace DiscordBotUpdates.Modules
 
         private async Task RunThroughTextAsync()
         {
-            if (Directory.Exists(Directory.GetCurrentDirectory() + "/Channel"))
+            if (Directory.Exists(Program.filePaths.networkPathDir + "/Channel"))
             {
-                string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Channel");
+                string[] filePaths = Directory.GetFiles(Program.filePaths.networkPathDir + "/Channel");
 
                 for (int i = 0; i < filePaths.Length; i++)
                 {
