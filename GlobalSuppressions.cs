@@ -6,4 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~P:DiscordBotUpdates.Modules.DBUTask.duration")]
-[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~P:DiscordBotUpdates.Modules.TaskInitator.alerts")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~P:DiscordBotUpdates.Modules.TaskInitiator.alerts")]

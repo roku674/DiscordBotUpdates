@@ -9,7 +9,7 @@ namespace DiscordBotUpdates.Modules
 {
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        internal TaskInitator init = new TaskInitator();
+        internal TaskInitiator init = new TaskInitiator();
 
         private readonly string[] listenerNames = { "building", "distress", "kombat", "serverResets", "All" };
 
@@ -299,13 +299,13 @@ namespace DiscordBotUpdates.Modules
             }
 
             await DBUTask.OutprintAsync("Owner: " + owner + '\n'
-                        + "We Lost: " + TaskInitator.planetsLost + '\n'
-                        + "We Kaptured: " + TaskInitator.planetsKaptured + '\n'
-                        + "Allies Slain: " + TaskInitator.alliesSlain + '\n'
-                        + "Enemies Slain: " + TaskInitator.enemiesSlain + '\n'
-                        + "landings: " + TaskInitator.landings + '\n'
-                        + "Colonies Abanonded: " + TaskInitator.colsAbandoned + '\n'
-                        + "Colonies Built: " + TaskInitator.colsBuilt, Program.channelId.botCommandsId);
+                        + "We Lost: " + TaskInitiator.planetsLost + '\n'
+                        + "We Kaptured: " + TaskInitiator.planetsKaptured + '\n'
+                        + "Allies Slain: " + TaskInitiator.alliesSlain + '\n'
+                        + "Enemies Slain: " + TaskInitiator.enemiesSlain + '\n'
+                        + "landings: " + TaskInitiator.landings + '\n'
+                        + "Colonies Abanonded: " + TaskInitiator.colsAbandoned + '\n'
+                        + "Colonies Built: " + TaskInitiator.colsBuilt, Program.channelId.botCommandsId);
         }
 
         [Command("run Info")]
@@ -318,13 +318,13 @@ namespace DiscordBotUpdates.Modules
                 temp[i] = temp[i].Trim();
             }
 
-            TaskInitator.planetsLost = uint.Parse(temp[0]);
-            TaskInitator.planetsKaptured = uint.Parse(temp[1]);
-            TaskInitator.alliesSlain = uint.Parse(temp[2]);
-            TaskInitator.enemiesSlain = uint.Parse(temp[3]);
-            TaskInitator.landings = uint.Parse(temp[4]);
-            TaskInitator.colsAbandoned = uint.Parse(temp[5]);
-            TaskInitator.colsBuilt = uint.Parse(temp[6]);
+            TaskInitiator.planetsLost = uint.Parse(temp[0]);
+            TaskInitiator.planetsKaptured = uint.Parse(temp[1]);
+            TaskInitiator.alliesSlain = uint.Parse(temp[2]);
+            TaskInitiator.enemiesSlain = uint.Parse(temp[3]);
+            TaskInitiator.landings = uint.Parse(temp[4]);
+            TaskInitiator.colsAbandoned = uint.Parse(temp[5]);
+            TaskInitiator.colsBuilt = uint.Parse(temp[6]);
 
             await InfoGet();
         }
@@ -363,13 +363,13 @@ namespace DiscordBotUpdates.Modules
         public async Task ListenerActivityGet()
         {
             await ReplyAsync(
-                "Building: " + TaskInitator.building +
+                "Building: " + TaskInitiator.building +
                 '\n' +
-                "Distress: " + TaskInitator.distress +
+                "Distress: " + TaskInitiator.distress +
                 '\n' +
-                "Kombat: " + TaskInitator.kombat +
+                "Kombat: " + TaskInitiator.kombat +
                 '\n' +
-                "Server Reset: " + TaskInitator.alerts);
+                "Server Reset: " + TaskInitiator.alerts);
         }
 
         [Command("run ListenerChatLog")]
@@ -471,10 +471,10 @@ namespace DiscordBotUpdates.Modules
         {
             string[] allfiles = Directory.GetFiles(Program.filePaths.planetPicturesDir, "*.*", SearchOption.AllDirectories);
 
-            int holdingIndex = TaskInitator.holdingsList.FindIndex(planet => planet.location == planetName);
+            int holdingIndex = TaskInitiator.holdingsList.FindIndex(planet => planet.location == planetName);
             if (holdingIndex != -1)
             {
-                StarportObjects.Holding planet = TaskInitator.holdingsList[holdingIndex];
+                StarportObjects.Holding planet = TaskInitiator.holdingsList[holdingIndex];
                 string message = init.AllPlanetInfo(planet);
                 await ReplyAsync(message);
             }
@@ -529,26 +529,26 @@ namespace DiscordBotUpdates.Modules
         public async Task PlanetsCapturedChange([Remainder] string text)
         {
             text = text.Trim();
-            TaskInitator.planetsKaptured = uint.Parse(text);
+            TaskInitiator.planetsKaptured = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitator.planetsKaptured, Program.channelId.botCommandsId);
+            await DBUTask.OutprintAsync("We Kaptured: " + TaskInitiator.planetsKaptured, Program.channelId.botCommandsId);
         }
 
         [Command("run planetsLost")]
         public async Task PlanetsLostChange([Remainder] string text)
         {
             text = text.Trim();
-            TaskInitator.planetsLost = uint.Parse(text);
+            TaskInitiator.planetsLost = uint.Parse(text);
 
-            await DBUTask.OutprintAsync("We Lost: " + TaskInitator.planetsLost, Program.channelId.botCommandsId);
+            await DBUTask.OutprintAsync("We Lost: " + TaskInitiator.planetsLost, Program.channelId.botCommandsId);
         }
 
         [Command("request planetTallies")]
         public async Task PlanetTalliesGet()
         {
             await DBUTask.OutprintAsync(
-                "We Lauwst: " + TaskInitator.planetsLost + '\n'
-                + "We Kaptured: " + TaskInitator.planetsKaptured, Program.channelId.slaversId);
+                "We Lauwst: " + TaskInitiator.planetsLost + '\n'
+                + "We Kaptured: " + TaskInitiator.planetsKaptured, Program.channelId.slaversId);
         }
 
         [Command("request planetsQuote")]
@@ -556,9 +556,9 @@ namespace DiscordBotUpdates.Modules
         {
             uint arctics = 0, arcticsZ = 0, deserts = 0, desertsZ = 0, earths = 0, earthsZ = 0, greenhouses = 0, greenhousesZ = 0, mountains = 0, mountainsZ = 0, oceans = 0, oceansZ = 0, paradises = 0, paradisesZ = 0, rockies = 0, rockiesZ = 0, volcanics = 0, volcanicsZ = 0, invasions = 0, dd = 0;
 
-            if (TaskInitator.holdingsList != null)
+            if (TaskInitiator.holdingsList != null)
             {
-                foreach (StarportObjects.Holding planet in TaskInitator.holdingsList)
+                foreach (StarportObjects.Holding planet in TaskInitiator.holdingsList)
                 {
                     if (planet.owner.Equals(owner))
                     {
@@ -671,7 +671,7 @@ namespace DiscordBotUpdates.Modules
         [Command("run readExcel")]
         public async Task ReadExcelDocument()
         {
-            await Task.Run(() => TaskInitator.LoadExcelHoldingsAsync());
+            await Task.Run(() => TaskInitiator.LoadExcelHoldingsAsync());
         }
 
         [Command("run readFolders")]

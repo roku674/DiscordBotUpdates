@@ -10,7 +10,7 @@ using System;
 
 namespace DiscordBotUpdates.Modules
 {
-    internal class TaskInitator : DBUTask
+    internal class TaskInitiator : DBUTask
     {
         public static bool alerts { get; set; }
         public static uint alliesSlain { get; set; }

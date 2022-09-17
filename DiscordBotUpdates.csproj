@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Extensions\StarportHelperClasses\Helper.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <COMReference Include="Microsoft.Office.Interop.Excel">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>7</VersionMinor>
