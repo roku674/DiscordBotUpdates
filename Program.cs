@@ -45,14 +45,14 @@ namespace DiscordBotUpdates
                 System.IO.Directory.CreateDirectory(directory + "/JSON");
             }
             //Update diplomacy lists from internet
-            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/Allies.json", directory + "/JSON/Allies.json");
-            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/Enemies.json", directory + "/JSON/Enemies.json");
-            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/NAP.json", directory + "/JSON/NAP.json");
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/allies.json", directory + "/JSON/allies.json");
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/enemies.json", directory + "/JSON/enemies.json");
+            Algorithms.FileManipulation.GetFileFromInternet("https://raw.githubusercontent.com/roku674/StarportObjects/main/JSON/nap.json", directory + "/JSON/nap.json");
 
             //store them in diplomacy
-            StarportObjects.Diplomacy.allies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/Allies.json"));
-            StarportObjects.Diplomacy.enemies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/Enemies.json"));
-            StarportObjects.Diplomacy.nap = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/NAP.json"));
+            StarportObjects.Diplomacy.allies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/allies.json"));
+            StarportObjects.Diplomacy.enemies = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/enemies.json"));
+            StarportObjects.Diplomacy.nap = System.Text.Json.JsonSerializer.Deserialize<string[]>(System.IO.File.ReadAllText(directory + "/JSON/nap.json"));
 
             //store filepaths/challenids and bots
             filePaths = Newtonsoft.Json.JsonConvert.DeserializeObject<Objects.FilePaths>(System.IO.File.ReadAllText(directory + "/JSON/filepaths.json"));
