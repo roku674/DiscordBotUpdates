@@ -671,7 +671,8 @@ namespace DiscordBotUpdates.Modules
         [Command("run readExcel")]
         public async Task ReadExcelDocument()
         {
-            await Task.Run(() => TaskInitiator.LoadExcelHoldingsAsync());
+            _ = Task.Run(() => TaskInitiator.LoadExcelHoldingsAsync());
+            await ReplyAsync("Running Load Holdings...");
         }
 
         [Command("run readFolders")]
