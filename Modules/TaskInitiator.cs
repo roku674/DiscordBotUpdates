@@ -1614,7 +1614,7 @@ namespace DiscordBotUpdates.Modules
                             }
                             else
                             {
-                                await OutprintAsync(AtUser("Autism") + lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", Program.channelId.botUpdatesId);
+                                await OutprintAsync(lastLine + '\n' + planetName + " got Adv Arch, but i couldn't find " + planetName + " in holdings!", Program.channelId.botUpdatesId);
                             }
                         }
                     }
