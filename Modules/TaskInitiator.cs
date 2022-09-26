@@ -543,7 +543,7 @@ namespace DiscordBotUpdates.Modules
             {
                 Algorithms.FileManipulation.DeleteFile(file);
             }
-            Algorithms.FileManipulation.DeleteDirectory(tempDir);
+            Algorithms.FileManipulation.DeleteDirectory(tempDir, true);
             System.Console.WriteLine("DELETED! " + tempDir);
         }
 
@@ -1053,7 +1053,7 @@ namespace DiscordBotUpdates.Modules
             await OutprintFileAsync(tempWeapons, Program.channelId.slaversId);
             Algorithms.FileManipulation.DeleteFile(tempWeapons);
 
-            Algorithms.FileManipulation.DeleteDirectory(Directory.GetCurrentDirectory() + "/TempWeaponsDir");
+            Algorithms.FileManipulation.DeleteDirectory(Directory.GetCurrentDirectory() + "/TempWeaponsDir", true);
             Console.WriteLine("DELETED!" + Directory.GetCurrentDirectory() + "/TempWeaponsDir");
         }
 

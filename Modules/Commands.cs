@@ -570,76 +570,79 @@ namespace DiscordBotUpdates.Modules
                         {
                             dd++;
                         }
-                        if (planet.planetType.Equals("arctic"))
+                        if (planet.population >= 5000)
                         {
-                            arctics++;
-                            if (planet.population >= 90000)
+                            if (planet.planetType.Equals("arctic"))
                             {
-                                arcticsZ++;
+                                arctics++;
+                                if (planet.population >= 90000)
+                                {
+                                    arcticsZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("desert"))
-                        {
-                            deserts++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("desert"))
                             {
-                                desertsZ++;
+                                deserts++;
+                                if (planet.population >= 90000)
+                                {
+                                    desertsZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("earthlike"))
-                        {
-                            earths++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("earthlike"))
                             {
-                                earthsZ++;
+                                earths++;
+                                if (planet.population >= 90000)
+                                {
+                                    earthsZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("greenhouse"))
-                        {
-                            greenhouses++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("greenhouse"))
                             {
-                                greenhousesZ++;
+                                greenhouses++;
+                                if (planet.population >= 90000)
+                                {
+                                    greenhousesZ++;
+                                }
                             }
-                        }
-                        if (planet.planetType.Equals("mountainous"))
-                        {
-                            mountains++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("mountainous"))
                             {
-                                mountainsZ++;
+                                mountains++;
+                                if (planet.population >= 90000)
+                                {
+                                    mountainsZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("oceanic"))
-                        {
-                            oceans++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("oceanic"))
                             {
-                                oceansZ++;
+                                oceans++;
+                                if (planet.population >= 90000)
+                                {
+                                    oceansZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("Intergalactic paradise"))
-                        {
-                            paradises++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("Intergalactic paradise"))
                             {
-                                paradisesZ++;
+                                paradises++;
+                                if (planet.population >= 90000)
+                                {
+                                    paradisesZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("rocky"))
-                        {
-                            rockies++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("rocky"))
                             {
-                                rockiesZ++;
+                                rockies++;
+                                if (planet.population >= 90000)
+                                {
+                                    rockiesZ++;
+                                }
                             }
-                        }
-                        else if (planet.planetType.Equals("volcanic"))
-                        {
-                            volcanics++;
-                            if (planet.population >= 90000)
+                            else if (planet.planetType.Equals("volcanic"))
                             {
-                                volcanicsZ++;
+                                volcanics++;
+                                if (planet.population >= 90000)
+                                {
+                                    volcanicsZ++;
+                                }
                             }
                         }
                     }
