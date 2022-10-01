@@ -994,9 +994,9 @@ namespace DiscordBotUpdates.Modules
 
                 for (int i = 0; i < lines.Length - 1; i++)
                 {
-                    if (string.IsNullOrEmpty(lines[i]))
+                    if (string.IsNullOrWhiteSpace(lines[i]))
                     {
-                        lines[i] = "Type" + i;
+                        lines[i] = " Type" + i + " ";
                     }
                 }
             }
