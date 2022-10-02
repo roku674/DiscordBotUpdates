@@ -917,7 +917,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.ore > 5000)
                         {
-                            lines[1] = lines[1].Replace(lines[1], " Type0 ");
+                            lines[1] = " Type0 ";
                         }
 
                         if (planetInSystem.ana > lastPlanet[1].ana)
@@ -927,7 +927,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.ana > 3000)
                         {
-                            lines[2] = lines[2].Replace(lines[2], " Type1 ");
+                            lines[2] = " Type1 ";
                         }
 
                         if (planetInSystem.med > lastPlanet[2].med)
@@ -937,7 +937,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.med > 1500)
                         {
-                            lines[3] = lines[3].Replace(lines[3], " Type2 ");
+                            lines[3] = " Type2 ";
                         }
 
                         if (planetInSystem.org > lastPlanet[3].org)
@@ -947,7 +947,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.org > 3000)
                         {
-                            lines[4] = lines[4].Replace(lines[4], " Type3 ");
+                            lines[4] = " Type3 ";
                         }
 
                         if (planetInSystem.oil > lastPlanet[4].oil)
@@ -957,7 +957,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.oil > 3000)
                         {
-                            lines[5] = lines[5].Replace(lines[5], " Type4 ");
+                            lines[5] = " Type4 ";
                         }
 
                         if (planetInSystem.ura > lastPlanet[5].ura)
@@ -967,7 +967,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.ura > 3000)
                         {
-                            lines[6] = lines[6].Replace(lines[6], " Type5 ");
+                            lines[6] = " Type5 ";
                         }
 
                         if (planetInSystem.equ > lastPlanet[6].equ)
@@ -977,7 +977,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.equ > 3000)
                         {
-                            lines[7] = lines[7].Replace(lines[7], " Type6 ");
+                            lines[7] = " Type6 ";
                         }
 
                         if (planetInSystem.spi > lastPlanet[7].spi)
@@ -987,7 +987,7 @@ namespace DiscordBotUpdates.Modules
                         }
                         else if (planetToBuild.spi > 2000)
                         {
-                            lines[8] = lines[8].Replace(lines[8], " Type7 ");
+                            lines[8] = " Type7 ";
                         }
                     }
                 }
@@ -996,7 +996,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     if (string.IsNullOrWhiteSpace(lines[i]))
                     {
-                        lines[i] = " Type" + i + " ";
+                        lines[i] = " Type" + (i - 1) + " ";
                     }
                 }
             }
