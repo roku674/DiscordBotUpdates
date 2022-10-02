@@ -890,7 +890,7 @@ namespace DiscordBotUpdates.Modules
 
                 lines[0] = "  Command Build " + text;
                 Holding planetToBuild = holdingsList.Find(p => p.location == text);
-                Holding[] lastHolding = new Holding[8];
+                Holding[] lastPlanet = new Holding[8];
                 for (int i = 0; i < holdingsList.Count - 1; i++)
                 {
                     if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
@@ -902,88 +902,88 @@ namespace DiscordBotUpdates.Modules
                                    planetInSystem.planetType[0].ToString(),
                                    planetInSystem.planetType[0].ToString().ToUpper());
 
-                        if (lastHolding[0] == null)
+                        if (lastPlanet[0] == null)
                         {
-                            for (int j = 0; j < lastHolding.Length; j++)
+                            for (int j = 0; j < lastPlanet.Length; j++)
                             {
-                                lastHolding[j] = planetInSystem;
+                                lastPlanet[j] = planetInSystem;
                             }
                         }
 
-                        if (planetInSystem.ore > lastHolding[0].ore)
+                        if (planetInSystem.ore > lastPlanet[0].ore)
                         {
                             lines[1] = planetInSystem.location + " Type0 " + planetType;
-                            lastHolding[0] = planetInSystem;
+                            lastPlanet[0] = planetInSystem;
                         }
                         else if (planetToBuild.ore > 5000)
                         {
                             lines[1] = lines[1].Replace(lines[1], " Type0 ");
                         }
 
-                        if (planetInSystem.ana > lastHolding[1].ana)
+                        if (planetInSystem.ana > lastPlanet[1].ana)
                         {
                             lines[2] = planetInSystem.location + " Type1 " + planetType;
-                            lastHolding[1] = planetInSystem;
+                            lastPlanet[1] = planetInSystem;
                         }
                         else if (planetToBuild.ana > 3000)
                         {
                             lines[2] = lines[2].Replace(lines[2], " Type1 ");
                         }
 
-                        if (planetInSystem.med > lastHolding[2].med)
+                        if (planetInSystem.med > lastPlanet[2].med)
                         {
                             lines[3] = planetInSystem.location + " Type2 " + planetType;
-                            lastHolding[2] = planetInSystem;
+                            lastPlanet[2] = planetInSystem;
                         }
                         else if (planetToBuild.med > 1500)
                         {
                             lines[3] = lines[3].Replace(lines[3], " Type2 ");
                         }
 
-                        if (planetInSystem.org > lastHolding[3].org)
+                        if (planetInSystem.org > lastPlanet[3].org)
                         {
                             lines[4] = planetInSystem.location + " Type3 " + planetType;
-                            lastHolding[3] = planetInSystem;
+                            lastPlanet[3] = planetInSystem;
                         }
                         else if (planetToBuild.org > 3000)
                         {
                             lines[4] = lines[4].Replace(lines[4], " Type3 ");
                         }
 
-                        if (planetInSystem.oil > lastHolding[4].oil)
+                        if (planetInSystem.oil > lastPlanet[4].oil)
                         {
                             lines[5] = planetInSystem.location + " Type4 " + planetType;
-                            lastHolding[4] = planetInSystem;
+                            lastPlanet[4] = planetInSystem;
                         }
                         else if (planetToBuild.oil > 3000)
                         {
                             lines[5] = lines[5].Replace(lines[5], " Type4 ");
                         }
 
-                        if (planetInSystem.ura > lastHolding[5].ura)
+                        if (planetInSystem.ura > lastPlanet[5].ura)
                         {
                             lines[6] = planetInSystem.location + " Type5 " + planetType;
-                            lastHolding[5] = planetInSystem;
+                            lastPlanet[5] = planetInSystem;
                         }
                         else if (planetToBuild.ura > 3000)
                         {
                             lines[6] = lines[6].Replace(lines[6], " Type5 ");
                         }
 
-                        if (planetInSystem.equ > lastHolding[6].equ)
+                        if (planetInSystem.equ > lastPlanet[6].equ)
                         {
                             lines[7] = planetInSystem.location + " Type6 " + planetType;
-                            lastHolding[6] = planetInSystem;
+                            lastPlanet[6] = planetInSystem;
                         }
                         else if (planetToBuild.equ > 3000)
                         {
                             lines[7] = lines[7].Replace(lines[7], " Type6 ");
                         }
 
-                        if (planetInSystem.spi > lastHolding[7].spi)
+                        if (planetInSystem.spi > lastPlanet[7].spi)
                         {
                             lines[8] = planetInSystem.location + " Type7 " + planetType;
-                            lastHolding[7] = planetInSystem;
+                            lastPlanet[7] = planetInSystem;
                         }
                         else if (planetToBuild.spi > 2000)
                         {
