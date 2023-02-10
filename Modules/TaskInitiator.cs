@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Algorithms;
+using System.Data;
 
 namespace DiscordBotUpdates.Modules
 {
@@ -35,114 +37,16 @@ namespace DiscordBotUpdates.Modules
                 loadingExcel = true;
                 holdingsList = new List<Holding>();
 
-                await Task.Delay(3000);
-                Excel.Kill();
+                DataTable dataTable = FileManipulation.ConvertCSVtoDataTable(Program.filePaths.excelPath);
 
-                await Excel.ConvertFromCSVtoXLSXAsync(Program.filePaths.csvPath, Program.filePaths.excelPath);
+                holdingsList = Converter.ConvertDataTableToList<Holding>(dataTable);
 
-                Excel excelHoldings = new Excel(Program.filePaths.excelPath, 1);
-                object[,] excelMatrixObj = excelHoldings.ReadCellRange();
-                string[,] excelMatrix = new string[excelHoldings.rowCount + 1, excelHoldings.colCount + 1];
-
-                //im starting this at two becuase column is the title
-                for (int i = 2; i < excelHoldings.rowCount + 1; i++)
-                {
-                    for (int j = 1; j <= excelHoldings.colCount; j++)
-                    {
-                        if (excelMatrixObj[i, j] == null)
-                        {
-                            excelMatrixObj[i, j] = "";
-                        }
-                        excelMatrix[i, j] = excelMatrixObj[i, j].ToString();
-
-                        int tempInt = 0;
-                        double tempDouble = 0;
-                        if (int.TryParse(excelMatrixObj[i, j].ToString(), out tempInt))
-                        {
-                            excelMatrixObj[i, j] = tempInt;
-                        }
-                        else if (double.TryParse(excelMatrixObj[i, j].ToString(), out tempDouble))
-                        {
-                            excelMatrixObj[i, j] = tempDouble;
-                        }
-                        else
-                        {
-                            excelMatrixObj[i, j] = excelMatrixObj[i, j].ToString();
-                        }
-                    }
-
-                    excelMatrixObj[i, 9] = DateTime.MaxValue;
-
-                    if ((int)excelMatrixObj[i, 46] == 1)
-                    {
-                        excelMatrixObj[i, 46] = true;
-                    }
-                    else
-                    {
-                        excelMatrixObj[i, 46] = false;
-                    }
-
-                    Holding holdings = new Holding(
-                        excelMatrix[i, 1],
-                        int.Parse(excelMatrix[i, 2]),
-                        excelMatrix[i, 3],
-                        excelMatrix[i, 4],
-                        int.Parse(excelMatrix[i, 5]),
-                        int.Parse(excelMatrix[i, 6]),
-                        excelMatrix[i, 7],
-                        excelMatrix[i, 8],
-                        (DateTime)excelMatrixObj[i, 9],
-                        int.Parse(excelMatrix[i, 10]),
-                        double.Parse(excelMatrix[i, 11]),
-                        double.Parse(excelMatrix[i, 12]),
-                        double.Parse(excelMatrix[i, 13]),
-                        excelMatrix[i, 14],
-                        int.Parse(excelMatrix[i, 15]),
-                        double.Parse(excelMatrix[i, 16]),
-                        int.Parse(excelMatrix[i, 17]),
-                        double.Parse(excelMatrix[i, 18]),
-                        int.Parse(excelMatrix[i, 19]),
-                        double.Parse(excelMatrix[i, 20]),
-                        int.Parse(excelMatrix[i, 21]),
-                        int.Parse(excelMatrix[i, 22]),
-                        int.Parse(excelMatrix[i, 23]),
-                        int.Parse(excelMatrix[i, 24]),
-                        excelMatrix[i, 25],
-                        int.Parse(excelMatrix[i, 26]),
-                        int.Parse(excelMatrix[i, 27]),
-                        int.Parse(excelMatrix[i, 28]),
-                        int.Parse(excelMatrix[i, 29]),
-                        int.Parse(excelMatrix[i, 40]),
-                        int.Parse(excelMatrix[i, 31]),
-                        int.Parse(excelMatrix[i, 32]),
-                        int.Parse(excelMatrix[i, 33]),
-                        int.Parse(excelMatrix[i, 34]),
-                        int.Parse(excelMatrix[i, 35]),
-                        int.Parse(excelMatrix[i, 36]),
-                        int.Parse(excelMatrix[i, 37]),
-                        int.Parse(excelMatrix[i, 38]),
-                        int.Parse(excelMatrix[i, 39]),
-                        int.Parse(excelMatrix[i, 40]),
-                        int.Parse(excelMatrix[i, 41]),
-                        int.Parse(excelMatrix[i, 42]),
-                        int.Parse(excelMatrix[i, 43]),
-                        int.Parse(excelMatrix[i, 44]),
-                        excelMatrix[i, 45],
-                        (bool)excelMatrixObj[i, 46]
-                        );
-
-                    holdingsList.Add(holdings);
-                }
-                excelHoldings.Close();
                 await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
                 loadingExcel = false;
             }
         }
 
-        /// </summary>
-        /// <summary>
-        /// Call this to start the Distress Calls Listener
-        /// </summary>
+        /// </summary> <summary> Call this to start the Distress Calls Listener </summary>
         /// <returns></returns>
         public async Task ChatLogListenerAsync(uint id, ulong channelId, string owner)
         {
@@ -178,7 +82,7 @@ namespace DiscordBotUpdates.Modules
                 int taskNum = runningTasks.FindIndex(task => task.id == id);
                 DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
-                for (uint i = 0; i < duration; i++)
+                for (uint i = 0;i < duration;i++)
                 {
                     if (runningTasks[taskNum].isCancelled)
                     {
@@ -556,7 +460,7 @@ namespace DiscordBotUpdates.Modules
                 string[] remainderLogsArr = File.ReadAllLines(remainingLogs);
                 while (remainderLogsArr.Length > 1)
                 {
-                    for (int i = 0; i < remainderLogsArr.Length; i++)
+                    for (int i = 0;i < remainderLogsArr.Length;i++)
                     {
                         ChatLogsReaderAsync(remainderLogsArr, "Remainder").Wait();
 
@@ -596,7 +500,7 @@ namespace DiscordBotUpdates.Modules
 
             DBUTaskObj task = runningTasks.ElementAt(taskNum);
 
-            for (uint i = 0; i < duration; i++)
+            for (uint i = 0;i < duration;i++)
             {
                 if (runningTasks[taskNum].isCancelled)
                 {
@@ -618,7 +522,7 @@ namespace DiscordBotUpdates.Modules
                    picturesDir + "/Targets",
                 };
 
-                for (int j = 0; j < paths.Length; j++)
+                for (int j = 0;j < paths.Length;j++)
                 {
                     string[] pictures = Directory.GetFiles(paths[j]);
                     if (pictures.Length > 0)
@@ -773,7 +677,7 @@ namespace DiscordBotUpdates.Modules
             System.Console.WriteLine("Sucessfully Initiated Text Listener!", Program.channelId.botCommandsId);
             uint hourlyTracker = 0;
             uint TwoMinuteTracker = 0;
-            for (uint i = 0; i < duration; i++)
+            for (uint i = 0;i < duration;i++)
             {
                 if (runningTasks[taskNum].isCancelled)
                 {
@@ -872,7 +776,7 @@ namespace DiscordBotUpdates.Modules
             string alliePath = Program.filePaths.networkPathDir + "/Echo/Allie.txt";
             string[] lines = new string[9];
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0;i < lines.Length;i++)
             {
                 lines[i] = " ";
             }
@@ -891,7 +795,7 @@ namespace DiscordBotUpdates.Modules
                 lines[0] = "  Command Build " + text;
                 Holding planetToBuild = holdingsList.Find(p => p.location == text);
                 Holding[] lastPlanet = new Holding[8];
-                for (int i = 0; i < holdingsList.Count - 1; i++)
+                for (int i = 0;i < holdingsList.Count - 1;i++)
                 {
                     if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
                     {
@@ -904,7 +808,7 @@ namespace DiscordBotUpdates.Modules
 
                         if (lastPlanet[0] == null)
                         {
-                            for (int j = 0; j < lastPlanet.Length; j++)
+                            for (int j = 0;j < lastPlanet.Length;j++)
                             {
                                 lastPlanet[j] = planetInSystem;
                             }
@@ -992,7 +896,7 @@ namespace DiscordBotUpdates.Modules
                     }
                 }
 
-                for (int i = 0; i < lines.Length - 1; i++)
+                for (int i = 0;i < lines.Length - 1;i++)
                 {
                     if (string.IsNullOrWhiteSpace(lines[i]))
                     {
@@ -1680,7 +1584,7 @@ namespace DiscordBotUpdates.Modules
             {
                 string[] filePaths = Directory.GetFiles(Program.filePaths.networkPathDir + "/Channel");
 
-                for (int i = 0; i < filePaths.Length; i++)
+                for (int i = 0;i < filePaths.Length;i++)
                 {
                     if (File.Exists(filePaths[i]))
                     {
