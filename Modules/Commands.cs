@@ -463,6 +463,7 @@ namespace DiscordBotUpdates.Modules
         [Command("Ping")]
         public async Task Ping()
         {
+            await Task.Run(() => TaskInitiator.PingAPI());
             await ReplyAsync("Pong");
         }
 
@@ -471,7 +472,7 @@ namespace DiscordBotUpdates.Modules
         {
             string[] allfiles = Directory.GetFiles(Program.filePaths.planetPicturesDir, "*.*", SearchOption.AllDirectories);
 
-            int holdingIndex = TaskInitiator.holdingsList.FindIndex(planet => planet.location == planetName);
+            int holdingIndex = TaskInitiator.holdingsList.FindIndex(planet => planet.Location == planetName);
             if (holdingIndex != -1)
             {
                 StarportObjects.Holding planet = TaskInitiator.holdingsList[holdingIndex];
@@ -560,86 +561,86 @@ namespace DiscordBotUpdates.Modules
             {
                 foreach (StarportObjects.Holding planet in TaskInitiator.holdingsList)
                 {
-                    if (planet.owner.Equals(owner))
+                    if (planet.Owner.Equals(owner))
                     {
-                        if (planet.name.EndsWith(".I") || planet.name.EndsWith(".ZI") || planet.name.EndsWith(".ZDI"))
+                        if (planet.Name.EndsWith(".I") || planet.Name.EndsWith(".ZI") || planet.Name.EndsWith(".ZDI"))
                         {
                             invasions++;
                         }
-                        if (planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD"))
+                        if (planet.Name.EndsWith(".D") || planet.Name.EndsWith(".DI") || planet.Name.Contains(".ZD"))
                         {
                             dd++;
                         }
-                        if (planet.population >= 5000)
+                        if (planet.Population >= 5000)
                         {
-                            if (planet.planetType.Equals("arctic"))
+                            if (planet.PlanetType.Equals("arctic"))
                             {
                                 arctics++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     arcticsZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("desert"))
+                            else if (planet.PlanetType.Equals("desert"))
                             {
                                 deserts++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     desertsZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("earthlike"))
+                            else if (planet.PlanetType.Equals("earthlike"))
                             {
                                 earths++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     earthsZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("greenhouse"))
+                            else if (planet.PlanetType.Equals("greenhouse"))
                             {
                                 greenhouses++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     greenhousesZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("mountainous"))
+                            else if (planet.PlanetType.Equals("mountainous"))
                             {
                                 mountains++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     mountainsZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("oceanic"))
+                            else if (planet.PlanetType.Equals("oceanic"))
                             {
                                 oceans++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     oceansZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("Intergalactic paradise"))
+                            else if (planet.PlanetType.Equals("Intergalactic paradise"))
                             {
                                 paradises++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     paradisesZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("rocky"))
+                            else if (planet.PlanetType.Equals("rocky"))
                             {
                                 rockies++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     rockiesZ++;
                                 }
                             }
-                            else if (planet.planetType.Equals("volcanic"))
+                            else if (planet.PlanetType.Equals("volcanic"))
                             {
                                 volcanics++;
-                                if (planet.population >= 90000)
+                                if (planet.Population >= 90000)
                                 {
                                     volcanicsZ++;
                                 }

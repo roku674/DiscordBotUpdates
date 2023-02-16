@@ -1,34 +1,84 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
 
 using StarportObjects;
-using ExcelCSharp;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using Algorithms;
 using System.Data;
+using System.Net.Http;
+using Optimization.Utility;
+using Optimization.Objects;
+using System;
 
 namespace DiscordBotUpdates.Modules
 {
     internal class TaskInitiator : DBUTask
     {
-        public static bool alerts { get; set; }
-        public static uint alliesSlain { get; set; }
-        public static bool building { get; set; }
-        public static uint colsAbandoned { get; set; }
-        public static uint colsBuilt { get; set; }
-        public static bool distress { get; set; }
-        public static uint enemiesSlain { get; set; }
-        public static List<Holding> holdingsList { get; set; }
-        public static bool kombat { get; set; }
-        public static uint landings { get; set; }
-        public static bool loadingExcel { get; set; }
-        public static string lastLand { get; set; }
-        public static string lastSystem { get; set; }
-        public static uint planetsKaptured { get; set; }
-        public static uint planetsLost { get; set; }
+        public static bool alerts {
+            get; set;
+        }
+
+        public static uint alliesSlain {
+            get; set;
+        }
+
+        public static bool building {
+            get; set;
+        }
+
+        public static uint colsAbandoned {
+            get; set;
+        }
+
+        public static uint colsBuilt {
+            get; set;
+        }
+
+        public static string currentServer {
+            get;set;
+        }
+
+        public static bool distress {
+            get; set;
+        }
+
+        public static uint enemiesSlain {
+            get; set;
+        }
+
+        public static List<Holding> holdingsList {
+            get; set;
+        }
+
+        public static bool kombat {
+            get; set;
+        }
+
+        public static uint landings {
+            get; set;
+        }
+
+        public static bool loadingExcel {
+            get; set;
+        }
+
+        public static string lastLand {
+            get; set;
+        }
+
+        public static string lastSystem {
+            get; set;
+        }
+
+        public static uint planetsKaptured {
+            get; set;
+        }
+
+        public static uint planetsLost {
+            get; set;
+        }
 
         public static async Task LoadExcelHoldingsAsync()
         {
@@ -37,12 +87,103 @@ namespace DiscordBotUpdates.Modules
                 loadingExcel = true;
                 holdingsList = new List<Holding>();
 
-                DataTable dataTable = FileManipulation.ConvertCSVtoDataTable(Program.filePaths.excelPath);
+                HttpClient client = new HttpClient();
 
-                holdingsList = Converter.ConvertDataTableToList<Holding>(dataTable);
+                client = APICaller.AddRequestHeaders(client,
+                    Settings.Configuration["API:StarportGE:host"],
+                    Settings.Configuration["API:StarportGE:keyName"],
+                    Settings.Configuration["API:StarportGE:key"],
+                    null);
 
+                string month = "";
+                string day = "";
+
+                if (DateTime.Now.Month < 10)
+                {
+                    month = "0" + DateTime.Now.Month;
+                }
+                else
+                {
+                    month = DateTime.Now.Month.ToString();
+                }
+                if (DateTime.Now.Day < 10)
+                {
+                    day = "0" + DateTime.Now.Day;
+                }
+                else
+                {
+                    day = DateTime.Now.Day.ToString();
+                }
+
+                FileInfo fileInfo = new FileInfo(Program.filePaths.csvLocal);
+                FileObj file = new FileObj(
+                    $"holdings_{DateTime.Now.Year}{month}{day}.csv",
+                    "csv",
+                    System.IO.File.ReadAllText(Program.filePaths.csvLocal),
+                    File.ReadAllBytes(Program.filePaths.csvLocal),
+                    fileInfo.CreationTime,
+                    fileInfo.LastAccessTime,
+                    fileInfo.Length,
+                    null,
+                    null
+                    );
+
+                string fileJson = Newtonsoft.Json.JsonConvert.SerializeObject(file);
+
+                if (string.IsNullOrWhiteSpace(currentServer))
+                {
+                    currentServer = "IC4";
+                    System.Console.WriteLine("Current server set to " + currentServer);
+                }
+
+                try{
+                string resposne = APICaller.PutJson(
+                    client,
+                    fileJson,
+                    $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Put:csv"]}server={currentServer}"
+                    ).Result;
+
+                    string json = APICaller.GetResponseBodyFromApiAsync(client,
+                    $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:allcolonies"]}server={currentServer}",
+                    0).Result;
+
+                    holdingsList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Holding>>(json);
+                }
+                catch(System.Exception e)
+                {                  
+                    string tempFile = Path.GetTempFileName().Replace(".tmp",".txt");
+                    File.WriteAllText(tempFile, fileJson);
+
+                    await OutprintAsync(e.ToString(), Program.channelId.botErrorsId);
+                    await OutprintFileAsync(tempFile, Program.channelId.botErrorsId);
+
+                    File.Delete(tempFile);
+                }
+
+                client.Dispose();
                 await OutprintAsync("Excel Document Sucessfully loaded into memory!I found " + holdingsList.Count + " Colonies!", Program.channelId.botUpdatesId);
                 loadingExcel = false;
+            }
+        }
+
+        public static async void PingAPI()
+        {
+            HttpClient client = new HttpClient();
+
+            client = APICaller.AddRequestHeaders(client,
+                Settings.Configuration["API:StarportGE:host"],
+                Settings.Configuration["API:StarportGE:keyName"],
+                Settings.Configuration["API:StarportGE:key"],
+                null);
+
+            string ping = APICaller.GetResponseBodyFromApiAsync(client,
+               $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:ping"]}",
+               0).Result;
+
+            if (!ping.Contains("API"))
+            {
+                await OutprintAsync("API is down!", Program.channelId.botUpdatesId);
+                await OutprintAsync("API is down!", Program.channelId.botErrorsId);
             }
         }
 
@@ -118,14 +259,14 @@ namespace DiscordBotUpdates.Modules
             //System.Console.WriteLine("Finding " + enemy + " colonies!");
             await OutprintAsync(enemy + "'s planets:", Program.channelId.scoutReportsId);
 
-            await File.WriteAllTextAsync(folder + "/enemyCols.txt", " ");
+            await System.IO.File.WriteAllTextAsync(folder + "/enemyCols.txt", " ");
             foreach (string fileName in Directory.EnumerateFiles(folder, "*.txt"))
             {
                 //System.Console.WriteLine(fileName);
-                string fileContents = File.ReadAllText(fileName);
+                string fileContents = System.IO.File.ReadAllText(fileName);
                 if (fileContents.Contains(enemy))
                 {
-                    await File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
+                    await System.IO.File.AppendAllTextAsync(folder + "/enemyCols.txt", Path.GetFileNameWithoutExtension(fileName) + '\n');
                 }
             }
             await OutprintFileAsync(folder + "/enemyCols.txt", Program.channelId.scoutReportsId);
@@ -146,13 +287,13 @@ namespace DiscordBotUpdates.Modules
             foreach (Holding planet in localHoldingsList)
             {
                 int pscIndex = planetarySystemCoords.FindIndex(v2 =>
-                v2.X == (float)planet.galaxyX &&
-                v2.Y == (float)planet.galaxyY
+                v2.X == (float)planet.GalaxyX &&
+                v2.Y == (float)planet.GalaxyY
                 );
 
                 if (pscIndex == -1)
                 {
-                    planetarySystemCoords.Add(new System.Numerics.Vector2(planet.galaxyX, planet.galaxyY));
+                    planetarySystemCoords.Add(new System.Numerics.Vector2(planet.GalaxyX, planet.GalaxyY));
                 }
             }
 
@@ -234,10 +375,10 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.pollutionFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.pollution > 0 && planet.pollutionRate > 1)
+                    if (planet.Pollution > 0 && planet.PollutionRate > 1)
                     {
                         polluting++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
@@ -247,10 +388,10 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.pollutionCritId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.pollution > 40 && planet.pollutionRate > 0)
+                    if (planet.Pollution > 40 && planet.PollutionRate > 0)
                     {
                         pollutingCrit++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
@@ -261,7 +402,7 @@ namespace DiscordBotUpdates.Modules
                 int zoundsableCounter = 0;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.planetType, planet.discoveries))
+                    if (planet.Population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.PlanetType, planet.Discoveries))
                     {
                         zoundsableCounter++;
                         string message = AllPlanetInfo(planet);
@@ -276,8 +417,8 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.ddId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.name.Contains("DD") ||
-                       ((planet.name.EndsWith(".D") || planet.name.EndsWith(".DI") || planet.name.Contains(".ZD")))
+                    if (planet.Name.Contains("DD") ||
+                       ((planet.Name.EndsWith(".D") || planet.Name.EndsWith(".DI") || planet.Name.Contains(".ZD")))
                        )
                     {
                         ddCount++;
@@ -291,7 +432,7 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.solarOffId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.solarShots == 0 && planet.population > 1000 || (planet.solarShots > 0 && planet.population > 10000 && planet.ore <= 5000))
+                    if (planet.SolarShots == 0 && planet.Population > 1000 || (planet.SolarShots > 0 && planet.Population > 10000 && planet.Ore <= 5000))
                     {
                         solarOff++;
                         string message = AllPlanetInfo(planet);
@@ -304,7 +445,7 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.solarWeakId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.solarShots < 25 && planet.population > 5000)
+                    if (planet.SolarShots < 25 && planet.Population > 5000)
                     {
                         solarWeak++;
                         string message = AllPlanetInfo(planet);
@@ -319,28 +460,28 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.botTestingId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.discoveries.Contains("MT lvl 1"))
+                    if (planet.Discoveries.Contains("MT lvl 1"))
                     {
                         military = 7150;
                     }
-                    else if (planet.discoveries.Contains("MT lvl 2"))
+                    else if (planet.Discoveries.Contains("MT lvl 2"))
                     {
                         military = 5600;
                     }
-                    else if (planet.discoveries.Contains("MT lvl 3"))
+                    else if (planet.Discoveries.Contains("MT lvl 3"))
                     {
                         military = 4550;
                     }
-                    else if (planet.discoveries.Contains("MT lvl 4"))
+                    else if (planet.Discoveries.Contains("MT lvl 4"))
                     {
                         military = 3850;
                     }
-                    else if (planet.discoveries.Contains("MT lvl 5"))
+                    else if (planet.Discoveries.Contains("MT lvl 5"))
                     {
                         military = 3350;
                     }
 
-                    if ((planet.percMilitary / 100) * planet.population < ((military * 0.4f) / military))
+                    if ((planet.PercMilitary / 100) * planet.Population < ((military * 0.4f) / military))
                     {
                         militaryWeak++;
                         string message = AllPlanetInfo(planet);
@@ -353,10 +494,10 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.revoltFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
+                    if (planet.Morale < 0 || planet.MoraleChange < 0.00d)
                     {
                         negativeMorale++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Morale: " + planet.Morale + " + " + planet.MoraleChange + "/hour" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
@@ -366,10 +507,10 @@ namespace DiscordBotUpdates.Modules
                 channel = Program.channelId.shrinkingFinderId;
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
+                    if (planet.PopGrowth < -1d && planet.PopGrowth > -2000)
                     {
                         negativeGrowth++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Population: " + planet.Population + " | Growth Rate: " + planet.PopGrowth + "/hour" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
@@ -380,22 +521,22 @@ namespace DiscordBotUpdates.Modules
 
                 foreach (Holding planet in localHoldingsList)
                 {
-                    if (planet.popGrowth < -1d && planet.popGrowth > -2000)
+                    if (planet.PopGrowth < -1d && planet.PopGrowth > -2000)
                     {
                         negativeGrowth++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Population: " + planet.population + " | Growth Rate: " + planet.popGrowth + "/hour" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Population: " + planet.Population + " | Growth Rate: " + planet.PopGrowth + "/hour" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
-                    if (planet.morale < 0 || planet.moraleChange < 0.00d)
+                    if (planet.Morale < 0 || planet.MoraleChange < 0.00d)
                     {
                         negativeMorale++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Morale: " + planet.Morale + " + " + planet.MoraleChange + "/hour" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
-                    if (planet.pollution > 0 || planet.pollutionRate > 1)
+                    if (planet.Pollution > 0 || planet.PollutionRate > 1)
                     {
                         polluting++;
-                        string message = planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + "/day" + '\n';
+                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
                         await UpdateCompanionFilesAsync(planet, tempPath, message, type);
                     }
                 }
@@ -793,18 +934,18 @@ namespace DiscordBotUpdates.Modules
                 }
 
                 lines[0] = "  Command Build " + text;
-                Holding planetToBuild = holdingsList.Find(p => p.location == text);
+                Holding planetToBuild = holdingsList.Find(p => p.Location == text);
                 Holding[] lastPlanet = new Holding[8];
                 for (int i = 0;i < holdingsList.Count - 1;i++)
                 {
-                    if (planetToBuild.galaxyX == holdingsList[i].galaxyX && planetToBuild.galaxyY == holdingsList[i].galaxyY)
+                    if (planetToBuild.GalaxyX == holdingsList[i].GalaxyX && planetToBuild.GalaxyY == holdingsList[i].GalaxyY)
                     {
                         Holding planetInSystem = holdingsList[i];
 
                         //Capitalize first letter
-                        string planetType = planetInSystem.planetType.Replace(
-                                   planetInSystem.planetType[0].ToString(),
-                                   planetInSystem.planetType[0].ToString().ToUpper());
+                        string planetType = planetInSystem.PlanetType.Replace(
+                                   planetInSystem.PlanetType[0].ToString(),
+                                   planetInSystem.PlanetType[0].ToString().ToUpper());
 
                         if (lastPlanet[0] == null)
                         {
@@ -814,82 +955,82 @@ namespace DiscordBotUpdates.Modules
                             }
                         }
 
-                        if (planetInSystem.ore > lastPlanet[0].ore)
+                        if (planetInSystem.Ore > lastPlanet[0].Ore)
                         {
-                            lines[1] = planetInSystem.location + " Type0 " + planetType;
+                            lines[1] = planetInSystem.Location + " Type0 " + planetType;
                             lastPlanet[0] = planetInSystem;
                         }
-                        else if (planetToBuild.ore > 5000)
+                        else if (planetToBuild.Ore > 5000)
                         {
                             lines[1] = " Type0 ";
                         }
 
-                        if (planetInSystem.ana > lastPlanet[1].ana)
+                        if (planetInSystem.Ana > lastPlanet[1].Ana)
                         {
-                            lines[2] = planetInSystem.location + " Type1 " + planetType;
+                            lines[2] = planetInSystem.Location + " Type1 " + planetType;
                             lastPlanet[1] = planetInSystem;
                         }
-                        else if (planetToBuild.ana > 3000)
+                        else if (planetToBuild.Ana > 3000)
                         {
                             lines[2] = " Type1 ";
                         }
 
-                        if (planetInSystem.med > lastPlanet[2].med)
+                        if (planetInSystem.Med > lastPlanet[2].Med)
                         {
-                            lines[3] = planetInSystem.location + " Type2 " + planetType;
+                            lines[3] = planetInSystem.Location + " Type2 " + planetType;
                             lastPlanet[2] = planetInSystem;
                         }
-                        else if (planetToBuild.med > 1500)
+                        else if (planetToBuild.Med > 1500)
                         {
                             lines[3] = " Type2 ";
                         }
 
-                        if (planetInSystem.org > lastPlanet[3].org)
+                        if (planetInSystem.Org > lastPlanet[3].Org)
                         {
-                            lines[4] = planetInSystem.location + " Type3 " + planetType;
+                            lines[4] = planetInSystem.Location + " Type3 " + planetType;
                             lastPlanet[3] = planetInSystem;
                         }
-                        else if (planetToBuild.org > 3000)
+                        else if (planetToBuild.Org > 3000)
                         {
                             lines[4] = " Type3 ";
                         }
 
-                        if (planetInSystem.oil > lastPlanet[4].oil)
+                        if (planetInSystem.Oil > lastPlanet[4].Oil)
                         {
-                            lines[5] = planetInSystem.location + " Type4 " + planetType;
+                            lines[5] = planetInSystem.Location + " Type4 " + planetType;
                             lastPlanet[4] = planetInSystem;
                         }
-                        else if (planetToBuild.oil > 3000)
+                        else if (planetToBuild.Oil > 3000)
                         {
                             lines[5] = " Type4 ";
                         }
 
-                        if (planetInSystem.ura > lastPlanet[5].ura)
+                        if (planetInSystem.Ura > lastPlanet[5].Ura)
                         {
-                            lines[6] = planetInSystem.location + " Type5 " + planetType;
+                            lines[6] = planetInSystem.Location + " Type5 " + planetType;
                             lastPlanet[5] = planetInSystem;
                         }
-                        else if (planetToBuild.ura > 3000)
+                        else if (planetToBuild.Ura > 3000)
                         {
                             lines[6] = " Type5 ";
                         }
 
-                        if (planetInSystem.equ > lastPlanet[6].equ)
+                        if (planetInSystem.Equ > lastPlanet[6].Equ)
                         {
-                            lines[7] = planetInSystem.location + " Type6 " + planetType;
+                            lines[7] = planetInSystem.Location + " Type6 " + planetType;
                             lastPlanet[6] = planetInSystem;
                         }
-                        else if (planetToBuild.equ > 3000)
+                        else if (planetToBuild.Equ > 3000)
                         {
                             lines[7] = " Type6 ";
                         }
 
-                        if (planetInSystem.spi > lastPlanet[7].spi)
+                        if (planetInSystem.Spi > lastPlanet[7].Spi)
                         {
-                            lines[8] = planetInSystem.location + " Type7 " + planetType;
+                            lines[8] = planetInSystem.Location + " Type7 " + planetType;
                             lastPlanet[7] = planetInSystem;
                         }
-                        else if (planetToBuild.spi > 2000)
+                        else if (planetToBuild.Spi > 2000)
                         {
                             lines[8] = " Type7 ";
                         }
@@ -912,16 +1053,16 @@ namespace DiscordBotUpdates.Modules
 
         internal string AllPlanetInfo(Holding planet)
         {
-            return planet.location + " (" + planet.galaxyX + "," + planet.galaxyY + ")" + " | " + planet.name + " | " + planet.planetType + " | " + planet.owner + '\n'
-                + "Population: " + planet.population + " + " + planet.popGrowth + "/hour" + " | Morale: " + planet.morale + " + " + planet.moraleChange + "/hour" + '\n'
-                + "  Disasters: " + planet.disaster + " | Pollution: " + planet.pollution + " + " + planet.pollutionRate + " / day" + '\n'
-                + "  Discoveries: " + planet.discoveries + "/ " + planet.numDiscoveries + " Total Discoveries | Building: " + planet.currentlyBuilding + " | Solar: " + planet.solarShots + " / " + planet.solarFreq + '\n'
-                + "Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + " | Compound Mines: " + planet.compoundMines + " | Lasers: " + planet.laserCannons + " | Shields: " + planet.shields + '\n'
-                + "/setworkforces " + planet.percConstruct + " " + planet.percResearch + " " + planet.percMilitary + " " + planet.percHarvest + '\n'
+            return planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | " + planet.PlanetType + " | " + planet.Owner + '\n'
+                + "Population: " + planet.Population + " + " + planet.PopGrowth + "/hour" + " | Morale: " + planet.Morale + " + " + planet.MoraleChange + "/hour" + '\n'
+                + "  Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + " / day" + '\n'
+                + "  Discoveries: " + planet.Discoveries + "/ " + planet.NumDiscoveries + " Total Discoveries | Building: " + planet.CurrentlyBuilding + " | Solar: " + planet.SolarShots + " / " + planet.SolarFreq + '\n'
+                + "Nukes: " + planet.Nukes + " | Negotiators: " + planet.Negotiators + " | Compound Mines: " + planet.CompoundMines + " | Lasers: " + planet.LaserCannons + " | Shields: " + planet.Shields + '\n'
+                + "/setworkforces " + planet.PercConstruct + " " + planet.PercResearch + " " + planet.PercMilitary + " " + planet.PercHarvest + '\n'
                 + "Resources: " + '\n'
-                + "  Metal: " + planet.ore + " | Anaerobes: " + planet.ana + " | Medicine: " + planet.med + '\n'
-                + "  Organics: " + planet.org + " | Oil: " + planet.oil + " | Uranium: " + planet.ura + '\n'
-                + "  Equipment: " + planet.equ + " | Spice: " + planet.spi +
+                + "  Metal: " + planet.Ore + " | Anaerobes: " + planet.Ana + " | Medicine: " + planet.Med + '\n'
+                + "  Organics: " + planet.Org + " | Oil: " + planet.Oil + " | Uranium: " + planet.Ura + '\n'
+                + "  Equipment: " + planet.Equ + " | Spice: " + planet.Spi +
                 +'\n' + '\n'
                 + " ___________________________________________________________________________"
                 + '\n' + '\n';
@@ -941,23 +1082,23 @@ namespace DiscordBotUpdates.Modules
             }
             await File.WriteAllTextAsync(tempWeapons, "");
 
-            holdingsList.OrderBy(hops => hops.hopsAway);
+            holdingsList.OrderBy(hops => hops.HopsAway);
 
             foreach (Holding planet in holdingsList)
             {
-                if (text == "Nukes" && (planet.nukes > 0 || planet.negotiators > 0) && planet.hopsAway <= 5)
+                if (text == "Nukes" && (planet.Nukes > 0 || planet.Negotiators > 0) && planet.HopsAway <= 5)
                 {
-                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Nukes: " + planet.nukes + " | Negotiators: " + planet.negotiators + '\n';
+                    string message = planet.Location + " | " + planet.Name + " | Hops Away: " + planet.HopsAway + " | Nukes: " + planet.Nukes + " | Negotiators: " + planet.Negotiators + '\n';
                     await File.AppendAllTextAsync(tempWeapons, message);
                 }
-                if (text == "Defenses" && (planet.laserCannons > 0 || planet.compoundMines > 0 || planet.flakCannons > 0) && planet.hopsAway <= 5)
+                if (text == "Defenses" && (planet.LaserCannons > 0 || planet.CompoundMines > 0 || planet.FlakCannons > 0) && planet.HopsAway <= 5)
                 {
-                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " | Lasers: " + planet.laserCannons + " | Compound Mines: " + planet.compoundMines + " Flaks: " + planet.flakCannons + '\n';
+                    string message = planet.Location + " | " + planet.Name + " | Hops Away: " + planet.HopsAway + " | Lasers: " + planet.LaserCannons + " | Compound Mines: " + planet.CompoundMines + " Flaks: " + planet.FlakCannons + '\n';
                     await File.AppendAllTextAsync(tempWeapons, message);
                 }
-                if (text == "Shields" && planet.shields > 0)
+                if (text == "Shields" && planet.Shields > 0)
                 {
-                    string message = planet.location + " | " + planet.name + " | Hops Away: " + planet.hopsAway + " Shields: " + planet.shields;
+                    string message = planet.Location + " | " + planet.Name + " | Hops Away: " + planet.HopsAway + " Shields: " + planet.Shields;
                     await File.AppendAllTextAsync(tempWeapons, message);
                 }
             }
@@ -1125,7 +1266,7 @@ namespace DiscordBotUpdates.Modules
                 {
                     await OutprintAsync(AtUser(lastLine) + lastLine, Program.channelId.newsId);
                 }
-                else if (lastLine.Contains("Exporting holdings.csv has finished."))
+                else if (lastLine.Contains("Exporting holdings.csv"))
                 {
                     string csv = "";
                     if (File.Exists(Program.filePaths.csvLocal))
@@ -1138,7 +1279,7 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine("Copied csv to internet...");
                     //await OutprintAsync("Copied local csv to internet", Program.channelId.botUpdatesId);
 
-                    await Task.Delay(15000);
+                    await Task.Delay(5000);
                     await Task.Run(() => LoadExcelHoldingsAsync());
                 }
                 else if (lastLine.Contains("Connection to server lost due to"))
@@ -1282,7 +1423,7 @@ namespace DiscordBotUpdates.Modules
                         await OutprintAsync(AtUser(lastLine) + lastLine, Program.channelId.distressCallsId);
                         await OutprintAsync(AtUser(lastLine) + lastLine, Program.channelId.recapListId);
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
-                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.Location == planetName);
 
                         if (lastLine.Contains("DD"))
                         {
@@ -1318,9 +1459,9 @@ namespace DiscordBotUpdates.Modules
                         if (holdingsIndex != -1)
                         {
                             await OutprintAsync(
-                                "Metal Ore: " + tempHoldingsList[holdingsIndex].ore + " | Solar: " + tempHoldingsList[holdingsIndex].solarShots + " / " + tempHoldingsList[holdingsIndex].solarFreq + '\n' +
-                                " | Nukes: " + tempHoldingsList[holdingsIndex].nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].compoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + tempHoldingsList[holdingsIndex].population + " | Discoveries: " + tempHoldingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
+                                "Metal Ore: " + tempHoldingsList[holdingsIndex].Ore + " | Solar: " + tempHoldingsList[holdingsIndex].SolarShots + " / " + tempHoldingsList[holdingsIndex].SolarFreq + '\n' +
+                                " | Nukes: " + tempHoldingsList[holdingsIndex].Nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].Negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].CompoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].LaserCannons + '\n' +
+                                " | Population: " + tempHoldingsList[holdingsIndex].Population + " | Discoveries: " + tempHoldingsList[holdingsIndex].Discoveries, Program.channelId.distressCallsId);
                         }
                     }
                     else if (lastLine.Contains("captured the colony"))
@@ -1393,7 +1534,7 @@ namespace DiscordBotUpdates.Modules
                         landings++;
                         string colonyName = Algorithms.StringManipulation.GetBetween(lastLine, "from", "on");
                         string planetName = Algorithms.StringManipulation.GetBetween(lastLine, "on", "(");
-                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.Location == planetName);
 
                         if (colonyName.Contains("(") && colonyName.Contains("."))
                         {
@@ -1427,9 +1568,9 @@ namespace DiscordBotUpdates.Modules
                         if (holdingsIndex != -1)
                         {
                             await OutprintAsync(
-                                "Metal Ore: " + tempHoldingsList[holdingsIndex].ore + " | Solar: " + tempHoldingsList[holdingsIndex].solarShots + " / " + tempHoldingsList[holdingsIndex].solarFreq + '\n' +
-                                " | Nukes: " + tempHoldingsList[holdingsIndex].nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].compoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].laserCannons + '\n' +
-                                " | Population: " + tempHoldingsList[holdingsIndex].population + " | Discoveries: " + tempHoldingsList[holdingsIndex].discoveries, Program.channelId.distressCallsId);
+                                "Metal Ore: " + tempHoldingsList[holdingsIndex].Ore + " | Solar: " + tempHoldingsList[holdingsIndex].SolarShots + " / " + tempHoldingsList[holdingsIndex].SolarFreq + '\n' +
+                                " | Nukes: " + tempHoldingsList[holdingsIndex].Nukes + " | Negotiators: " + tempHoldingsList[holdingsIndex].Negotiators + " | Compound Mines: " + tempHoldingsList[holdingsIndex].CompoundMines + " | Lasers: " + tempHoldingsList[holdingsIndex].LaserCannons + '\n' +
+                                " | Population: " + tempHoldingsList[holdingsIndex].Population + " | Discoveries: " + tempHoldingsList[holdingsIndex].Discoveries, Program.channelId.distressCallsId);
                         }
                         else
                         {
@@ -1500,28 +1641,28 @@ namespace DiscordBotUpdates.Modules
                             planetName = Algorithms.StringManipulation.GetBetween(planetName, " on ", "(");
                         }
 
-                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
+                        int holdingsIndex = tempHoldingsList.FindIndex(planet => planet.Location == planetName);
                         if (holdingsIndex != -1)
                         {
                             Holding planet = tempHoldingsList[holdingsIndex];
-                            if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
+                            if (StarportHelperClasses.Helper.IsZoundsable(planet.PlanetType, discovery))
                             {
                                 string message = AllPlanetInfo(planet);
 
-                                await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, Program.channelId.zoundsForHoundsId);
+                                await OutprintAsync(AtUser(planet.Owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, Program.channelId.zoundsForHoundsId);
                             }
                         }
                         else
                         {
-                            holdingsIndex = tempHoldingsList.FindIndex(planet => planet.location == planetName);
+                            holdingsIndex = tempHoldingsList.FindIndex(planet => planet.Location == planetName);
                             if (holdingsIndex != -1)
                             {
                                 Holding planet = tempHoldingsList[holdingsIndex];
-                                if (StarportHelperClasses.Helper.IsZoundsable(planet.planetType, discovery))
+                                if (StarportHelperClasses.Helper.IsZoundsable(planet.PlanetType, discovery))
                                 {
                                     string message = AllPlanetInfo(planet);
 
-                                    await OutprintAsync(AtUser(planet.owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, Program.channelId.zoundsForHoundsId);
+                                    await OutprintAsync(AtUser(planet.Owner) + lastLine + " Zounds dat hoe now!" + '\n' + message, Program.channelId.zoundsForHoundsId);
                                 }
                             }
                             else
@@ -1562,6 +1703,23 @@ namespace DiscordBotUpdates.Modules
         {
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
+
+            if(filePath.Contains("Industrial Clusters 4"))
+            {
+                currentServer = "IC4";
+            }
+            else if(filePath.Contains("A Return of Hope"))
+            {
+                currentServer.Contains("RoH");
+            }
+            else if (filePath.Contains("Deep Freeze"))
+            {
+                currentServer.Contains("Deep");
+            }
+            else if (filePath.Contains("Golden Age 6"))
+            {
+                currentServer.Contains("GA6");
+            }
 
             string[] split = Path.GetFileName(filePath).Split(" ");
             string chatLogOwner = split[0];
@@ -1637,8 +1795,8 @@ namespace DiscordBotUpdates.Modules
         {
             await File.AppendAllTextAsync(path, message);
 
-            string fileName = AtUser(planet.owner);
-            if (AtUser(planet.owner) != "")
+            string fileName = AtUser(planet.Owner);
+            if (AtUser(planet.Owner) != "")
             {
                 string[] remove = { ">", "<", "@" };
                 foreach (string str in remove)

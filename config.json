@@ -1,0 +1,37 @@
+﻿{
+  "API": {
+    "StarportGE": {
+      "host": "164.92.72.200",
+      "keyName": "APIStarportGEKey",
+      "key": "e+/k8S6b4OsfJfe8twlA2Rfv/bqRiL0lzFQjQnLPt86TYa1zhKwOF2taf/du6KO3f0tXIiANvFujBgDGrQgAbIWSsdB0/UBOgstbSOA3xE6iEyXti6wiL1Zco/iZqVHGnNNWKqNKcUfLA3Wem0QMSPSMuIcW58GEiJYWLB+J/ibW0b3wUXW38+Vl0QdHxVkd+7LYl8mZ0h7C7e4Uo1vGs6wxa16yliwE1yiJTLFtAOo=",
+      "url": "http://164.92.72.200",
+
+      "Get": {
+        "allcolonies": "api/colony/getall?",
+        "coloniesBySystem": "api/colony/getcoloniesbysystem?",
+        "colonyByName": "api/colony/getbyname?",
+        "csvByDate": "api/file/getcsvbydate?",
+        "csvByName": "api/file/getcsvbyname?",
+        "galaxy": "api/galaxy/getgalaxy?",
+        "ping": "logging/ping",
+        "planetByName": "api/galaxy/getplanetbyname?",
+        "SystemByName": "api/galaxy/getsystembyname?"
+      },
+      "Post": {
+        "colony": "api/colony/post?",
+        "csv": "api/file/postcsv?"
+      },
+      "Put": {
+        "csv": "api/file/putcsv?",
+        "colony": "api/colony/put?",
+        "system": "api/galaxy/putsystem?",
+        "planet": "api/galaxy/putplanet?"
+
+      },
+      "Delete": {
+        "deleteCsvByName": "api/file/deleteByName?",
+        "deleteCol": "api/colony/deletebyname?"
+      }
+    }
+  }
+}

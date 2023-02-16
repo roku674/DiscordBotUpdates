@@ -1,8 +1,10 @@
 ﻿//Created by Alexander Fields https://github.com/roku674
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using Google.Apis.Calendar.v3.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscordBotUpdates
@@ -36,6 +38,8 @@ namespace DiscordBotUpdates
 
         private static void Main(string[] args)
         {
+            string configContents = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + "/config.json");
+            Optimization.Objects.Settings.BuildAndSetConfig(Directory.GetCurrentDirectory() + "/config.json");
             directory = System.IO.Directory.GetCurrentDirectory();
             System.Console.WriteLine("Last Update: " + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly().Location));
             Google.Apis.Auth.OAuth2.UserCredential credential;
@@ -114,6 +118,7 @@ namespace DiscordBotUpdates
             await commands.ChatLogListener(Program.channelId.botUpdatesId, "Chat Log Listener", "Client");
             await Task.Run(() => commands.init.SetAllAsync(true));
 
+            await Task.Run(() => Modules.TaskInitiator.PingAPI());
             await Task.Run(() => Modules.TaskInitiator.LoadExcelHoldingsAsync());
 
             await Task.Delay(System.Threading.Timeout.Infinite);
