@@ -944,7 +944,7 @@ namespace DiscordBotUpdates.Modules
                 null);
 
             return APICaller.GetResponseBodyFromApiAsync(client,
-                  $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:PlanetByName"]}={text}&server={currentServer}",
+                  $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:PlanetByName"]}name={text}&server={currentServer}",
                   0).Result;
         }
 
@@ -959,7 +959,7 @@ namespace DiscordBotUpdates.Modules
                 null);
 
             return APICaller.GetResponseBodyFromApiAsync(client,
-                   $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:SystemByName"]}={text}&server={currentServer}",
+                   $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:SystemByName"]}name={text}&server={currentServer}",
                    0).Result;        
         }
 
