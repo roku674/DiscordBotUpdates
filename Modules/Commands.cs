@@ -95,13 +95,7 @@ namespace DiscordBotUpdates.Modules
             //await MessageUpdater(Program.channelId.slaversId, "Warped In & Out Updater", "Client", "warpedInOut");
 
             await PictureUpdater(Program.channelId.botUpdatesId, "Picture Updater", "Client");
-        }
-
-        [Command("run Build")]
-        public async Task BuildMacroCreator([Remainder] string text)
-        {
-            await init.UpdateAllieTxt(text);
-        }
+        }    
 
         [Command("run ClearProgram.botsEcho")]
         public async Task ClearBotsEcho()
@@ -205,6 +199,18 @@ namespace DiscordBotUpdates.Modules
             {
                 await Task.Run(() => init.FindListAsync(text));
             }
+        }
+
+        [Command("request planet")]
+        public async Task PlanetGet([Remainder] string text)
+        {
+            await Task.Run(() => init.FindPlanetAsync(text));
+        }
+
+        [Command("request System")]
+        public async Task SystemGet([Remainder] string text)
+        {
+            await Task.Run(() => init.FindSystemAsync(text));
         }
 
         [Command("request WF")]

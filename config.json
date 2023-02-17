@@ -33,5 +33,14 @@
         "deleteCol": "api/colony/deletebyname?"
       }
     }
+  },
+  "Starport": {
+    "Servers": {
+      "Deep Freeze": "Deep",
+      "A Return of Hop": "RoH",
+      "Industrial Clusters 4": "IC4",
+      "Golden Age 6": "GA6"
+    }
+    
   }
 }

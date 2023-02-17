@@ -38,7 +38,6 @@ namespace DiscordBotUpdates
 
         private static void Main(string[] args)
         {
-            string configContents = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + "/config.json");
             Optimization.Objects.Settings.BuildAndSetConfig(Directory.GetCurrentDirectory() + "/config.json");
             directory = System.IO.Directory.GetCurrentDirectory();
             System.Console.WriteLine("Last Update: " + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly().Location));
@@ -119,7 +118,7 @@ namespace DiscordBotUpdates
             await Task.Run(() => commands.init.SetAllAsync(true));
 
             await Task.Run(() => Modules.TaskInitiator.PingAPI());
-            await Task.Run(() => Modules.TaskInitiator.LoadExcelHoldingsAsync());
+            //await Task.Run(() => Modules.TaskInitiator.LoadExcelHoldingsAsync());
 
             await Task.Delay(System.Threading.Timeout.Infinite);
         }

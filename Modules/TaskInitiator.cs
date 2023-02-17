@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Algorithms;
 using System.Data;
 using System.Net.Http;
 using Optimization.Utility;
 using Optimization.Objects;
 using System;
+using Newtonsoft.Json;
 
 namespace DiscordBotUpdates.Modules
 {
@@ -136,12 +136,13 @@ namespace DiscordBotUpdates.Modules
                     System.Console.WriteLine("Current server set to " + currentServer);
                 }
 
-                try{
-                string resposne = APICaller.PutJson(
-                    client,
-                    fileJson,
-                    $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Put:csv"]}server={currentServer}"
-                    ).Result;
+                try
+                {
+                    string resposne = APICaller.PutJson(
+                        client,
+                        fileJson,
+                        $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Put:csv"]}server={currentServer}"
+                        ).Result;
 
                     string json = APICaller.GetResponseBodyFromApiAsync(client,
                     $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:allcolonies"]}server={currentServer}",
@@ -149,9 +150,9 @@ namespace DiscordBotUpdates.Modules
 
                     holdingsList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Holding>>(json);
                 }
-                catch(System.Exception e)
-                {                  
-                    string tempFile = Path.GetTempFileName().Replace(".tmp",".txt");
+                catch (System.Exception e)
+                {
+                    string tempFile = Path.GetTempFileName().Replace(".tmp", ".txt");
                     File.WriteAllText(tempFile, fileJson);
 
                     await OutprintAsync(e.ToString(), Program.channelId.botErrorsId);
@@ -166,7 +167,7 @@ namespace DiscordBotUpdates.Modules
             }
         }
 
-        public static async void PingAPI()
+        public static async Task<bool> PingAPI()
         {
             HttpClient client = new HttpClient();
 
@@ -184,7 +185,10 @@ namespace DiscordBotUpdates.Modules
             {
                 await OutprintAsync("API is down!", Program.channelId.botUpdatesId);
                 await OutprintAsync("API is down!", Program.channelId.botErrorsId);
+
+                return false;
             }
+            return true;
         }
 
         /// </summary> <summary> Call this to start the Distress Calls Listener </summary>
@@ -912,145 +916,6 @@ namespace DiscordBotUpdates.Modules
             dbuTaskNum--;
         }
 
-        public async Task UpdateAllieTxt(string text)
-        {
-            string alliePath = Program.filePaths.networkPathDir + "/Echo/Allie.txt";
-            string[] lines = new string[9];
-
-            for (int i = 0;i < lines.Length;i++)
-            {
-                lines[i] = " ";
-            }
-
-            if (text == "Stop")
-            {
-                lines[0] = "Stop";
-            }
-            else
-            {
-                if (holdingsList == null)
-                {
-                    await LoadExcelHoldingsAsync();
-                }
-
-                lines[0] = "  Command Build " + text;
-                Holding planetToBuild = holdingsList.Find(p => p.Location == text);
-                Holding[] lastPlanet = new Holding[8];
-                for (int i = 0;i < holdingsList.Count - 1;i++)
-                {
-                    if (planetToBuild.GalaxyX == holdingsList[i].GalaxyX && planetToBuild.GalaxyY == holdingsList[i].GalaxyY)
-                    {
-                        Holding planetInSystem = holdingsList[i];
-
-                        //Capitalize first letter
-                        string planetType = planetInSystem.PlanetType.Replace(
-                                   planetInSystem.PlanetType[0].ToString(),
-                                   planetInSystem.PlanetType[0].ToString().ToUpper());
-
-                        if (lastPlanet[0] == null)
-                        {
-                            for (int j = 0;j < lastPlanet.Length;j++)
-                            {
-                                lastPlanet[j] = planetInSystem;
-                            }
-                        }
-
-                        if (planetInSystem.Ore > lastPlanet[0].Ore)
-                        {
-                            lines[1] = planetInSystem.Location + " Type0 " + planetType;
-                            lastPlanet[0] = planetInSystem;
-                        }
-                        else if (planetToBuild.Ore > 5000)
-                        {
-                            lines[1] = " Type0 ";
-                        }
-
-                        if (planetInSystem.Ana > lastPlanet[1].Ana)
-                        {
-                            lines[2] = planetInSystem.Location + " Type1 " + planetType;
-                            lastPlanet[1] = planetInSystem;
-                        }
-                        else if (planetToBuild.Ana > 3000)
-                        {
-                            lines[2] = " Type1 ";
-                        }
-
-                        if (planetInSystem.Med > lastPlanet[2].Med)
-                        {
-                            lines[3] = planetInSystem.Location + " Type2 " + planetType;
-                            lastPlanet[2] = planetInSystem;
-                        }
-                        else if (planetToBuild.Med > 1500)
-                        {
-                            lines[3] = " Type2 ";
-                        }
-
-                        if (planetInSystem.Org > lastPlanet[3].Org)
-                        {
-                            lines[4] = planetInSystem.Location + " Type3 " + planetType;
-                            lastPlanet[3] = planetInSystem;
-                        }
-                        else if (planetToBuild.Org > 3000)
-                        {
-                            lines[4] = " Type3 ";
-                        }
-
-                        if (planetInSystem.Oil > lastPlanet[4].Oil)
-                        {
-                            lines[5] = planetInSystem.Location + " Type4 " + planetType;
-                            lastPlanet[4] = planetInSystem;
-                        }
-                        else if (planetToBuild.Oil > 3000)
-                        {
-                            lines[5] = " Type4 ";
-                        }
-
-                        if (planetInSystem.Ura > lastPlanet[5].Ura)
-                        {
-                            lines[6] = planetInSystem.Location + " Type5 " + planetType;
-                            lastPlanet[5] = planetInSystem;
-                        }
-                        else if (planetToBuild.Ura > 3000)
-                        {
-                            lines[6] = " Type5 ";
-                        }
-
-                        if (planetInSystem.Equ > lastPlanet[6].Equ)
-                        {
-                            lines[7] = planetInSystem.Location + " Type6 " + planetType;
-                            lastPlanet[6] = planetInSystem;
-                        }
-                        else if (planetToBuild.Equ > 3000)
-                        {
-                            lines[7] = " Type6 ";
-                        }
-
-                        if (planetInSystem.Spi > lastPlanet[7].Spi)
-                        {
-                            lines[8] = planetInSystem.Location + " Type7 " + planetType;
-                            lastPlanet[7] = planetInSystem;
-                        }
-                        else if (planetToBuild.Spi > 2000)
-                        {
-                            lines[8] = " Type7 ";
-                        }
-                    }
-                }
-
-                for (int i = 0;i < lines.Length - 1;i++)
-                {
-                    if (string.IsNullOrWhiteSpace(lines[i]))
-                    {
-                        lines[i] = " Type" + (i - 1) + " ";
-                    }
-                }
-            }
-
-            await File.WriteAllLinesAsync(alliePath, lines);
-            await OutprintAsync(AtUser("Autism"), Program.channelId.botUpdatesId);
-            await OutprintFileAsync(alliePath, Program.channelId.botUpdatesId);
-        }
-
         internal string AllPlanetInfo(Holding planet)
         {
             return planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | " + planet.PlanetType + " | " + planet.Owner + '\n'
@@ -1066,6 +931,36 @@ namespace DiscordBotUpdates.Modules
                 +'\n' + '\n'
                 + " ___________________________________________________________________________"
                 + '\n' + '\n';
+        }
+
+        internal string FindPlanetAsync(string text)
+        {
+            HttpClient client = new HttpClient();
+
+            client = APICaller.AddRequestHeaders(client,
+                Settings.Configuration["API:StarportGE:host"],
+                Settings.Configuration["API:StarportGE:keyName"],
+                Settings.Configuration["API:StarportGE:key"],
+                null);
+
+            return APICaller.GetResponseBodyFromApiAsync(client,
+                  $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:PlanetByName"]}={text}&server={currentServer}",
+                  0).Result;
+        }
+
+        internal string FindSystemAsync(string text)
+        {
+            HttpClient client = new HttpClient();
+
+            client = APICaller.AddRequestHeaders(client,
+                Settings.Configuration["API:StarportGE:host"],
+                Settings.Configuration["API:StarportGE:keyName"],
+                Settings.Configuration["API:StarportGE:key"],
+                null);
+
+            return APICaller.GetResponseBodyFromApiAsync(client,
+                   $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:SystemByName"]}={text}&server={currentServer}",
+                   0).Result;        
         }
 
         internal async Task FindWeaponsNearMeAsync(string text)
@@ -1704,22 +1599,16 @@ namespace DiscordBotUpdates.Modules
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
 
-            if(filePath.Contains("Industrial Clusters 4"))
+            string json = Settings.Configuration["Starport:Servers"];
+            Dictionary<string, string> servers = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+
+            foreach (KeyValuePair<string,string> kvp in servers)
             {
-                currentServer = "IC4";
-            }
-            else if(filePath.Contains("A Return of Hope"))
-            {
-                currentServer.Contains("RoH");
-            }
-            else if (filePath.Contains("Deep Freeze"))
-            {
-                currentServer.Contains("Deep");
-            }
-            else if (filePath.Contains("Golden Age 6"))
-            {
-                currentServer.Contains("GA6");
-            }
+                if (filePath.Contains(kvp.Key))
+                {
+                    currentServer = kvp.Value;
+                }
+            }         
 
             string[] split = Path.GetFileName(filePath).Split(" ");
             string chatLogOwner = split[0];
