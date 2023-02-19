@@ -93,8 +93,6 @@ namespace DiscordBotUpdates.Modules
             await MessageUpdater("Message Updater", "Client");
             //await MessageUpdater(Program.channelId.distressCallsId, "Distress Signal Updater", "Client", "distress");
             //await MessageUpdater(Program.channelId.slaversId, "Warped In & Out Updater", "Client", "warpedInOut");
-
-            await PictureUpdater(Program.channelId.botUpdatesId, "Picture Updater", "Client");
         }    
 
         [Command("run ClearProgram.botsEcho")]
@@ -473,65 +471,6 @@ namespace DiscordBotUpdates.Modules
             await ReplyAsync("Pong");
         }
 
-        [Command("request planet")]
-        public async Task PlanetPictureGet([Remainder] string planetName)
-        {
-            string[] allfiles = Directory.GetFiles(Program.filePaths.planetPicturesDir, "*.*", SearchOption.AllDirectories);
-
-            int holdingIndex = TaskInitiator.holdingsList.FindIndex(planet => planet.Location == planetName);
-            if (holdingIndex != -1)
-            {
-                StarportObjects.Holding planet = TaskInitiator.holdingsList[holdingIndex];
-                string message = init.AllPlanetInfo(planet);
-                await ReplyAsync(message);
-            }
-            else
-            {
-                await ReplyAsync(planetName + " was NOT found in spreadsheet!");
-            }
-
-            foreach (string file in allfiles)
-            {
-                if (planetName.Equals(Path.GetFileNameWithoutExtension(file)))
-                {
-                    System.Console.WriteLine(planetName
-                       + '\n' + file);
-
-                    DirectoryInfo directoryInfo = Directory.GetParent(file);
-                    //System.Console.WriteLine(directoryInfo.Name);
-                    if (directoryInfo.Name == "PlanetPictures")
-                    {
-                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", Program.channelId.planetPicturesFriendlyId);
-                        await DBUTask.OutprintFileAsync(file, Program.channelId.planetPicturesFriendlyId);
-
-                        await ReplyAsync("File printed to planet pictures!");
-                        return;
-                    }
-                    else if (directoryInfo.Name == "Enemy Planets")
-                    {
-                        await DBUTask.OutprintAsync("Enemy Planet Requested: ", Program.channelId.slaversId);
-                        await DBUTask.OutprintFileAsync(file, Program.channelId.slaversId);
-                        /*
-                        if (File.Exists(directoryInfo.FullName + "/" + text + ".txt"))
-                        {
-                            await DBUTask.OutprintFileAsync(directoryInfo.FullName + "/" + text + ".txt", Program.channelId.slaversId);
-                        }
-                        */
-                        await ReplyAsync("File printed to slavers!");
-                        return;
-                    }
-                    else if (directoryInfo.Name == "Undomed")
-                    {
-                        await DBUTask.OutprintAsync("Friendly Planet Requested: ", Program.channelId.buildingId);
-                        await DBUTask.OutprintFileAsync(file, Program.channelId.buildingId);
-                        await ReplyAsync("File printed to building!");
-                        return;
-                    }
-                }
-            }
-            await ReplyAsync(planetName + " picture was NOT found in our folders!");
-        }
-
         [Command("run planetsCaptured")]
         public async Task PlanetsCapturedChange([Remainder] string text)
         {
@@ -722,15 +661,7 @@ namespace DiscordBotUpdates.Modules
             Task task = Task.Run(() => init.TextUpdaterAsync(id));
             DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, id, null));
             await Task.Delay(500);
-        }
-
-        internal async Task PictureUpdater(ulong channelId, string purpose, string owner)
-        {
-            uint picturesNum = DBUTask.dbuTaskNum++;
-            Task task = Task.Run(() => init.PictureUpdaterAsync(picturesNum));
-            DBUTask.runningTasks.Add(new DBUTask.DBUTaskObj(task, purpose, owner, picturesNum, null));
-            await Task.Delay(500);
-        }
+        }     
 
         private string SecondsToTime(uint seconds)
         {

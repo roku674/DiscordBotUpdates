@@ -627,183 +627,6 @@ namespace DiscordBotUpdates.Modules
         }
 
         /// <summary>
-        /// Call this to start the picture updater
-        /// </summary>
-        /// <returns></returns>
-        public async Task PictureUpdaterAsync(uint id)
-        {
-            //await channel.SendMessageAsync("Sucessfully Initiated Picture Listener!");
-            System.Console.WriteLine("Sucessfully Initiated Picture Listener!");
-            await Task.Delay(2000);
-
-            int taskNum = runningTasks.FindIndex(task => task.id == id);
-
-            while (taskNum == -1)
-            {
-                taskNum = runningTasks.FindIndex(task => task.id == id);
-            }
-
-            DBUTaskObj task = runningTasks.ElementAt(taskNum);
-
-            for (uint i = 0;i < duration;i++)
-            {
-                if (runningTasks[taskNum].isCancelled)
-                {
-                    i = duration;
-                    break;
-                }
-
-                await Task.Delay(1000);
-                string picturesDir = Program.filePaths.networkPathDir + "/Pictures";
-                string[] paths =
-                {
-                   picturesDir,
-                   picturesDir + "/Building",
-                   picturesDir + "/Distress",
-                   picturesDir + "/Planet-Pictures-Enemy",
-                   picturesDir + "/Planet-Pictures-Friendly",
-                   picturesDir + "/Planet-Pictures-Undomed",
-                   picturesDir + "/Scout-Reports",
-                   picturesDir + "/Targets",
-                };
-
-                for (int j = 0;j < paths.Length;j++)
-                {
-                    string[] pictures = Directory.GetFiles(paths[j]);
-                    if (pictures.Length > 0)
-                    {
-                        foreach (string picture in pictures)
-                        {
-                            System.Console.WriteLine(Path.GetFileName(paths[j]));
-                            if (Path.GetFileName(picture) != "desktop.ini")
-                            {
-                                switch (j)
-                                {
-                                    case 0:
-                                        await OutprintFileAsync(picture, Program.channelId.botUpdatesId);
-                                        break;
-
-                                    case 1:
-                                        await OutprintFileAsync(picture, Program.channelId.buildingId);
-                                        break;
-
-                                    case 2:
-                                        await OutprintFileAsync(picture, Program.channelId.distressCallsId);
-                                        break;
-
-                                    case 3:
-                                        if (Directory.Exists(Program.filePaths.planetPicturesDir + "/Enemy Planets/"))
-                                        {
-                                            if (picture.Contains("_"))
-                                            {
-                                                picture.Replace("_", " ");
-                                            }
-                                            if (!File.Exists(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture)))
-                                            {
-                                                File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                await OutprintAsync("Enemy Planet Picture Downloaded!", Program.channelId.planetPicturesEnemyId);
-                                                await OutprintFileAsync(picture, Program.channelId.planetPicturesEnemyId);
-                                            }
-                                            else
-                                            {
-                                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                await OutprintAsync("Enemy Planet Picture Updated/Replaced!", Program.channelId.planetPicturesEnemyId);
-                                                await OutprintFileAsync(picture, Program.channelId.planetPicturesEnemyId);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            await OutprintAsync(picture + " : was not successfully downloaded!", Program.channelId.planetPicturesEnemyId);
-                                        }
-                                        break;
-
-                                    case 4:
-
-                                        if (Directory.Exists(Program.filePaths.planetPicturesDir))
-                                        {
-                                            if (picture.Contains("_"))
-                                            {
-                                                picture.Replace("_", " ");
-                                            }
-                                            if (!File.Exists(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture)))
-                                            {
-                                                File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                await OutprintAsync("Colony Picture Downloaded!", Program.channelId.planetPicturesFriendlyId);
-                                                await OutprintFileAsync(picture, Program.channelId.planetPicturesFriendlyId);
-                                            }
-                                            else
-                                            {
-                                                await OutprintAsync(Path.GetFileName(picture) + " was not downloaded as there was a duplicate!", Program.channelId.planetPicturesFriendlyId);
-                                                //await OutprintFileAsync(picture, Program.channelId.botUpdatesId);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            await OutprintAsync(picture + " : was not successfully downloaded!", Program.channelId.planetPicturesFriendlyId);
-                                        }
-
-                                        break;
-
-                                    case 5:
-                                        if (Directory.Exists(Program.filePaths.planetPicturesDir + "/Undomed/"))
-                                        {
-                                            if (picture.Contains("_"))
-                                            {
-                                                picture.Replace("_", " ");
-                                            }
-                                            if (!File.Exists(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture)))
-                                            {
-                                                File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                await OutprintAsync("Enemy Planet Picture Downloaded!", Program.channelId.planetPicturesUndomedId);
-                                                await OutprintFileAsync(picture, Program.channelId.planetPicturesUndomedId);
-                                            }
-                                            else
-                                            {
-                                                Algorithms.FileManipulation.DeleteFile(Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                File.Copy(picture, Program.filePaths.planetPicturesDir + "/" + Path.GetFileName(picture));
-                                                await OutprintAsync("Enemy Planet Picture Updated/Replaced!", Program.channelId.planetPicturesUndomedId);
-                                                await OutprintFileAsync(picture, Program.channelId.planetPicturesUndomedId);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            await OutprintAsync(picture + " : was not successfully downloaded!", Program.channelId.planetPicturesUndomedId);
-                                        }
-                                        break;
-
-                                    case 6:
-                                        await OutprintFileAsync(picture, Program.channelId.scoutReportsId);
-                                        break;
-
-                                    case 7:
-                                        await OutprintFileAsync(picture, Program.channelId.targetsId);
-                                        break;
-
-                                    default:
-                                        await OutprintFileAsync(picture, Program.channelId.botUpdatesId);
-                                        break;
-                                }
-                            }
-
-                            Algorithms.FileManipulation.DeleteFile(picture);
-                        }
-                    }
-                }
-
-                if (i == 1)
-                {
-                    System.Console.WriteLine("Picture Updater: First pass completed!");
-                }
-
-                task.ticker++;
-            }
-            await OutprintAsync("No Longer Listening for Pictures Updates!", Program.channelId.botCommandsId);
-            runningTasks.RemoveAt(taskNum);
-            dbuTaskNum--;
-        }
-
-        /// <summary>
         /// Call this to start the Message Updater
         /// </summary>
         /// <returns></returns>
@@ -1438,7 +1261,41 @@ namespace DiscordBotUpdates.Modules
 
                         //System.Console.WriteLine("colonyName: " + colonyName);
                         string colonyPath = Program.filePaths.planetPicturesDir + "/" + colonyName + ".png";
-                        string planetPath = Program.filePaths.planetPicturesDir + "/" + planetName + ".png";
+                        string planetPath = null;
+
+                        HttpClient client = new HttpClient();
+
+                        client = APICaller.AddRequestHeaders(client,
+                            Settings.Configuration["API:StarportGE:host"],
+                            Settings.Configuration["API:StarportGE:keyName"],
+                            Settings.Configuration["API:StarportGE:key"],
+                            null);
+
+                        string json = APICaller.GetResponseBodyFromApiAsync(client,
+                            $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:planetByName"]}name={planetName}&server={currentServer}",
+                            0).Result;
+
+                        if (json == null)
+                        {
+                            await OutprintAsync($"There was a problem fetching {planetName}'s picture", Program.channelId.distressCallsId);
+                        }
+                        else
+                        {
+                            Planet planet = JsonConvert.DeserializeObject<Planet>(json);
+
+                            if(planet.Picture == null)
+                            {
+                                await OutprintAsync($"{planetName}'s picture does not exist!", Program.channelId.distressCallsId);
+                            }
+                            else
+                            {
+                                string tempFile = Path.GetTempFileName().Replace(".tmp", planet.Picture.FileExtension);
+                                File.WriteAllBytes(tempFile, planet.Picture.FileBytes);
+                                planetPath = tempFile;
+                            }
+
+                        }
+
 
                         if (File.Exists(colonyPath))
                         {
@@ -1449,6 +1306,7 @@ namespace DiscordBotUpdates.Modules
                         {
                             await OutprintAsync("@everyone " + lastLine, Program.channelId.distressCallsId);
                             await OutprintFileAsync(planetPath, Program.channelId.distressCallsId);
+                            File.Delete(planetPath);
                         }
                         else
                         {
@@ -1599,17 +1457,16 @@ namespace DiscordBotUpdates.Modules
             string filePath = fileSysEvent.FullPath;
             string[] fileStrArr = new string[0];
 
-            string json = Settings.Configuration["Starport:Servers"];
-            Dictionary<string, string> servers = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-
-            foreach (KeyValuePair<string,string> kvp in servers)
+            string serversJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/servers.json");
+            ServerDictionary serverDict = JsonConvert.DeserializeObject<ServerDictionary>(serversJson);
+            foreach (KeyValuePair<string,string> kvp in serverDict.Servers)
             {
                 if (filePath.Contains(kvp.Key))
                 {
                     currentServer = kvp.Value;
                 }
             }         
-
+            
             string[] split = Path.GetFileName(filePath).Split(" ");
             string chatLogOwner = split[0];
 

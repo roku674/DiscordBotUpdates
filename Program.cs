@@ -113,12 +113,11 @@ namespace DiscordBotUpdates
             await Task.Delay(10000);
             Modules.Commands commands = new Modules.Commands();
             await commands.MessageUpdater("Message Updater", "Client");
-            await commands.PictureUpdater(Program.channelId.botUpdatesId, "Picture Updater", "Client");
             await commands.ChatLogListener(Program.channelId.botUpdatesId, "Chat Log Listener", "Client");
             await Task.Run(() => commands.init.SetAllAsync(true));
 
             await Task.Run(() => Modules.TaskInitiator.PingAPI());
-            //await Task.Run(() => Modules.TaskInitiator.LoadExcelHoldingsAsync());
+            await Task.Run(() => Modules.TaskInitiator.LoadExcelHoldingsAsync());
 
             await Task.Delay(System.Threading.Timeout.Infinite);
         }
