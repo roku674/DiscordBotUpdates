@@ -8,14 +8,17 @@
 
       "Get": {
         "allcolonies": "api/colony/getall?",
+        "builds": "api/analysis/getbuilds?",
         "coloniesBySystem": "api/colony/getcoloniesbysystem?",
         "colonyByName": "api/colony/getbyname?",
         "csvByDate": "api/file/getcsvbydate?",
         "csvByName": "api/file/getcsvbyname?",
         "galaxy": "api/galaxy/getgalaxy?",
+        "picture": "api/file/getpicture?",
+        "pictures": "api/file/getPictures?",
         "ping": "logging/ping",
         "planetByName": "api/galaxy/getplanetbyname?",
-        "SystemByName": "api/galaxy/getsystembyname?"
+        "systemByName": "api/galaxy/getsystembyname?"
       },
       "Post": {
         "colony": "api/colony/post?",

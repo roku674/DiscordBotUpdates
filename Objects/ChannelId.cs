@@ -17,9 +17,6 @@ namespace DiscordBotUpdates.Objects
         public ulong militaryLowId;
         public ulong newsId;
         public ulong nuetrinoId;
-        public ulong planetPicturesEnemyId;
-        public ulong planetPicturesFriendlyId;
-        public ulong planetPicturesUndomedId;
         public ulong pollutionCritId;
         public ulong pollutionFinderId;
         public ulong recapListId;
@@ -65,9 +62,6 @@ namespace DiscordBotUpdates.Objects
             this.militaryLowId = militaryLowId;
             this.newsId = newsId;
             this.nuetrinoId = nuetrinoId;
-            this.planetPicturesEnemyId = planetPicturesEnemyId;
-            this.planetPicturesFriendlyId = planetPicturesFriendlyId;
-            this.planetPicturesUndomedId = planetPicturesUndomedId;
             this.pollutionCritId = pollutionCritId;
             this.pollutionFinderId = pollutionFinderId;
             this.recapListId = recapListId;

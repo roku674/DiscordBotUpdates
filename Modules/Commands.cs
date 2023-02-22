@@ -202,13 +202,14 @@ namespace DiscordBotUpdates.Modules
         [Command("request planet")]
         public async Task PlanetGet([Remainder] string text)
         {
-            await Task.Run(() => init.FindPlanetAsync(text));
+            await ReplyAsync($"Finding {text}...");
+            await ReplyAsync(await init.FindPlanetAsync(text));
         }
 
         [Command("request System")]
         public async Task SystemGet([Remainder] string text)
         {
-            await Task.Run(() => init.FindSystemAsync(text));
+            await ReplyAsync(await init.FindSystemAsync(text));
         }
 
         [Command("request WF")]

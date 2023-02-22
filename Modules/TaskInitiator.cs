@@ -376,60 +376,19 @@ namespace DiscordBotUpdates.Modules
 
             if (type == "Pollution")
             {
-                channel = Program.channelId.pollutionFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Pollution > 0 && planet.PollutionRate > 1)
-                    {
-                        polluting++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+             
             }
             else if (type == "PollutionCrit")
             {
-                channel = Program.channelId.pollutionCritId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Pollution > 40 && planet.PollutionRate > 0)
-                    {
-                        pollutingCrit++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+             
             }
             else if (type == "Zoundsables")
             {
-                channel = Program.channelId.zoundsForHoundsId;
-                int zoundsableCounter = 0;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Population < 100000 && StarportHelperClasses.Helper.IsZoundsable(planet.PlanetType, planet.Discoveries))
-                    {
-                        zoundsableCounter++;
-                        string message = AllPlanetInfo(planet);
-
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
-                await OutprintAsync("Zoundsables found: " + zoundsableCounter, channel);
+             
             }
             else if (type == "DD")
             {
-                channel = Program.channelId.ddId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Name.Contains("DD") ||
-                       ((planet.Name.EndsWith(".D") || planet.Name.EndsWith(".DI") || planet.Name.Contains(".ZD")))
-                       )
-                    {
-                        ddCount++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+               
             }
             else if (type == "Solar Off")
             {
@@ -446,104 +405,23 @@ namespace DiscordBotUpdates.Modules
             }
             else if (type == "Solar Weak")
             {
-                channel = Program.channelId.solarWeakId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.SolarShots < 25 && planet.Population > 5000)
-                    {
-                        solarWeak++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+              
             }
             else if (type == "MilitaryTest")
             {
-                uint military = 10000;
-
-                channel = Program.channelId.botTestingId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Discoveries.Contains("MT lvl 1"))
-                    {
-                        military = 7150;
-                    }
-                    else if (planet.Discoveries.Contains("MT lvl 2"))
-                    {
-                        military = 5600;
-                    }
-                    else if (planet.Discoveries.Contains("MT lvl 3"))
-                    {
-                        military = 4550;
-                    }
-                    else if (planet.Discoveries.Contains("MT lvl 4"))
-                    {
-                        military = 3850;
-                    }
-                    else if (planet.Discoveries.Contains("MT lvl 5"))
-                    {
-                        military = 3350;
-                    }
-
-                    if ((planet.PercMilitary / 100) * planet.Population < ((military * 0.4f) / military))
-                    {
-                        militaryWeak++;
-                        string message = AllPlanetInfo(planet);
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+               
             }
             else if (type == "Revolt")
             {
-                channel = Program.channelId.revoltFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.Morale < 0 || planet.MoraleChange < 0.00d)
-                    {
-                        negativeMorale++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Morale: " + planet.Morale + " + " + planet.MoraleChange + "/hour" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+               
             }
             else if (type == "Shrinking")
             {
-                channel = Program.channelId.shrinkingFinderId;
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.PopGrowth < -1d && planet.PopGrowth > -2000)
-                    {
-                        negativeGrowth++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Population: " + planet.Population + " | Growth Rate: " + planet.PopGrowth + "/hour" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
+                
             }
             else if (type == "All")
             {
-                channel = Program.channelId.colonyManagementId;
 
-                foreach (Holding planet in localHoldingsList)
-                {
-                    if (planet.PopGrowth < -1d && planet.PopGrowth > -2000)
-                    {
-                        negativeGrowth++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Population: " + planet.Population + " | Growth Rate: " + planet.PopGrowth + "/hour" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                    if (planet.Morale < 0 || planet.MoraleChange < 0.00d)
-                    {
-                        negativeMorale++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Morale: " + planet.Morale + " + " + planet.MoraleChange + "/hour" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                    if (planet.Pollution > 0 || planet.PollutionRate > 1)
-                    {
-                        polluting++;
-                        string message = planet.Location + " (" + planet.GalaxyX + "," + planet.GalaxyY + ")" + " | " + planet.Name + " | Disasters: " + planet.Disaster + " | Pollution: " + planet.Pollution + " + " + planet.PollutionRate + "/day" + '\n';
-                        await UpdateCompanionFilesAsync(planet, tempPath, message, type);
-                    }
-                }
             }
             else
             {
@@ -756,7 +634,7 @@ namespace DiscordBotUpdates.Modules
                 + '\n' + '\n';
         }
 
-        internal string FindPlanetAsync(string text)
+        internal async Task<string> FindPlanetAsync(string text)
         {
             HttpClient client = new HttpClient();
 
@@ -766,12 +644,12 @@ namespace DiscordBotUpdates.Modules
                 Settings.Configuration["API:StarportGE:key"],
                 null);
 
-            return APICaller.GetResponseBodyFromApiAsync(client,
-                  $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:PlanetByName"]}name={text}&server={currentServer}",
-                  0).Result;
+            return await APICaller.GetResponseBodyFromApiAsync(client,
+                  $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:planetByName"]}name={text}&server={currentServer}",
+                  0);
         }
 
-        internal string FindSystemAsync(string text)
+        internal async Task<string> FindSystemAsync(string text)
         {
             HttpClient client = new HttpClient();
 
@@ -781,9 +659,9 @@ namespace DiscordBotUpdates.Modules
                 Settings.Configuration["API:StarportGE:key"],
                 null);
 
-            return APICaller.GetResponseBodyFromApiAsync(client,
-                   $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:SystemByName"]}name={text}&server={currentServer}",
-                   0).Result;        
+            return await APICaller.GetResponseBodyFromApiAsync(client,
+                   $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:systemByName"]}name={text}&server={currentServer}",
+                   0);        
         }
 
         internal async Task FindWeaponsNearMeAsync(string text)
@@ -1263,17 +1141,7 @@ namespace DiscordBotUpdates.Modules
                         string colonyPath = Program.filePaths.planetPicturesDir + "/" + colonyName + ".png";
                         string planetPath = null;
 
-                        HttpClient client = new HttpClient();
-
-                        client = APICaller.AddRequestHeaders(client,
-                            Settings.Configuration["API:StarportGE:host"],
-                            Settings.Configuration["API:StarportGE:keyName"],
-                            Settings.Configuration["API:StarportGE:key"],
-                            null);
-
-                        string json = APICaller.GetResponseBodyFromApiAsync(client,
-                            $"{Settings.Configuration["API:StarportGE:url"]}/{Settings.Configuration["API:StarportGE:Get:planetByName"]}name={planetName}&server={currentServer}",
-                            0).Result;
+                        string json = await FindPlanetAsync(planetName);
 
                         if (json == null)
                         {
